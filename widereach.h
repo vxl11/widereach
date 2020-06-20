@@ -43,6 +43,3 @@ struct samples_t *random_samples(
                 /** Dimension of the sample space */
 		size_t dimension);
 
-
-/* --------------------------- Helper methods ---------------------------- */
-#define CALLOC(nmemb, type) (type *) calloc(nmemb, sizeof(type))

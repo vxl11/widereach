@@ -8,7 +8,7 @@ endif
 
 INC =
 LIBS = -lgplk -lm
-BASE = widereach.h Makefile
+BASE = widereach.h helper.h Makefile
 OBJ = samples.o
 
 .PHONY: all clean
