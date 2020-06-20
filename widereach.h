@@ -49,3 +49,21 @@ samples_t *random_samples(
                 /** Dimension of the sample space */
 		size_t dimension);
 
+
+/* ---------------------- Sparse Vectors ---------------------------- */
+
+/** Sparse vector in GLPK format */
+typedef struct {
+	int len;
+	int *ind;
+	double *val
+} sparse_vector_t;
+
+/** Deallocates the ind and val vectors in a sparse vector.
+ * It assumes that ind and val were dynamically allocated.
+ * 
+ * @return the sparse vector */
+void delete_sparse_vector(sparse_vector_t *);
+
+/** Convert an array of doubles into a new sparse vector */
+sparse_vector_t *to_sparse(double *);
