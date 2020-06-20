@@ -53,3 +53,7 @@ dkms.conf
 
 # vi files
 .*.swp
+
+# Executables (project specific)
+utest
+widereach

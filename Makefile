@@ -7,9 +7,10 @@ else
 endif
 
 INC =
-LIBS = -lgplk -lm
+LIBS = -lglpk -lm
 BASE = widereach.h helper.h Makefile
 OBJ = samples.o
+UOBJ = utest.o
 
 .PHONY: all clean
 
@@ -19,8 +20,8 @@ all:
 widereach:	$(OBJ) $(BASE)
 	$(CC) $(CFLAGS) -o $@ $< $(LIBS)
 
-utest:	$(UOBJ) $(OBJ) $(BASE) utest.h
-	$(CC) $(CFLAGS) -o $@ $< $(LIBS)
+utest:	$(UOBJ) $(OBJ) $(BASE)
+	$(CC) $(CFLAGS) -o $@ $< $(LIBS) -lcunit
 
 %.o:	%.c $(BASE)
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
