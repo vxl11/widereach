@@ -14,7 +14,7 @@ struct sample_t {
  *
  * It is assume that the sample array and the values of each sample
  * have been dynamically allocated */
-void delete_samples(struct sample_t *);
+void delete_samples(size_t, struct sample_t *);
 
 /** Generates random samples in the unit square in the given dimensional 
  * space.
