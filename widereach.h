@@ -21,8 +21,9 @@ typedef struct {
 
 /** @brief Delete the element within the given sample array.
  *
- * It is assume that all the arrays within the sample
+ * It is assumed that all the arrays within the sample
  * have been dynamically allocated.
+ * No assumption is made about the allocation of the argument itself.
  *
  * @return the samples */
 samples_t *delete_samples(samples_t *);

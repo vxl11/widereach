@@ -6,20 +6,24 @@
 /* -------------------- Samples ------------------------------------------ */
 
 int is_binary(samples_t *samples) {
-	return 2 == samples->class_cnt &&
+	return 	 2 == samples->class_cnt &&
 		-1 == samples->label[0] &&
 		 1 == samples->label[1];
 }
 
 
 samples_t *delete_samples(samples_t *samples) {
-	free(samples->count);
 	free(samples->label);
 	size_t class_cnt = samples->class_cnt;
-	for (size_t j = 0; j < class_cnt; j++) {
-		free(samples->samples + j);
+	for (size_t i = 0; i < class_cnt; i++) {
+		size_t cnt = samples->count[i];
+		for (size_t j = 0; j < cnt; j++) {
+			free(samples->samples[i][j]);
+		}
+		free(samples->samples[i]);
 	}
 	free(samples->samples);
+	free(samples->count);
 	return samples;
 }
 

@@ -17,13 +17,12 @@ void test_samples() {
 	for (size_t k = 0; k < 2; k++) {
 		for (size_t i = 0; i < samples->count[k]; i++) {
 			for (size_t j = 0; j < 2; j++) {
-				printf("%g\n", samples->samples[k][i][j]);
 				CU_ASSERT(samples->samples[k][i][j] >= 0.);
 				CU_ASSERT(samples->samples[k][i][j] <= 1.);
 			}
 		}
 	}
-	delete_samples(samples);
+	free(delete_samples(samples));
 }
 
 int main() {
