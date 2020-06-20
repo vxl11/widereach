@@ -6,7 +6,8 @@
 #include "helper.h"
 
 void test_samples() {
-	// samples_t samples;
+	samples_t *samples = random_samples(5, 3, 2);
+	CU_ASSERT(is_binary(samples));
 }
 
 int main() {
