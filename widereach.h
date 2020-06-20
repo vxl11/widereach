@@ -19,9 +19,13 @@ void delete_samples(size_t, struct sample_t *);
 /** Generates random samples in the unit square in the given dimensional 
  * space.
  *
- * @param Dimension dimension of the sample space
  * @param n Number of samples
  * @param Positives number of positives samples (must be no more than n)
+ * @param dimension Dimension of the sample space
  * @return A newly allocated array of samples
  **/
-struct sample_t *random_samples(int dimension, int n, int positives);
+struct sample_t *random_samples(size_t n, int positives, int dimension);
+
+
+/* --------------------------- Helper methods ---------------------------- */
+#define CALLOC(nmemb, type) (type *) calloc(nmemb, sizeof(type))

@@ -8,6 +8,7 @@ endif
 
 INC =
 LIBS = -lgplk -lm
+BASE = widereach.h Makefile
 OBJ = samples.o
 
 .PHONY: all clean
@@ -15,10 +16,13 @@ OBJ = samples.o
 all:
 	echo $(CFLAGS)
 
-widereach:	$(OBJ) widereach.h Makefile
+widereach:	$(OBJ) $(BASE)
 	$(CC) $(CFLAGS) -o $@ $< $(LIBS)
 
-*.o*.c: widereach.h Makefile
+utest:	$(UOBJ) $(OBJ) $(BASE) utest.h
+	$(CC) $(CFLAGS) -o $@ $< $(LIBS)
+
+*.o*.c: $(BASE)
 	$(CC) $(CFLAGS) $(INC) -o $@ $<
 
 clean:
