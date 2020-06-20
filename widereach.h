@@ -1,30 +1,46 @@
 /** Widereach Classification */
 
 /* --------------------------- Samples -------------------------------- */
+/** A single sample */
 struct sample_t {
 	/** Sample direction: +1 positive, -1 negative */
 	int direction;
-	/** Dimension of the sample space, and size of the values array */
-	int dimension;
 	/** Values of the sample coordinates in the given dimensions */
 	double *values;
+};
+
+
+/** An array of samples */
+struct samples_t {
+	/** Number of samples */
+	size_t count;
+	/** Dimension of the sample space, and 
+	 * size of the values array of all samples in the array */
+	size_t dimension;
+	/** Sample array */
+	struct sample_t *samples;
 };
 
 /** @brief Delete the given sample array.
  *
  * It is assume that the sample array and the values of each sample
  * have been dynamically allocated */
-void delete_samples(size_t, struct sample_t *);
+void delete_samples(struct samples_t *);
 
 /** Generates random samples in the unit square in the given dimensional 
  * space.
  *
- * @param n Number of samples
- * @param Positives number of positives samples (must be no more than n)
- * @param dimension Dimension of the sample space
+ * The drand48(3) functions must have been seeded before invoking this method.
+ *
  * @return A newly allocated array of samples
  **/
-struct sample_t *random_samples(size_t n, int positives, int dimension);
+struct samples_t *random_samples(
+                /** Number of samples */
+		size_t count, 
+		/** Number of positives samples (must be no more than count) */ 
+		size_t positives, 
+                /** Dimension of the sample space */
+		size_t dimension);
 
 
 /* --------------------------- Helper methods ---------------------------- */
