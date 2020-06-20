@@ -1,45 +1,44 @@
 /** Widereach Classification */
 
 /* --------------------------- Samples -------------------------------- */
-/** A single sample */
-struct sample_t {
-	/** Sample direction: +1 positive, -1 negative */
-	int direction;
-	/** Values of the sample coordinates in the given dimensions */
-	double *values;
-};
 
-
-/** An array of samples */
+/* An group of samples */
 struct samples_t {
-	/** Number of samples */
-	size_t count;
 	/** Dimension of the sample space, and 
 	 * size of the values array of all samples in the array */
 	size_t dimension;
-	/** Sample array */
-	struct sample_t *samples;
+	/** Number of sample categories. */
+	size_t class_cnt;
+	/** Number of samples in each category */
+	size_t *count;
+	/** Label of the samples in each category */
+	int *label;
+	/** Sample array. 
+	 * The ith array contains count[i] samples in class label[i].
+	 * Each sample contains the value along the given dimensions. */
+	double ***samples;
 };
 
-/** @brief Delete the given sample array.
+/** @brief Delete the element within the given sample array.
  *
- * It is assume that the sample array and the values of each sample
- * have been dynamically allocated */
-void delete_samples(struct samples_t *);
+ * It is assume that all the arrays within the sample
+ * have been dynamically allocated.
+ *
+ * @return the samples */
+struct samples_t *delete_samples(struct samples_t *);
 
-/** Generates random samples in the unit square in the given dimensional 
- * space.
+/** Generates random binary samples in the unit square in the given dimension.
  *
  * The drand48(3) functions must have been seeded before invoking this method.
  *
- * @return A newly allocated array of samples
+ * @return A newly allocated group of samples
  **/
 struct samples_t *random_samples(
                 /** Number of samples */
 		size_t count, 
 		/** Number of positives samples.
-		 * If positives is greater than count, then all points 
-		 * will be positive. */ 
+		 * If positives is greater than or equal to count, 
+		 * then all points will be positive. */ 
 		size_t positives, 
                 /** Dimension of the sample space */
 		size_t dimension);
