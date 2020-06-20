@@ -5,7 +5,14 @@
 
 /* -------------------- Samples ------------------------------------------ */
 
-struct samples_t *delete_samples(struct samples_t *samples) {
+int is_binary(samples_t *samples) {
+	return 2 == samples->class_cnt &&
+		-1 == samples->label[0] &&
+		 1 == samples->label[1];
+}
+
+
+samples_t *delete_samples(samples_t *samples) {
 	free(samples->count);
 	free(samples->label);
 	size_t class_cnt = samples->class_cnt;
@@ -26,7 +33,7 @@ double *random_point(size_t dimension) {
 }
 
 
-double **generic_samples(size_t count, size_t dimension) {
+double **random_points(size_t count, size_t dimension) {
 	double **samples = CALLOC(count, double *);
 	for (size_t j = 0; j < count; j++) {
 		samples[j] = random_point(dimension);
@@ -36,19 +43,19 @@ double **generic_samples(size_t count, size_t dimension) {
 
 
 void set_sample_class(
-		struct samples_t *samples, 
+		samples_t *samples, 
 		size_t class, 
 		int label, 
 		size_t count) {
 	samples->label[class] = label;
 	samples->count[class] = count;
-	samples->samples[class] = generic_samples(count, samples->dimension);
+	samples->samples[class] = random_points(count, samples->dimension);
 }
 
 
-struct samples_t *random_samples(
+samples_t *random_samples(
 		size_t count, size_t positives, size_t dimension) {
-	struct samples_t *samples = CALLOC(1, struct samples_t);
+	samples_t *samples = CALLOC(1, samples_t);
 	samples->dimension = dimension;
 	samples->class_cnt = 2;
 	samples->label = CALLOC(2, int);

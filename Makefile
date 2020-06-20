@@ -22,8 +22,8 @@ widereach:	$(OBJ) $(BASE)
 utest:	$(UOBJ) $(OBJ) $(BASE) utest.h
 	$(CC) $(CFLAGS) -o $@ $< $(LIBS)
 
-*.o*.c: $(BASE)
-	$(CC) $(CFLAGS) $(INC) -o $@ $<
+%.o:	%.c $(BASE)
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:
 	rm *.o

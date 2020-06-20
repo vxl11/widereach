@@ -3,7 +3,7 @@
 /* --------------------------- Samples -------------------------------- */
 
 /* An group of samples */
-struct samples_t {
+typedef struct {
 	/** Dimension of the sample space, and 
 	 * size of the values array of all samples in the array */
 	size_t dimension;
@@ -17,7 +17,7 @@ struct samples_t {
 	 * The ith array contains count[i] samples in class label[i].
 	 * Each sample contains the value along the given dimensions. */
 	double ***samples;
-};
+} samples_t;
 
 /** @brief Delete the element within the given sample array.
  *
@@ -25,7 +25,12 @@ struct samples_t {
  * have been dynamically allocated.
  *
  * @return the samples */
-struct samples_t *delete_samples(struct samples_t *);
+samples_t *delete_samples(samples_t *);
+
+
+/** Checks whether the given samples are binary: it contains two classes,
+ * the first of which labelled -1 and the other +1 */
+int is_binary(samples_t *);
 
 /** Generates random binary samples in the unit square in the given dimension.
  *
@@ -33,7 +38,7 @@ struct samples_t *delete_samples(struct samples_t *);
  *
  * @return A newly allocated group of samples
  **/
-struct samples_t *random_samples(
+samples_t *random_samples(
                 /** Number of samples */
 		size_t count, 
 		/** Number of positives samples.
