@@ -54,16 +54,37 @@ samples_t *random_samples(
 
 /** Sparse vector in GLPK format */
 typedef struct {
+	/** Length of the significant part of ind and val */
 	int len;
+	/** Additional space at the end of ind and val */
+	size_t extra;
+	/** Index vector */
 	int *ind;
+	/** Value vector */
 	double *val
 } sparse_vector_t;
 
-/** Deallocates the ind and val vectors in a sparse vector.
+/** Deallocates the ind and val vectors in a sparse vector, and 
+ * sets the length and extra to zero.
  * It assumes that ind and val were dynamically allocated.
  * 
  * @return the sparse vector */
 void delete_sparse_vector(sparse_vector_t *);
 
-/** Convert an array of doubles into a new sparse vector */
-sparse_vector_t *to_sparse(double *);
+/** Convert an array of doubles into a new sparse vector. */
+sparse_vector_t *to_sparse(
+                /** Length of the double array */
+		size_t nmemb, 
+		double *,
+		/** Extra len to be left at the end of the sparse vector */
+		size_t extra = 0);
+
+/** Appends an element at the end of the sparse vector. 
+ *
+ * @return 0 if successful, 1 if no extra space is available */
+int add(sparse_vector_t *, 
+	/** Index of the new element.
+            It is assumed that this index has not been previously defined. */
+	int ind, 
+	/** Value to be inserted */
+	double val);
