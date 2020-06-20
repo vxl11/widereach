@@ -37,7 +37,9 @@ void delete_samples(struct samples_t *);
 struct samples_t *random_samples(
                 /** Number of samples */
 		size_t count, 
-		/** Number of positives samples (must be no more than count) */ 
+		/** Number of positives samples.
+		 * If positives is greater than count, then all points 
+		 * will be positive. */ 
 		size_t positives, 
                 /** Dimension of the sample space */
 		size_t dimension);
