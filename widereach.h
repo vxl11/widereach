@@ -1,7 +1,7 @@
 /** Widereach Classification */
 
 /* --------------------------- Samples -------------------------------- */
-struct sample_t sample {
+struct sample_t {
 	/** Sample direction: +1 positive, -1 negative */
 	int direction;
 	/** Dimension of the sample space, and size of the values array */
