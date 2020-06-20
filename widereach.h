@@ -81,7 +81,9 @@ sparse_vector_t *to_sparse(
 
 /** Appends an element at the end of the sparse vector. 
  *
- * @return 0 if successful, 1 if no extra space is available */
+ * @return -1 if no extra space is available 
+ * (and thus the item was not added) or 
+ * the amount of extra space after the insertion. */
 int add(sparse_vector_t *, 
 	/** Index of the new element.
             It is assumed that this index has not been previously defined. */
