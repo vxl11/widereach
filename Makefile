@@ -9,7 +9,7 @@ endif
 INC =
 LIBS = -lglpk -lm
 BASE = widereach.h helper.h Makefile
-OBJ = samples.o
+OBJ = samples.o sparse_vector.o
 UOBJ = utest.o
 
 .PHONY: all clean

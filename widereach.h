@@ -1,3 +1,6 @@
+#include <stdlib.h>
+#include <stdio.h>
+
 /** Widereach Classification */
 
 /* --------------------------- Samples -------------------------------- */
@@ -61,7 +64,7 @@ typedef struct {
 	/** Index vector */
 	int *ind;
 	/** Value vector */
-	double *val
+	double *val;
 } sparse_vector_t;
 
 /** Deallocates the ind and val vectors in a sparse vector, and 
@@ -77,14 +80,19 @@ sparse_vector_t *to_sparse(
 		size_t nmemb, 
 		double *,
 		/** Extra len to be left at the end of the sparse vector */
-		size_t extra = 0);
+		size_t extra);
+
+/** Multiple a sparse vector by a scalar.
+ *
+ * @return The sparse vector after multiplication. */
+sparse_vector_t *multiply(sparse_vector_t *, double);
 
 /** Appends an element at the end of the sparse vector. 
  *
  * @return -1 if no extra space is available 
  * (and thus the item was not added) or 
  * the amount of extra space after the insertion. */
-int add(sparse_vector_t *, 
+int append(sparse_vector_t *, 
 	/** Index of the new element.
             It is assumed that this index has not been previously defined. */
 	int ind, 

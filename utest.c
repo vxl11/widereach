@@ -25,6 +25,10 @@ void test_samples() {
 	free(delete_samples(samples));
 }
 
+
+void test_sparse_vector() {
+}
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -33,6 +37,10 @@ int main() {
 	// Samples
 	CU_pSuite samples = CU_add_suite("samples", init_samples, NULL);
 	CU_add_test(samples, "generic samples", test_samples);
+
+	// Samples
+	CU_pSuite sparse = CU_add_suite("sparse vector", NULL, NULL);
+	CU_add_test(sparse, "generic sparse vector", test_sparse_vector);
 
 	// Run tests
 	CU_basic_run_tests();
