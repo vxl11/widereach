@@ -189,6 +189,17 @@ int idx(
 	/** Sample collection */
 	samples_t *);
 
+
+/** Maps the index of a decision variable into a sample locator.
+ *
+ * In case of error (e.g., the index does not belong to a sample)
+ * it returns class = -1. */
+sample_locator_t *locator(
+		/** Decision variable index */
+		int index, 
+		/** Sample set */
+		samples_t *);
+
 /** Return the minimum or maximum index corresponding to an index of a 
  * given class */
 int idx_extreme(

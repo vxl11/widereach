@@ -79,6 +79,16 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(idx_extreme(1, 0, 0, samples), 4);
 	CU_ASSERT_EQUAL(idx_extreme(1, 0, 1, samples), 5);
 
+	sample_locator_t *loc;
+	loc = locator(5, samples);
+	CU_ASSERT_EQUAL(loc->class, 1);
+	CU_ASSERT_EQUAL(loc->index, 1);
+	free(loc);
+	loc = locator(8, samples);
+	CU_ASSERT_EQUAL(loc->class, 0);
+	CU_ASSERT_EQUAL(loc->index, 1);
+	free(loc);
+
 	sparse_vector_t *v = precision_row(samples, .7);
 	CU_ASSERT_EQUAL(v->len, 6);
 	// Negatives

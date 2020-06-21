@@ -1,4 +1,5 @@
 #include "widereach.h"
+#include "helper.h"
 
 /*
  * Translates indexing in a problem instance (env) into GLPK problem (glp_prob).
@@ -41,6 +42,32 @@ int violation_idx(int direction, samples_t *samples) {
 	int idx = samples_total(samples) + 1;
 	idx = directional_offset(idx, direction, samples->dimension);
 	return idx;
+}
+
+
+sample_locator_t *locator(int index, samples_t *samples) {
+	sample_locator_t *locator = CALLOC(1, sample_locator_t);
+	int index_min = samples->dimension + 2;
+	if (index < index_min) {
+		locator->class = -1;
+		return locator;
+	}
+	size_t offset = (size_t) (index - index_min);
+	if (offset >= samples_total(samples)) {
+		locator->class = -1;
+		return locator;
+	}
+
+	size_t threshold = positives(samples);
+	if (offset > threshold) {
+		locator->class = 0;
+		locator->index = offset - threshold;
+	} else {
+		locator->class = 1;
+		locator->index = offset;
+	}
+
+	return locator;
 }
 
 int idx_extreme(int direction, int class, int extreme, samples_t *samples) {
