@@ -37,7 +37,6 @@ void test_sparse_vector() {
 	multiply(v, -1.);
 	for (int i = 1; i <= 3; i++) {
           CU_ASSERT_EQUAL(v->ind[i], i);
-	  printf("%g\n", v->val[i]);
 	  CU_ASSERT_DOUBLE_EQUAL(v->val[i], (double) -(4 - i), 1e-12);
 	}
 
@@ -46,6 +45,12 @@ void test_sparse_vector() {
 	CU_ASSERT_DOUBLE_EQUAL(v->val[4], 6., 1e-12);
 
 	free(delete_sparse_vector(v));
+}
+
+void test_env() {
+	env_t env;
+	env.samples = random_samples(5, 3, 2);
+	delete_env(&env);
 }
 
 int main() {
@@ -57,9 +62,13 @@ int main() {
 	CU_pSuite samples = CU_add_suite("samples", init_samples, NULL);
 	CU_add_test(samples, "generic samples", test_samples);
 
-	// Samples
+	// Sparse vectors
 	CU_pSuite sparse = CU_add_suite("sparse vector", NULL, NULL);
 	CU_add_test(sparse, "generic sparse vector", test_sparse_vector);
+	
+	// Sparse vectors
+	CU_pSuite env = CU_add_suite("environment", NULL, NULL);
+	CU_add_test(env, "environment", test_env);
 
 	// Run tests
 	CU_basic_run_tests();
