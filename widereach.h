@@ -5,7 +5,7 @@
 
 /* --------------------------- Samples -------------------------------- */
 
-/* An group of samples */
+/** A group of samples */
 typedef struct {
 	/** Dimension of the sample space, and 
 	 * size of the values array of all samples in the array */
@@ -21,6 +21,14 @@ typedef struct {
 	 * Each sample contains the value along the given dimensions. */
 	double ***samples;
 } samples_t;
+
+
+/** Sample locator: specifies a sample in a sample group but call and
+ * index within class */
+typedef struct {
+	size_t class;
+	size_t index;
+} sample_locator_t;
 
 /** @brief Delete the element within the given sample array.
  *

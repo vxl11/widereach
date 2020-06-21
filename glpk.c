@@ -76,10 +76,11 @@ double label_to_bound(int label, params_t *params) {
 		-params->epsilon_negative;
 }
 
-void add_sample(glp_prob *p, size_t class, size_t sample_index, 
-		const env_t *env) {
+void add_sample(glp_prob *p, sample_locator_t locator, const env_t *env) {
 	samples_t *samples = env->samples;
+	size_t class = locator.class;
 	int label = samples->label[class];
+	size_t sample_index = locator.index;
 	char name[NAME_LEN_MAX];
 	snprintf(name, NAME_LEN_MAX, "%c%u", 
 			label_to_varname(label), 
@@ -117,7 +118,8 @@ glp_prob *add_samples(glp_prob *p, const env_t *env) {
 	for (size_t class = 0; class < samples->class_cnt; class++) {
 		int cnt = samples->count[class];
 		for (size_t idx = 0; idx < cnt; idx++) {
-			add_sample(p, class, idx, env);
+			sample_locator_t locator = { class, idx };
+			add_sample(p, locator , env);
 		}
 	}
 
