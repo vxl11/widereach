@@ -213,3 +213,6 @@ sparse_vector_t *precision_row(
 
 /** Return GLPK solver parameters initialized from the given parameters */
 glp_iocp *iocp(const params_t *);
+
+/** Return an GLPK problem intialized from the given environment */
+glp_prob *milp(const env_t *);
