@@ -77,6 +77,18 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(idx_extreme(1, 1, 1, samples), 3);
 	CU_ASSERT_EQUAL(idx_extreme(1, 0, 0, samples), 4);
 	CU_ASSERT_EQUAL(idx_extreme(1, 0, 1, samples), 5);
+
+	sparse_vector_t *v = precision_row(samples, .7);
+	CU_ASSERT_EQUAL(v->len, 6);
+	// Negatives
+	CU_ASSERT_EQUAL(v->ind[1], 7);
+	CU_ASSERT_EQUAL(v->ind[2], 8);
+	// Positives
+	for (int i = 3; i <= 5; i++) {
+		CU_ASSERT_EQUAL(v->ind[i], i + 1);
+	}
+	CU_ASSERT_EQUAL(v->ind[6], 9);
+	free(delete_sparse_vector(v));
 }
 
 int main() {

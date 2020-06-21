@@ -197,3 +197,11 @@ int violation_idx(
 	int direction, 
 	/** Sample collection */
 	samples_t *);
+
+/** Returns a new sparse vector representing the right hand side of the 
+ * precision constraint */
+sparse_vector_t *precision_row(
+		/** Sample set */
+		samples_t *, 
+		/** Precision threshold */
+		double theta);
