@@ -50,12 +50,15 @@ glp_prob *init_prob(const env_t *env) {
 
 
 glp_prob *add_hyperplane(glp_prob *p, const env_t *env) {
+	char name[NAME_LEN_MAX];
 	int hyperplane_cnt = env->samples->dimension + 1;
-	// TODO default parms
 	for (int i = 1; i <= hyperplane_cnt; i++) {
 		glp_set_col_kind(p, i, GLP_CV);
 		glp_set_col_bnds(p, i, GLP_FR, 0., 0.);
+	        snprintf(name, NAME_LEN_MAX, "w%u", i);
+		glp_set_col_name(p, i, name);
 	}
+	glp_set_col_name(p, hyperplane_cnt, "c");
 	return p;
 }
 
