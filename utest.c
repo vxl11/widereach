@@ -27,6 +27,25 @@ void test_samples() {
 
 
 void test_sparse_vector() {
+	double ary[] = { 3., 2., 1. };
+	sparse_vector_t *v = to_sparse(3, ary, 2);
+	for (int i = 1; i <= 3; i++) {
+          CU_ASSERT_EQUAL(v->ind[i], i);
+	  CU_ASSERT_DOUBLE_EQUAL(v->val[i], (double) (4 - i), 1e-12);
+	}
+
+	multiply(v, -1.);
+	for (int i = 1; i <= 3; i++) {
+          CU_ASSERT_EQUAL(v->ind[i], i);
+	  printf("%g\n", v->val[i]);
+	  CU_ASSERT_DOUBLE_EQUAL(v->val[i], (double) -(4 - i), 1e-12);
+	}
+
+	CU_ASSERT_EQUAL(append(v, 6, 6.), 1);
+        CU_ASSERT_EQUAL(v->ind[4], 6);
+	CU_ASSERT_DOUBLE_EQUAL(v->val[4], 6., 1e-12);
+
+	free(delete_sparse_vector(v));
 }
 
 int main() {

@@ -72,7 +72,7 @@ typedef struct {
  * It assumes that ind and val were dynamically allocated.
  * 
  * @return the sparse vector */
-void delete_sparse_vector(sparse_vector_t *);
+sparse_vector_t *delete_sparse_vector(sparse_vector_t *);
 
 /** Convert an array of doubles into a new sparse vector. */
 sparse_vector_t *to_sparse(
@@ -98,3 +98,22 @@ int append(sparse_vector_t *,
 	int ind, 
 	/** Value to be inserted */
 	double val);
+
+
+/* --------------------- Parameters and Environment ---------------------- */
+
+/** Problem instance parameters */
+typedef struct {
+	/** Precision threshold */
+	double theta;
+} params_t;
+
+/** Environment */
+typedef struct {
+	/** Sample set */
+	samples_t *samples;
+	/** Problem instance parameters */
+	params_t *params;
+} env_t;
+
+env_t *delete_env(env_t *);

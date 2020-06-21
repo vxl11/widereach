@@ -1,10 +1,11 @@
 #include "widereach.h"
 #include "helper.h"
 
-void delete_sparse_vector(sparse_vector_t *v) {
+sparse_vector_t *delete_sparse_vector(sparse_vector_t *v) {
 	v->len = v->extra = 0;
 	free(v->ind);
 	free(v->val);
+	return v;
 }
 
 sparse_vector_t *to_sparse(size_t nmemb, double *ary, size_t extra) {
@@ -35,7 +36,8 @@ int append(sparse_vector_t *v, int ind, double x) {
 
 
 sparse_vector_t *multiply(sparse_vector_t *v, double x) {
-	for (int i = 1; i <= v->len; v++) {
+	int len = v->len;
+	for (int i = 1; i <= len; i++) {
 		v->val[i] *= x;
 	}
 	return v;
