@@ -74,6 +74,10 @@ typedef struct {
 	double *val;
 } sparse_vector_t;
 
+
+/** Allocates a new sparse vector of zero len and the given extras. */
+sparse_vector_t *sparse_vector_blank(size_t extra);
+
 /** Deallocates the ind and val vectors in a sparse vector, and 
  * sets the length and extra to zero.
  * It assumes that ind and val were dynamically allocated.
@@ -165,6 +169,25 @@ int idx(
         int class, 
 	/** Sample index within class */
 	size_t sample_index, 
+	/** Sample collection */
+	samples_t *);
+
+/** Return the minimum or maximum index corresponding to an index of a 
+ * given class */
+int idx_extreme(
+	/** 0: return column index, 1: row index */
+	int direction, 
+	/** Sample class */
+        int class, 
+	/** 0: return the minimum index, 1: max */
+	int extreme,
+	/** Sample collection */
+	samples_t *);
+
+/** Return the index corresponding to the violation variable */
+int violation_idx(
+	/** 0: return column index, 1: row index */
+	int direction, 
 	/** Sample collection */
 	samples_t *);
 

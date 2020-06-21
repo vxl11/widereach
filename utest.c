@@ -47,6 +47,11 @@ void test_sparse_vector() {
 	CU_ASSERT_DOUBLE_EQUAL(v->val[4], 6., 1e-12);
 
 	free(delete_sparse_vector(v));
+
+	v = sparse_vector_blank(3);
+        CU_ASSERT_EQUAL(v->len, 0);
+        CU_ASSERT_EQUAL(v->extra, 3);
+	free(delete_sparse_vector(v));
 }
 
 void test_env() {
@@ -64,6 +69,14 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(idx(1, 0, 1, samples), 5);
 	CU_ASSERT_EQUAL(violation_idx(0, samples), 9);
 	CU_ASSERT_EQUAL(violation_idx(1, samples), 6);
+	CU_ASSERT_EQUAL(idx_extreme(0, 1, 0, samples), 4);
+	CU_ASSERT_EQUAL(idx_extreme(0, 1, 1, samples), 6);
+	CU_ASSERT_EQUAL(idx_extreme(0, 0, 0, samples), 7);
+	CU_ASSERT_EQUAL(idx_extreme(0, 0, 1, samples), 8);
+	CU_ASSERT_EQUAL(idx_extreme(1, 1, 0, samples), 1);
+	CU_ASSERT_EQUAL(idx_extreme(1, 1, 1, samples), 3);
+	CU_ASSERT_EQUAL(idx_extreme(1, 0, 0, samples), 4);
+	CU_ASSERT_EQUAL(idx_extreme(1, 0, 1, samples), 5);
 }
 
 int main() {

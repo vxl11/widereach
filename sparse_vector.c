@@ -1,6 +1,16 @@
 #include "widereach.h"
 #include "helper.h"
 
+sparse_vector_t *sparse_vector_blank(size_t extra) {
+	sparse_vector_t *v = CALLOC(1, sparse_vector_t);
+	v->len = 0;
+	v->extra = extra;
+	v->ind = CALLOC(extra + 1, int);
+	v->val = CALLOC(extra + 1, double);
+	return v;
+}
+
+
 sparse_vector_t *delete_sparse_vector(sparse_vector_t *v) {
 	v->len = v->extra = 0;
 	free(v->ind);
