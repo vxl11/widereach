@@ -3,14 +3,14 @@
 
 /* -------------------- Samples ------------------------------------------ */
 
-int is_binary(samples_t *samples) {
+int is_binary(const samples_t *samples) {
 	return 	 2 == samples->class_cnt &&
 		-1 == samples->label[0] &&
 		 1 == samples->label[1];
 }
 
 
-size_t samples_total(samples_t *samples) {
+size_t samples_total(const samples_t *samples) {
 	size_t *count = samples->count;
 	int cnt = 0;
 	for (size_t class = 0; class < samples->class_cnt; class++) {
@@ -20,7 +20,7 @@ size_t samples_total(samples_t *samples) {
 }
 
 
-size_t positives(samples_t *samples) {
+size_t positives(const samples_t *samples) {
 	return samples->count[1];
 }
 

@@ -111,10 +111,6 @@ void add_sample(glp_prob *p, size_t class, size_t sample_index,
 
 glp_prob *add_samples(glp_prob *p, const env_t *env) {
 	samples_t *samples = env->samples;
-	if (!is_binary(samples)) {
-		return NULL;
-	}
-
 	for (size_t class = 0; class < samples->class_cnt; class++) {
 		int cnt = samples->count[class];
 		for (size_t idx = 0; idx < cnt; idx++) {
@@ -150,6 +146,9 @@ glp_prob *add_precision(glp_prob *p, const env_t *env) {
 
 
 glp_prob *milp(const env_t *env) {
+	if (!is_binary(env->samples)) {
+		return NULL;
+	}
 	glp_prob *p = init_prob(env);
 	p = add_hyperplane(p, env);
 	p = add_samples(p, env);

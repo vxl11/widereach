@@ -34,14 +34,14 @@ samples_t *delete_samples(samples_t *);
 
 /** Checks whether the given samples are binary: it contains two classes,
  * the first of which labelled -1 and the other +1 */
-int is_binary(samples_t *);
+int is_binary(const samples_t *);
 
 
 /** Return the total number of samples */
-size_t samples_total(samples_t *);
+size_t samples_total(const samples_t *);
 
 /** Return the number of positives samples in a binary sample set */
-size_t positives(samples_t *);
+size_t positives(const samples_t *);
 
 /** Generates random binary samples in the unit square in the given dimension.
  *

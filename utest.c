@@ -95,6 +95,14 @@ void test_indexing() {
 	free(delete_sparse_vector(v));
 }
 
+void test_glpk() {
+	env_t env;
+	env.params = params_default();
+	env.samples = random_samples(5, 3, 2);
+	CU_ASSERT_PTR_NOT_NULL(milp(&env));
+	delete_env(&env);
+}
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -115,6 +123,10 @@ int main() {
 	// Indexing
 	CU_pSuite indexing = CU_add_suite("indexing", init_samples, NULL);
 	CU_add_test(indexing, "indexing", test_indexing);
+
+	// GLPK
+	CU_pSuite glpk = CU_add_suite("glpk", init_samples, NULL);
+	CU_add_test(glpk, "glpk", test_glpk);
 
 	// Run tests
 	CU_basic_run_tests();
