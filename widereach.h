@@ -145,6 +145,9 @@ typedef struct {
 	params_t *params;
 } env_t;
 
+/** Deallocate the samples and the parameters.
+ *
+ * It assumes that samples and parameters were dynamically allocated */
 env_t *delete_env(env_t *);
 
 
