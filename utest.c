@@ -82,12 +82,15 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(v->len, 6);
 	// Negatives
 	CU_ASSERT_EQUAL(v->ind[1], 7);
+	CU_ASSERT_DOUBLE_EQUAL(v->val[1], .7, 1e-12);
 	CU_ASSERT_EQUAL(v->ind[2], 8);
 	// Positives
 	for (int i = 3; i <= 5; i++) {
 		CU_ASSERT_EQUAL(v->ind[i], i + 1);
+	        CU_ASSERT_DOUBLE_EQUAL(v->val[i], -.3, 1e-12);
 	}
 	CU_ASSERT_EQUAL(v->ind[6], 9);
+	CU_ASSERT_DOUBLE_EQUAL(v->val[6], -1., 1e-12);
 	free(delete_sparse_vector(v));
 }
 
