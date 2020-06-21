@@ -10,6 +10,16 @@ int is_binary(samples_t *samples) {
 }
 
 
+size_t samples_total(samples_t *samples) {
+	size_t *count = samples->count;
+	int cnt = 0;
+	for (size_t class = 0; class < samples->class_cnt; class++) {
+		cnt += count[class];
+	}
+	return cnt;
+}
+
+
 size_t positives(samples_t *samples) {
 	return samples->count[1];
 }

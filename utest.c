@@ -14,6 +14,7 @@ void test_samples() {
 	samples_t *samples = random_samples(5, 3, 2);
 	CU_ASSERT(is_binary(samples));
 	CU_ASSERT_EQUAL(samples->dimension, 2);
+	CU_ASSERT_EQUAL(samples_total(samples), 5);
 	CU_ASSERT_EQUAL(positives(samples), 3);
 	for (size_t k = 0; k < 2; k++) {
 		for (size_t i = 0; i < samples->count[k]; i++) {
@@ -54,6 +55,17 @@ void test_env() {
 	delete_env(&env);
 }
 
+
+void test_indexing() {
+	samples_t *samples = random_samples(5, 3, 2);
+	CU_ASSERT_EQUAL(idx(0, 1, 1, samples), 5);
+	CU_ASSERT_EQUAL(idx(1, 1, 1, samples), 2);
+	CU_ASSERT_EQUAL(idx(0, 0, 1, samples), 8);
+	CU_ASSERT_EQUAL(idx(1, 0, 1, samples), 5);
+	CU_ASSERT_EQUAL(violation_idx(0, samples), 9);
+	CU_ASSERT_EQUAL(violation_idx(1, samples), 6);
+}
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -67,9 +79,13 @@ int main() {
 	CU_pSuite sparse = CU_add_suite("sparse vector", NULL, NULL);
 	CU_add_test(sparse, "generic sparse vector", test_sparse_vector);
 	
-	// Sparse vectors
-	CU_pSuite env = CU_add_suite("environment", NULL, NULL);
+	// Environment
+	CU_pSuite env = CU_add_suite("environment", init_samples, NULL);
 	CU_add_test(env, "environment", test_env);
+
+	// Indexing
+	CU_pSuite indexing = CU_add_suite("indexing", init_samples, NULL);
+	CU_add_test(indexing, "indexing", test_indexing);
 
 	// Run tests
 	CU_basic_run_tests();

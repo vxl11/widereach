@@ -37,6 +37,9 @@ samples_t *delete_samples(samples_t *);
 int is_binary(samples_t *);
 
 
+/** Return the total number of samples */
+size_t samples_total(samples_t *);
+
 /** Return the number of positives samples in a binary sample set */
 size_t positives(samples_t *);
 
@@ -114,6 +117,14 @@ typedef struct {
 	int verbosity;
 	/** Precision threshold */
 	double theta;
+	/** Tolerance for positive samples */
+	double epsilon_positive;
+	/** Tolerance for negative samples */
+	double epsilon_negative;
+	/** Tolerance for the precision constraint */
+	double epsilon_precision;
+	/** Lagrangian multiplier of the precision constraint */
+	double lambda;
 } params_t;
 
 /** Environment */
@@ -125,3 +136,41 @@ typedef struct {
 } env_t;
 
 env_t *delete_env(env_t *);
+
+
+/* ------------------------ Indexing ---------------------------------- */
+
+/*
+ * Maps addressing in a binary classification problem instance (env) into 
+ * indexing in a GLPK problem (glp_prob) according to the follwoing convetions.
+ *
+ * *Variables (columns)*
+ * - 1 to dimension w
+ * - dimension+1 c
+ * - dimension+2 to dimension+positives+1 xi
+ * - dimension+positives+2 to dimension+samples+1 yj
+ * - dimension+samples+2 V
+ *
+ * *Constrains (rows)*
+ * - 1 to positives xi
+ * - positives+1 to samples yj
+ * - samples+1 V 
+ */
+
+/** Return the index corresponding to a sample */
+int idx(
+	/** 0: return column index, 1: row index */
+	int direction, 
+	/** Sample class */
+        int class, 
+	/** Sample index within class */
+	size_t sample_index, 
+	/** Sample collection */
+	samples_t *);
+
+/** Return the index corresponding to the violation variable */
+int violation_idx(
+	/** 0: return column index, 1: row index */
+	int direction, 
+	/** Sample collection */
+	samples_t *);
