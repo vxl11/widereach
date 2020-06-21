@@ -56,6 +56,7 @@ void test_sparse_vector() {
 
 void test_env() {
 	env_t env;
+	env.params = params_default();
 	env.samples = random_samples(5, 3, 2);
 	delete_env(&env);
 }

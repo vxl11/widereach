@@ -133,6 +133,10 @@ typedef struct {
 	int violation_type;
 } params_t;
 
+
+/** Return a new parameter set with default values */
+params_t *params_default();
+
 /** Environment */
 typedef struct {
 	/** Sample set */
