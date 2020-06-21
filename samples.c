@@ -10,6 +10,11 @@ int is_binary(samples_t *samples) {
 }
 
 
+size_t positives(samples_t *samples) {
+	return samples->count[1];
+}
+
+
 samples_t *delete_samples(samples_t *samples) {
 	free(samples->label);
 	size_t class_cnt = samples->class_cnt;

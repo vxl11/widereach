@@ -14,6 +14,7 @@ void test_samples() {
 	samples_t *samples = random_samples(5, 3, 2);
 	CU_ASSERT(is_binary(samples));
 	CU_ASSERT_EQUAL(samples->dimension, 2);
+	CU_ASSERT_EQUAL(positives(samples), 3);
 	for (size_t k = 0; k < 2; k++) {
 		for (size_t i = 0; i < samples->count[k]; i++) {
 			for (size_t j = 0; j < 2; j++) {

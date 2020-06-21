@@ -36,6 +36,10 @@ samples_t *delete_samples(samples_t *);
  * the first of which labelled -1 and the other +1 */
 int is_binary(samples_t *);
 
+
+/** Return the number of positives samples in a binary sample set */
+size_t positives(samples_t *);
+
 /** Generates random binary samples in the unit square in the given dimension.
  *
  * The drand48(3) functions must have been seeded before invoking this method.
@@ -104,6 +108,10 @@ int append(sparse_vector_t *,
 
 /** Problem instance parameters */
 typedef struct {
+	/** Problem name */
+	char *name;
+	/** Verbosity level (GLPK enum) */
+	int verbosity;
 	/** Precision threshold */
 	double theta;
 } params_t;
