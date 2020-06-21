@@ -23,7 +23,7 @@
 
 #define NAME_LEN_MAX 255
 
-glp_iocp *iocp(params_t *params)  {
+glp_iocp *iocp(const params_t *params)  {
 	glp_iocp *parm = CALLOC(1, glp_iocp);
 	glp_init_iocp(parm);
 	parm->msg_lev = params->verbosity;
@@ -37,20 +37,21 @@ glp_iocp *iocp(params_t *params)  {
 }
 
 
-glp_prob *init_prob(env_t *env) {
+glp_prob *init_prob(const env_t *env) {
 	glp_prob *p = glp_create_prob();
 	params_t *params = env->params;
 	glp_set_prob_name(p, params->name);
 	glp_set_obj_dir(p, GLP_MAX);
+	samples_t *samples = env->samples;
+	glp_add_cols(p, violation_idx(0, samples));
+	glp_add_rows(p, violation_idx(1, samples));
 	return p;
 }
 
-// void delete_prob(glp_prob *p) { }1G
 
-glp_prob *add_hyperplane(glp_prob *p, env_t *env) {
+glp_prob *add_hyperplane(glp_prob *p, const env_t *env) {
 	int hyperplane_cnt = env->samples->dimension + 1;
-	// TODO all sizing at once
-	glp_add_cols(p, hyperplane_cnt);
+	// TODO default parms
 	for (int i = 1; i <= hyperplane_cnt; i++) {
 		glp_set_col_kind(p, i, GLP_CV);
 		glp_set_col_bnds(p, i, GLP_FR, 0., 0.);
@@ -72,7 +73,8 @@ double label_to_bound(int label, params_t *params) {
 		-params->epsilon_negative;
 }
 
-void add_sample(glp_prob *p, size_t class, size_t sample_index, env_t *env) {
+void add_sample(glp_prob *p, size_t class, size_t sample_index, 
+		const env_t *env) {
 	samples_t *samples = env->samples;
 	int label = samples->label[class];
 	char name[NAME_LEN_MAX];
@@ -107,14 +109,11 @@ void add_sample(glp_prob *p, size_t class, size_t sample_index, env_t *env) {
 	free(delete_sparse_vector(v));
 }
 
-glp_prob *add_samples(glp_prob *p, env_t *env) {
+glp_prob *add_samples(glp_prob *p, const env_t *env) {
 	samples_t *samples = env->samples;
 	if (!is_binary(samples)) {
 		return NULL;
 	}
-        int samples_cnt = samples_total(samples);
-	glp_add_cols(p, samples_cnt);
-	glp_add_rows(p, samples_cnt);
 
 	for (size_t class = 0; class < samples->class_cnt; class++) {
 		int cnt = samples->count[class];
@@ -127,8 +126,7 @@ glp_prob *add_samples(glp_prob *p, env_t *env) {
 }
 
 
-glp_prob *add_precision(glp_prob *p, env_t *env) {
-	glp_add_cols(p, 1);
+glp_prob *add_precision(glp_prob *p, const env_t *env) {
 	samples_t *samples = env->samples;
 	int col_idx = violation_idx(0, samples);
 	glp_set_col_name(p, col_idx, "V");
@@ -137,7 +135,6 @@ glp_prob *add_precision(glp_prob *p, env_t *env) {
 	glp_set_col_bnds(p, col_idx, params->violation_type, 0., 0.);
 	glp_set_obj_coef(p, col_idx, -params->lambda);
 
-	glp_add_rows(p, 1);
 	int row_idx = violation_idx(1, samples);
 	glp_set_row_name(p, row_idx, "V");
 	double theta = params->theta;
@@ -152,7 +149,7 @@ glp_prob *add_precision(glp_prob *p, env_t *env) {
 }
 
 
-glp_prob *milp(env_t *env) {
+glp_prob *milp(const env_t *env) {
 	glp_prob *p = init_prob(env);
 	p = add_hyperplane(p, env);
 	p = add_samples(p, env);

@@ -212,4 +212,4 @@ sparse_vector_t *precision_row(
 /* ----------------------------- GLPK ----------------------------------- */
 
 /** Return GLPK solver parameters initialized from the given parameters */
-glp_iocp *iocp(params_t *);
+glp_iocp *iocp(const params_t *);
