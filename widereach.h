@@ -1,5 +1,5 @@
 #include <stdlib.h>
-#include <stdio.h>
+#include <glpk.h>
 
 /** Widereach Classification */
 
@@ -129,6 +129,8 @@ typedef struct {
 	double epsilon_precision;
 	/** Lagrangian multiplier of the precision constraint */
 	double lambda;
+	/** Violation bound (either GLP_FR or GLP_LO) */
+	int violation_type;
 } params_t;
 
 /** Environment */
@@ -205,3 +207,9 @@ sparse_vector_t *precision_row(
 		samples_t *, 
 		/** Precision threshold */
 		double theta);
+
+
+/* ----------------------------- GLPK ----------------------------------- */
+
+/** Return GLPK solver parameters initialized from the given parameters */
+glp_iocp *iocp(params_t *);
