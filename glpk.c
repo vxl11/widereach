@@ -23,16 +23,17 @@
 
 #define NAME_LEN_MAX 255
 
-glp_iocp *iocp(const params_t *params)  {
+glp_iocp *iocp(const env_t *env)  {
+	params_t *params = env->params;
 	glp_iocp *parm = CALLOC(1, glp_iocp);
 	glp_init_iocp(parm);
 	parm->msg_lev = params->verbosity;
 	parm->pp_tech = GLP_PP_NONE;
 	parm->sr_heur = GLP_OFF;
 	parm->binarize= GLP_ON;
-	// parms->cb_func = callback;
-	// parms->cb_info =;
-	// parms->cb_size =;
+	// parm->cb_func = callback;
+	parm->cb_info = (void *) env;
+	parm->cb_size = sizeof(node_info_t);
 	return parm;
 }
 
