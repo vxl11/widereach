@@ -246,7 +246,17 @@ glp_prob *milp(const env_t *);
 
 /** Additional data to be stored in each tree node */
 typedef struct {
-} node_info_t;
+	/** Flag denoting whether the node data has been initialized */
+	int initialized;
+	/** Smallest distance of a fractional sample from the hyperplane */
+	double distance;
+	/** GLPK index of the fractional sample closest to the hyperplane */
+	int index_closest;
+} node_data_t;
+
+/** Populate node data */
+void initialize_node_data(glp_tree *, env_t *);
+
 
 
 /* -------------------------- Callback ---------------------------------- */

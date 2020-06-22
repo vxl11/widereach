@@ -4,6 +4,10 @@
 #include "widereach.h"
 
 void ibranch(glp_tree *t, env_t *env) {
+	node_data_t *data = 
+		(node_data_t *) glp_ios_node_data(t, glp_ios_curr_node(t));
+	glp_assert(data->initialized);
+
 	samples_t *samples = env->samples;
 	int idx_max = violation_idx(0, samples);
 	int dimension = samples->dimension;
@@ -44,10 +48,13 @@ void ibranch(glp_tree *t, env_t *env) {
 	}
 	// if (wzero == dimension && positive_cnt > 0 && negative_cnt > 0) {
 	/*
-	if (wzero == dimension) {
+	if (wzero == dimension) {*/
+	/*
+	if (drand48() < 1e-2) {
 	  glp_printf("ibranch: wzero=%i x=%i y=%i\n", 
 			wzero, positive_cnt, negative_cnt);
 	}
 	*/
+	glp_printf("distance: %g\tbound: %g\n", candidate_frac, glp_ios_node_bound(t, glp_ios_curr_node(t)));
         glp_ios_branch_upon(t, candidate_idx, candidate_sel);
 }

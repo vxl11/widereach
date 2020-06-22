@@ -38,6 +38,8 @@ double iheur_violation(double X, double Y, params_t *params) {
 }
 
 void iheur(glp_tree *t, env_t *env) {
+	initialize_node_data(t, env);
+
 	glp_prob *p = glp_ios_get_prob(t);
 
 	// Hyperplane and samples
