@@ -19,6 +19,14 @@ int main() {
 	printf("]\nNo output: MILP matches, differs: error\n");
 	system("rm tmp.lp");
 
+	printf("Integration testing: solve relaxation\n");
+	glp_simplex(p, NULL);
+
+	printf("Integration testing: solve integer problem\n");
+	glp_iocp *parm = iocp(&env);
+	glp_intopt(p, parm);
+	free(parm);
+
 	glp_delete_prob(p);
         delete_env(&env);
 }
