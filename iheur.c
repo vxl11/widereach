@@ -27,8 +27,14 @@ double iheur_round(
 	return solution_rounded;
 }
 
-double iheur_violation(double X, double Y, double theta, double epsilon) { 
-	return (theta - 1.) * X + theta * Y + theta * epsilon;
+double iheur_violation(double X, double Y, params_t *params) {
+	double theta = params->theta;
+	double violation = (theta - 1.) * X + theta * Y + 
+		theta * params->epsilon_precision;
+	if (violation < 0. && GLP_LO == params->violation_type) {
+		violation = 0.;
+	}
+	return violation;
 }
 
 void iheur(glp_tree *t, env_t *env) {
@@ -40,15 +46,24 @@ void iheur(glp_tree *t, env_t *env) {
 	double *solution = CALLOC(idx_max + 1, double);
 	double X = 0.;
 	double Y = 0.;
+	// glp_printf("------------- iheur ------\n");
 	for (int i = 1; i < idx_max; i++) {
 		solution[i] = 
 			iheur_round(i, glp_get_col_prim(p, i), &X, &Y, samples);
+		/*
+		glp_printf("%s:\t%g\n",
+                                glp_get_col_name(p, i), solution[i]);
+				*/
 	}
 
 	// Violation
 	params_t *params = env->params;
-	solution[idx_max] = 
-		iheur_violation(X, Y, params->theta, params->epsilon_precision);
+	solution[idx_max] = iheur_violation(X, Y, params);
+	/*
+		glp_printf("%s:\t%g\n",
+                                glp_get_col_name(p, idx_max), 
+				solution[idx_max]);
+				*/
 
 	glp_ios_heur_sol(t, solution);
 	free(solution);

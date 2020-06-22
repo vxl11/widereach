@@ -123,7 +123,7 @@ void test_glpk() {
 extern double iheur_round(
 		int i, double solution, 
 		double *X, double *Y, samples_t *);
-extern double iheur_violation(double X, double Y, double theta, double epsilon);
+extern double iheur_violation(double X, double Y, params_t *);
 
 void test_iheur() {
 	samples_t *samples = random_samples(5, 3, 2);
@@ -150,7 +150,12 @@ void test_iheur() {
 	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(Y, 1., 1e-12);
 
-        CU_ASSERT_DOUBLE_EQUAL(iheur_violation(X, Y, .7, 1e-3), .4+7e-4, 1e-9);
+	params_t *params = params_default();
+        CU_ASSERT_DOUBLE_EQUAL(iheur_violation(X, Y, params), 15e-4, 1e-9);
+        CU_ASSERT_DOUBLE_EQUAL(iheur_violation(10., 0., params), 0., 1e-9);
+
+	free(delete_samples(samples));
+	free(params);
 }
 
 int main() {
