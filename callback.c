@@ -10,6 +10,10 @@ void callback(glp_tree *t, void *info) {
 			ibranch(t, env);
 			break;
 		case GLP_ISELECT:
+			iselect(t, env);
+			break;
+		case GLP_IROWGEN:
+			irowgen(t, env);
 			break;
 	}
 }

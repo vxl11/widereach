@@ -255,7 +255,11 @@ typedef struct {
 } node_data_t;
 
 /** Populate node data */
-void initialize_node_data(glp_tree *, env_t *);
+void initialize_node_data(
+		/** GLPK tree */
+		glp_tree *, 
+		/** Environment */
+		env_t *);
 
 
 
@@ -270,3 +274,9 @@ void iheur(glp_tree *, env_t *);
 
 /** Decide on a variable to branch. */
 void ibranch(glp_tree *, env_t *);
+
+/** Select the next problem to expand. */
+void iselect(glp_tree *, env_t *);
+
+/** Calculate and set the node data for the current node */
+void irowgen(glp_tree *, env_t *);

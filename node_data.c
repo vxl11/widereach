@@ -10,7 +10,8 @@ node_data_t *set_distance(node_data_t *data, glp_tree *t, samples_t *samples) {
 	int idx_max = violation_idx(0, samples);
 	for (int i = samples->dimension + 2; i < idx_max; i++) { 
 		double value = glp_get_col_prim(p, i);
-		if (round(value) != value) {
+		if (glp_ios_can_branch(t, i)) {
+			glp_assert(round(value) != value);
 			// Fractional variable
 			sample_locator_t *loc = locator(i, samples);
 			int class = loc->class;
