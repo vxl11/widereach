@@ -257,3 +257,6 @@ void callback(glp_tree *, void *);
 /** Find an integer solution compatible with 
  * the current solution of the relaxation */
 void iheur(glp_tree *, env_t *);
+
+/** Decide on a variable to branch. */
+void ibranch(glp_tree *, env_t *);

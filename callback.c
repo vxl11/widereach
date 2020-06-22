@@ -7,6 +7,7 @@ void callback(glp_tree *t, void *info) {
 			iheur(t, env);
 			break;
 		case GLP_IBRANCH:
+			ibranch(t, env);
 			break;
 		case GLP_ISELECT:
 			break;
