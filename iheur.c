@@ -37,7 +37,7 @@ void iheur(glp_tree *t, env_t *env) {
 	// Hyperplane and samples
 	samples_t *samples = env->samples;
 	int idx_max = violation_idx(0, samples);
-	double *solution = CALLOC(idx_max, double);
+	double *solution = CALLOC(idx_max + 1, double);
 	double X = 0.;
 	double Y = 0.;
 	for (int i = 1; i < idx_max; i++) {
@@ -47,11 +47,9 @@ void iheur(glp_tree *t, env_t *env) {
 
 	// Violation
 	params_t *params = env->params;
-	double theta = params->theta;
 	solution[idx_max] = 
-		iheur_violation(X, Y, theta, params->epsilon_precision);
+		iheur_violation(X, Y, params->theta, params->epsilon_precision);
 
-	// TODO tell glpk
-
+	glp_ios_heur_sol(t, solution);
 	free(solution);
 }

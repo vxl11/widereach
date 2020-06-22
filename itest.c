@@ -6,8 +6,11 @@ int main() {
 	env_t env;
         env.params = params_default();
 	env.params->theta = 0.7;
+	// int n = 5;
+	int n = 100;
+	env.params->lambda = 10 * (n + 1);
 	srand48(20200621154912);
-        env.samples = random_samples(5, 3, 2);
+        env.samples = random_samples(n, n / 2, 2);
 
 	glp_prob *p = milp(&env);
 
