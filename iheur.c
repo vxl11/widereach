@@ -1,4 +1,3 @@
-#include <stdio.h> // TODO
 #include <math.h>
 
 #include "widereach.h"
@@ -28,20 +27,31 @@ double iheur_round(
 	return solution_rounded;
 }
 
+double iheur_violation(double X, double Y, double theta, double epsilon) { 
+	return (theta - 1.) * X + theta * Y + theta * epsilon;
+}
+
 void iheur(glp_tree *t, env_t *env) {
 	glp_prob *p = glp_ios_get_prob(t);
+
+	// Hyperplane and samples
 	samples_t *samples = env->samples;
 	int idx_max = violation_idx(0, samples);
 	double *solution = CALLOC(idx_max, double);
 	double X = 0.;
 	double Y = 0.;
-	printf("-- iheur -- \n");
 	for (int i = 1; i < idx_max; i++) {
-		printf("%i\t%g\n", i, glp_get_col_prim(p, i));
 		solution[i] = 
 			iheur_round(i, glp_get_col_prim(p, i), &X, &Y, samples);
-		printf("%i\t%g\n", i, solution[i]);
 	}
+
 	// Violation
+	params_t *params = env->params;
+	double theta = params->theta;
+	solution[idx_max] = 
+		iheur_violation(X, Y, theta, params->epsilon_precision);
+
+	// TODO tell glpk
+
 	free(solution);
 }

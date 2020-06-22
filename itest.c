@@ -12,7 +12,6 @@ int main() {
 	glp_prob *p = milp(&env);
 
 	printf("Integration testing: CPLEX LP compare\n");
-	// glp_iocp *parms = iocp(env.params);
 	glp_write_lp(p, NULL, "tmp.lp");
 	printf("Comparison result:\t[");
 	system("cmp itest.lp tmp.lp");
