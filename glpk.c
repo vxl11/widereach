@@ -31,7 +31,7 @@ glp_iocp *iocp(const env_t *env)  {
 	parm->pp_tech = GLP_PP_NONE;
 	parm->sr_heur = GLP_OFF;
 	parm->binarize= GLP_ON;
-	// parm->cb_func = callback;
+	parm->cb_func = callback;
 	parm->cb_info = (void *) env;
 	parm->cb_size = sizeof(node_info_t);
 	return parm;
