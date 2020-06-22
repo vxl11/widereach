@@ -253,3 +253,7 @@ typedef struct {
 
 /** Callback entry point */
 void callback(glp_tree *, void *);
+
+/** Find an integer solution compatible with 
+ * the current solution of the relaxation */
+void iheur(glp_tree *, env_t *);

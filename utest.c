@@ -119,6 +119,37 @@ void test_glpk() {
 	delete_env(&env);
 }
 
+
+extern double iheur_round(
+		int i, double solution, 
+		double *X, double *Y, samples_t *);
+
+void test_iheur() {
+	samples_t *samples = random_samples(5, 3, 2);
+	double X = 0.;
+	double Y = 0.;
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(3, 3.14, &X, &Y, samples), 
+			3.14, 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(X, 0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 0.14, &X, &Y, samples), 
+			0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(X, 0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 1., &X, &Y, samples), 
+			1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(8, 0.14, &X, &Y, samples), 
+			1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(Y, 1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 0., &X, &Y, samples), 
+			0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(Y, 1., 1e-12);
+}
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -143,6 +174,10 @@ int main() {
 	// GLPK
 	CU_pSuite glpk = CU_add_suite("glpk", init_samples, NULL);
 	CU_add_test(glpk, "glpk", test_glpk);
+
+	// IHeur
+	CU_pSuite iheur = CU_add_suite("iheur", init_samples, NULL);
+	CU_add_test(iheur, "iheur", test_iheur);
 
 	// Run tests
 	CU_basic_run_tests();
