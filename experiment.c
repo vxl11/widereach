@@ -12,7 +12,7 @@ int main() {
         env.samples = random_samples(n, n / 2, 2);
 
 	glp_prob *p = milp(&env);
-	glp_write_lp(p, NULL, "tmp.lp");
+	// glp_write_lp(p, NULL, "tmp.lp");
 	glp_simplex(p, NULL);
 
 	glp_iocp *parm = iocp(&env);

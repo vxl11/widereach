@@ -250,16 +250,7 @@ typedef struct {
 	int initialized;
 	/** Smallest distance of a fractional sample from the hyperplane */
 	double distance;
-	/** GLPK index of the fractional sample closest to the hyperplane */
-	int index_closest;
 } node_data_t;
-
-/** Populate node data */
-void initialize_node_data(
-		/** GLPK tree */
-		glp_tree *, 
-		/** Environment */
-		env_t *);
 
 
 
