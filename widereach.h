@@ -142,6 +142,8 @@ typedef struct {
 	double lambda;
 	/** Violation bound (either GLP_FR or GLP_LO) */
 	int violation_type;
+	/** Target value of the branching variable */
+	int branch_target;
 } params_t;
 
 

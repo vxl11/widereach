@@ -6,9 +6,12 @@ int main() {
 	env_t env;
         env.params = params_default();
 	env.params->theta = 0.51;
+	env.params->branch_target = 0.1;
 	int n = 1000;
 	env.params->lambda = 100 * (n + 1);
-	srand48(20200621154912);
+	// srand48(20200621154912);
+	// srand48(20200623170005);
+	srand48(85287339);
         env.samples = random_samples(n, n / 2, 2);
 
 	glp_prob *p = milp(&env);
@@ -17,6 +20,10 @@ int main() {
 
 	glp_iocp *parm = iocp(&env);
 	// parm->bt_tech = GLP_BT_DFS;
+	/* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
+	 * It would be similar to branch_target=1 for the positive samples,
+	 * but the opposite for negative samples */
+	// parm->br_tech = GLP_BR_LFV; 
 	glp_intopt(p, parm);
 	free(parm);
 

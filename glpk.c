@@ -157,7 +157,6 @@ glp_prob *add_precision(glp_prob *p, const env_t *env) {
 
 
 glp_prob *add_valid_constraints(glp_prob *p, const env_t *env) {
-	glp_printf("add valid constraint\n");
 	glp_add_rows(p, 2);
 
 	// Positive cover
@@ -192,6 +191,6 @@ glp_prob *milp(const env_t *env) {
 	p = add_hyperplane(p, env);
 	p = add_samples(p, env);
 	p = add_precision(p, env);
-	p = add_valid_constraints(p, env);
+ 	// p = add_valid_constraints(p, env);
 	return p;
 }
