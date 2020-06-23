@@ -16,6 +16,7 @@ void test_samples() {
 	CU_ASSERT_EQUAL(samples->dimension, 2);
 	CU_ASSERT_EQUAL(samples_total(samples), 5);
 	CU_ASSERT_EQUAL(positives(samples), 3);
+	CU_ASSERT_EQUAL(negatives(samples), 2);
 	for (size_t k = 0; k < 2; k++) {
 		for (size_t i = 0; i < samples->count[k]; i++) {
 			for (size_t j = 0; j < 2; j++) {

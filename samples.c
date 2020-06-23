@@ -24,6 +24,9 @@ size_t positives(const samples_t *samples) {
 	return samples->count[1];
 }
 
+size_t negatives(const samples_t *samples) {
+	return samples->count[0];
+}
 
 samples_t *delete_samples(samples_t *samples) {
 	free(samples->label);

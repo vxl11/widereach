@@ -48,8 +48,11 @@ int is_binary(const samples_t *);
 /** Return the total number of samples */
 size_t samples_total(const samples_t *);
 
-/** Return the number of positives samples in a binary sample set */
+/** Return the number of positive samples in a binary sample set */
 size_t positives(const samples_t *);
+
+/** Return the number of negative samples in a binary sample set */
+size_t negatives(const samples_t *);
 
 /** Generates random binary samples in the unit square in the given dimension.
  *

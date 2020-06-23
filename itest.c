@@ -2,6 +2,8 @@
 
 #include "widereach.h"
 
+#define LINE_MAX 255
+
 int main() {
 	env_t env;
         env.params = params_default();
@@ -15,10 +17,13 @@ int main() {
 
 	printf("Integration testing: CPLEX LP compare\n");
 	glp_write_lp(p, NULL, "tmp.lp");
-	printf("Comparison result:\t[");
-	(void) system("cmp itest.lp tmp.lp");
-	printf("]\nNo output: MILP matches, differs: error\n");
-	(void) system("rm tmp.lp");
+	printf("Comparison result:\t");
+	char line[LINE_MAX];
+	FILE *cmp = popen("cmp itest.lp tmp.lp", "r");
+	printf("%s\n", fgets(line, sizeof(line), cmp) == NULL ? 
+			"success" : "FAILURE");
+	pclose(cmp);
+	system("rm tmp.lp");
 
 	printf("Integration testing: solve relaxation\n");
 	glp_simplex(p, NULL);

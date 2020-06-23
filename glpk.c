@@ -128,6 +128,12 @@ glp_prob *add_samples(glp_prob *p, const env_t *env) {
 }
 
 
+void set_rhs(glp_prob *p, int row_idx, sparse_vector_t *constraint) {
+	glp_set_mat_row(p, row_idx, 
+			constraint->len, constraint->ind, constraint->val);
+}
+
+
 glp_prob *add_precision(glp_prob *p, const env_t *env) {
 	samples_t *samples = env->samples;
 	int col_idx = violation_idx(0, samples);
@@ -143,9 +149,36 @@ glp_prob *add_precision(glp_prob *p, const env_t *env) {
 	glp_set_row_bnds(p, row_idx, GLP_UP, 0., 
 			-theta * params->epsilon_precision);
 	sparse_vector_t *constraint = precision_row(samples, theta);
-	glp_set_mat_row(p, row_idx, 
-			constraint->len, constraint->ind, constraint->val);
+	set_rhs(p, row_idx, constraint);
 	free(delete_sparse_vector(constraint));
+
+	return p;
+}
+
+
+glp_prob *add_valid_constraints(glp_prob *p, const env_t *env) {
+	glp_printf("add valid constraint\n");
+	glp_add_rows(p, 2);
+
+	// Positive cover
+	samples_t *samples = env->samples;
+	int row_idx = violation_idx(1, samples) + 1;
+	glp_set_row_name(p, row_idx, "X");
+	glp_set_row_bnds(p, row_idx, GLP_LO, 1., 1.);
+	sparse_vector_t *constraint = sparse_vector_blank(positives(samples));
+	cover_row(constraint, 1, 1., samples);
+	set_rhs(p, row_idx, constraint);
+	free(constraint);
+
+	// Negative cover
+	row_idx++;
+	glp_set_row_name(p, row_idx, "Y");
+	int negative_cnt = negatives(samples);
+	glp_set_row_bnds(p, row_idx, GLP_UP, 0., negative_cnt - 1);
+	constraint = sparse_vector_blank(negatives(samples));
+	cover_row(constraint, 0, 1., samples);
+	set_rhs(p, row_idx, constraint);
+	free(constraint);
 
 	return p;
 }
@@ -159,5 +192,6 @@ glp_prob *milp(const env_t *env) {
 	p = add_hyperplane(p, env);
 	p = add_samples(p, env);
 	p = add_precision(p, env);
+	p = add_valid_constraints(p, env);
 	return p;
 }

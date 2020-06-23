@@ -3,6 +3,7 @@
 #include "widereach.h"
 
 void iselect(glp_tree *t, env_t *env) {
+	return;
 	int node = glp_ios_next_node(t, 0);
 	int node_best = node;
 	double distance_min = DBL_MAX;
