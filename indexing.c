@@ -93,14 +93,21 @@ sparse_vector_t *precision_row(samples_t *samples, double theta) {
 	sparse_vector_t *constraint = sparse_vector_blank(len);
 	size_t class_cnt = samples->class_cnt;
 	for (size_t class = 0; class < class_cnt; class++) {
-		int label = samples->label[class];
-		int count = samples->count[class];
-		for (size_t i = 0; i < count; i++) {
-			append(constraint, 
-				idx(0, class, i, samples), 
-				label_to_penalty(label, theta));
-		}
+		double penalty = label_to_penalty(samples->label[class], theta);
+		cover_row(constraint, class, penalty, samples);
 	}
 	append(constraint, violation_idx(0, samples), -1.);
+	return constraint;
+}
+
+sparse_vector_t *cover_row(
+		sparse_vector_t *constraint, 
+		size_t class, 
+		double coef, 
+		samples_t *samples) {
+	int count = samples->count[class];
+	for (size_t i = 0; i < count; i++) { 
+		append(constraint, idx(0, class, i, samples), coef);
+	}
 	return constraint;
 }

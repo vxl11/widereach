@@ -226,6 +226,20 @@ int violation_idx(
 	/** Sample collection */
 	samples_t *);
 
+/** Fills in a sparse vector in which all decision variables of the given
+ * class are assigned the given coefficient 
+ *
+ * @return the sparse vector */
+sparse_vector_t *cover_row(
+		/** The sparse vector to be filled */
+                sparse_vector_t *,
+		/** Class of the decision variables */
+                size_t class,
+		/** Coefficient of the decision variables */
+                double coef,
+		/** Sample set */
+                samples_t *);
+
 /** Returns a new sparse vector representing the right hand side of the 
  * precision constraint */
 sparse_vector_t *precision_row(

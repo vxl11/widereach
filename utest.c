@@ -109,6 +109,12 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(v->ind[6], 9);
 	CU_ASSERT_DOUBLE_EQUAL(v->val[6], -1., 1e-12);
 	free(delete_sparse_vector(v));
+
+	v = sparse_vector_blank(5);
+	cover_row(v, 1, 1., samples);
+	CU_ASSERT_EQUAL(v->ind[2], 5);
+	CU_ASSERT_DOUBLE_EQUAL(v->val[2], 1., 1e-12);
+	free(delete_sparse_vector(v));
 }
 
 void test_glpk() {

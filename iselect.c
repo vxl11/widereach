@@ -6,6 +6,7 @@ void iselect(glp_tree *t, env_t *env) {
 	int node = glp_ios_next_node(t, 0);
 	int node_best = node;
 	double distance_min = DBL_MAX;
+	// double distance_min = -DBL_MAX;
 	for (int node = glp_ios_next_node(t, 0); 
 	     node != 0; 
 	     node = glp_ios_next_node(t, node)) {
@@ -22,7 +23,8 @@ void iselect(glp_tree *t, env_t *env) {
 
 		double distance = data->distance;
 		glp_assert(distance > 0.);
-		if (distance < distance_min) {
+		// if (distance >= distance_min) {
+		if (distance <= distance_min) {
 			distance_min = distance;
 			node_best = node;
 		}
