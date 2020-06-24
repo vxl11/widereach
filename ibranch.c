@@ -33,26 +33,38 @@ void ibranch_LFV(glp_tree *t, env_t *env) {
         glp_ios_branch_upon(t, candidate_idx, candidate_sel);
 }
 
-void ibranch(glp_tree *t, env_t *env) {
+
+int index_label(int i, samples_t *samples) {
+	int class = index_to_class(i, samples);
+	glp_assert(class >= 0);
+	return samples->label[class];
+}
+
+
+/* Return the index with the highest score, where indexes are only
+ * considered for variables on which branching is allowed, and are ranked
+ * by lower label first, and ties are broken with the absolute difference
+ * between variable values and branch target. 
+ * The suggested branching direction is stored in the direction argument. */
+int highest_score_index(int *direction, glp_tree *t, env_t *env) {
 	samples_t *samples = env->samples;
 	double branch_target = env->params->branch_target;
 
 	glp_prob *p = glp_ios_get_prob(t);
-	// int w_zero_cnt = wzero(p, samples->dimension);
+
+	/* Possible diagnostics */
+	// int w_zero_cnt = wzero(p, samples->dimension); 
+	// int positive_cnt = 0;
+	// int negative_cnt = 0;
 
 	double candidate_frac = DBL_MAX;
 	int candidate_idx;
 	int candidate_sel;
 	int candidate_label = 2;
-	int sel;
-	int positive_cnt = 0;
-	int negative_cnt = 0;
 	int idx_max = violation_idx(0, samples);
 	for (int i = idx_max; i > 0; i--) {
 		if (glp_ios_can_branch(t, i)) {
-			int class = index_to_class(i, samples);
-	                glp_assert(class >= 0);
-			int label = samples->label[class];
+			int label = index_label(i, samples);
 			if (label > candidate_label) {
 				/* Since negatives take precendece over
 				 * positives, there is no point continuing
@@ -60,28 +72,36 @@ void ibranch(glp_tree *t, env_t *env) {
 				break;
 			}
 			double value = glp_get_col_prim(p, i);
+			int sel;
 			if (label > 0) {
-				positive_cnt++;
+				// positive_cnt++;
 				value = 1. - value;
 				sel = GLP_UP_BRNCH;
 			} else {
-				negative_cnt++;
+				// negative_cnt++;
 				sel = GLP_DN_BRNCH;
 			}
 			value = fabs(value - branch_target);
 			if (value <= candidate_frac) {
 				candidate_frac = value;
 				candidate_idx = i;
-				candidate_sel = sel;
 				candidate_label = label;
+				candidate_sel = sel;
 			}
 		}
 	}
+	*direction = candidate_sel;
+	return candidate_idx;
+}
 
+void ibranch(glp_tree *t, env_t *env) {
 	int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = 
 		(node_data_t *) glp_ios_node_data(t, curr_node);
 	data->initialized = 1;
 
-        glp_ios_branch_upon(t, candidate_idx, candidate_sel);
+	int direction;
+	int idx = highest_score_index(&direction, t, env);
+
+        glp_ios_branch_upon(t, idx, direction); 
 }
