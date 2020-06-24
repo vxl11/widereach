@@ -155,6 +155,10 @@ params_t *params_default();
 
 /** Data updated by the callback during the solution of the program */
 typedef struct {
+	/** Number of elements in rank that are significant */
+	size_t rank_significant;
+	/** Sorted list of indexes in order of branching priority */
+	int *rank;
 } solution_data_t;
 
 /* ---------------------------- Environment ----------------------------- */
