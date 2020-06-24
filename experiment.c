@@ -13,6 +13,7 @@ int main() {
 	// srand48(20200623170005);
 	srand48(85287339);
         env.samples = random_samples(n, n / 2, 2);
+	env.solution_data = solution_data_init(n);
 
 	glp_prob *p = milp(&env);
 	// glp_write_lp(p, NULL, "tmp.lp");
@@ -35,5 +36,5 @@ int main() {
 	}
 
 	glp_delete_prob(p);
-        delete_env(&env);
+        free(delete_env(&env));
 }

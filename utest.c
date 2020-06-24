@@ -59,6 +59,7 @@ void test_env() {
 	env_t env;
 	env.params = params_default();
 	env.samples = random_samples(5, 3, 2);
+	env.solution_data = solution_data_init(5);
 	delete_env(&env);
 }
 
@@ -122,6 +123,7 @@ void test_indexing() {
 void test_glpk() {
 	env_t env;
 	env.params = params_default();
+	env.solution_data = solution_data_init(5);
 	env.samples = random_samples(5, 3, 2);
 	CU_ASSERT_PTR_NOT_NULL(milp(&env));
 	delete_env(&env);
@@ -166,6 +168,17 @@ void test_iheur() {
 	free(params);
 }
 
+
+void test_solution_data() {
+	solution_data_t *data = solution_data_init(5);
+	CU_ASSERT_EQUAL(data->rank_significant, 0);
+	append_data(data, 4);
+	CU_ASSERT_EQUAL(data->rank_significant, 1);
+	CU_ASSERT_EQUAL(data->rank[0], 4);
+	free(delete_solution_data(data));
+}
+
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -194,6 +207,10 @@ int main() {
 	// IHeur
 	CU_pSuite iheur = CU_add_suite("iheur", init_samples, NULL);
 	CU_add_test(iheur, "iheur", test_iheur);
+
+	// Solution data
+	CU_pSuite solution = CU_add_suite("solution data", init_samples, NULL);
+	CU_add_test(solution, "solution data", test_solution_data);
 
 	// Run tests
 	CU_basic_run_tests();

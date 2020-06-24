@@ -161,6 +161,19 @@ typedef struct {
 	int *rank;
 } solution_data_t;
 
+
+/** Allocate and return a new solution data of the given size with no
+ * significant element. */
+solution_data_t *solution_data_init(size_t);
+
+/** Deallocate and return the elements in the solution data, 
+ * but not the solution data. */
+solution_data_t *delete_solution_data(solution_data_t *);
+
+/** Append the given index as the last significant element of the solution
+ * data */
+solution_data_t *append_data(solution_data_t *, int index);
+
 /* ---------------------------- Environment ----------------------------- */
 
 /** Environment */

@@ -12,6 +12,7 @@ int main() {
 	env.params->lambda = 10 * (n + 1);
 	srand48(20200621154912);
         env.samples = random_samples(n, n / 2, 2);
+	env.solution_data = solution_data_init(n);
 
 	glp_prob *p = milp(&env);
 
@@ -34,5 +35,5 @@ int main() {
 	free(parm);
 
 	glp_delete_prob(p);
-        delete_env(&env);
+        free(delete_env(&env));
 }
