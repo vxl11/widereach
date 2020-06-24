@@ -122,7 +122,7 @@ int append(sparse_vector_t *,
 	double val);
 
 
-/* --------------------- Parameters and Environment ---------------------- */
+/* --------------------- Parameters                 ---------------------- */
 
 /** Problem instance parameters */
 typedef struct {
@@ -150,12 +150,23 @@ typedef struct {
 /** Return a new parameter set with default values */
 params_t *params_default();
 
+
+/* ---------------------------- Solution Data -------------------------- */
+
+/** Data updated by the callback during the solution of the program */
+typedef struct {
+} solution_data_t;
+
+/* ---------------------------- Environment ----------------------------- */
+
 /** Environment */
 typedef struct {
 	/** Sample set */
 	samples_t *samples;
 	/** Problem instance parameters */
 	params_t *params;
+	/** Solution data */
+	solution_data_t *solution_data;
 } env_t;
 
 /** Deallocate the samples and the parameters.
@@ -252,6 +263,9 @@ sparse_vector_t *precision_row(
 		samples_t *, 
 		/** Precision threshold */
 		double theta);
+
+/** Finds and return the class of the given GLPK decision variable */
+int index_to_class(int idx, samples_t *);
 
 
 /* ----------------------------- GLPK ----------------------------------- */

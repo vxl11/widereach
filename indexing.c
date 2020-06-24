@@ -111,3 +111,11 @@ sparse_vector_t *cover_row(
 	}
 	return constraint;
 }
+
+
+int index_to_class(int idx, samples_t *samples) {
+	sample_locator_t *loc = locator(idx, samples);
+	int class = loc->class;
+	free(loc);
+	return class;
+}

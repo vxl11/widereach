@@ -69,6 +69,7 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(idx(1, 1, 1, samples), 2);
 	CU_ASSERT_EQUAL(idx(0, 0, 1, samples), 8);
 	CU_ASSERT_EQUAL(idx(1, 0, 1, samples), 5);
+	CU_ASSERT_EQUAL(index_to_class(5, samples), 1);
 	CU_ASSERT_EQUAL(violation_idx(0, samples), 9);
 	CU_ASSERT_EQUAL(violation_idx(1, samples), 6);
 	CU_ASSERT_EQUAL(idx_extreme(0, 1, 0, samples), 4);

@@ -50,10 +50,8 @@ void ibranch(glp_tree *t, env_t *env) {
 	int idx_max = violation_idx(0, samples);
 	for (int i = idx_max; i > 0; i--) {
 		if (glp_ios_can_branch(t, i)) {
-			sample_locator_t *loc = locator(i, samples);
-			int class = loc->class;
-			free(loc);
-			glp_assert(class >= 0);
+			int class = index_to_class(i, samples);
+	                glp_assert(class >= 0);
 			int label = samples->label[class];
 			if (label > candidate_label) {
 				/* Since negatives take precendece over
@@ -64,7 +62,7 @@ void ibranch(glp_tree *t, env_t *env) {
 			double value = glp_get_col_prim(p, i);
 			if (label > 0) {
 				positive_cnt++;
-				value = 1 - value;
+				value = 1. - value;
 				sel = GLP_UP_BRNCH;
 			} else {
 				negative_cnt++;
