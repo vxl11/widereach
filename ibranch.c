@@ -41,6 +41,23 @@ int index_label(int i, samples_t *samples) {
 }
 
 
+/* Return the index of the decision variable on which branching is allowed
+ * and that ranks the first in the solution data. 
+ * If no suitable index is found, it returns -1. */
+int highest_rank_index(glp_tree *t, env_t *env) {
+	solution_data_t *data = env->solution_data;
+	size_t rank_significant = data->rank_significant;
+	int *rank = data->rank;
+	for (size_t i = 0; i < rank_significant; i++) {
+		int idx = rank[i];
+		if (glp_ios_can_branch(t, idx)) {
+			return (int) idx;
+		}
+	}
+	return -1;
+}
+
+
 /* Return the index with the highest score, where indexes are only
  * considered for variables on which branching is allowed, and are ranked
  * by lower label first, and ties are broken with the absolute difference
