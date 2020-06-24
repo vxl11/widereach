@@ -41,7 +41,6 @@ void ibranch(glp_tree *t, env_t *env) {
 	// int w_zero_cnt = wzero(p, samples->dimension);
 
 	double candidate_frac = DBL_MAX;
-	double runnerup_frac = DBL_MAX;
 	int candidate_idx;
 	int candidate_sel;
 	int candidate_label = 2;
@@ -73,7 +72,6 @@ void ibranch(glp_tree *t, env_t *env) {
 			}
 			value = fabs(value - branch_target);
 			if (value <= candidate_frac) {
-				runnerup_frac = candidate_frac;
 				candidate_frac = value;
 				candidate_idx = i;
 				candidate_sel = sel;
@@ -85,18 +83,7 @@ void ibranch(glp_tree *t, env_t *env) {
 	int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = 
 		(node_data_t *) glp_ios_node_data(t, curr_node);
-	data->distance = runnerup_frac;
 	data->initialized = 1;
 
-	// if (wzero == dimension && positive_cnt > 0 && negative_cnt > 0) {
-	/*
-	if (wzero == dimension) {*/
-	/*
-	if (drand48() < 1e-2) {
-	  glp_printf("ibranch: wzero=%i x=%i y=%i\n", 
-			wzero, positive_cnt, negative_cnt);
-	}
-	*/
-	// glp_printf("%i runnerup: %g\tbound: %g\n", curr_node, runnerup_frac, glp_ios_node_bound(t, glp_ios_curr_node(t)));
         glp_ios_branch_upon(t, candidate_idx, candidate_sel);
 }

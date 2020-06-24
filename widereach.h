@@ -267,8 +267,6 @@ glp_prob *milp(const env_t *);
 typedef struct {
 	/** Flag denoting whether the node data has been initialized */
 	int initialized;
-	/** Smallest distance of a fractional sample from the hyperplane */
-	double distance;
 } node_data_t;
 
 
