@@ -13,6 +13,7 @@ int main() {
 	// srand48(20200623170005);
 	srand48(85287339);
         env.samples = random_samples(n, n / 2, 2);
+	print_samples(env.samples);
 	env.solution_data = solution_data_init(n);
 
 	glp_prob *p = milp(&env);

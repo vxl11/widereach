@@ -39,6 +39,8 @@ typedef struct {
  * @return the samples */
 samples_t *delete_samples(samples_t *);
 
+/** Print all samples in the sample set */
+void print_samples(samples_t *);
 
 /** Checks whether the given samples are binary: it contains two classes,
  * the first of which labelled -1 and the other +1 */
@@ -232,6 +234,10 @@ sample_locator_t *locator(
 		int index, 
 		/** Sample set */
 		samples_t *);
+
+
+/** Prints the sample referenced by the locator */
+void print_sample(sample_locator_t, samples_t *);
 
 /** Return the minimum or maximum index corresponding to an index of a 
  * given class */

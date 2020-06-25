@@ -16,6 +16,8 @@ int main() {
 
 	glp_prob *p = milp(&env);
 
+	printf("Integration testing: samples\n");
+	print_samples(env.samples);
 	printf("Integration testing: CPLEX LP compare\n");
 	glp_write_lp(p, NULL, "tmp.lp");
 	printf("Comparison result:\t");

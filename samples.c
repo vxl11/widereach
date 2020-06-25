@@ -88,3 +88,29 @@ samples_t *random_samples(
 	set_sample_class(samples, 1,  1, positives);
 	return samples;
 }
+
+
+void print_sample(sample_locator_t loc, samples_t *samples) {
+	size_t class = loc.class;
+	glp_printf("%i ", samples->label[class]);
+
+	double *sample = samples->samples[class][loc.index];
+	size_t dimension = samples->dimension;
+	for (size_t j = 0; j < dimension; j++) {
+		glp_printf("%g ", sample[j]);
+	}
+	glp_printf("\n");
+
+}
+
+void print_samples(samples_t *samples) {
+	size_t class_cnt = samples->class_cnt;
+	size_t *counts = samples->count;
+	for (size_t class = 0; class < class_cnt; class ++) {
+		size_t count = counts[class];
+		for (size_t i = 0; i < count; i++) {
+			sample_locator_t loc = { class, i };
+			print_sample(loc, samples);
+		}
+	}
+}
