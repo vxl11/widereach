@@ -41,6 +41,11 @@ int index_label(int i, samples_t *samples) {
 }
 
 
+int index_direction(int i, samples_t *samples) {
+	return index_label(i, samples) > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
+}
+
+
 /* Return the index of the decision variable on which branching is allowed
  * and that ranks the first in the solution data. 
  * If no suitable index is found, it returns -1. */
@@ -63,7 +68,7 @@ int highest_rank_index(glp_tree *t, env_t *env) {
  * by lower label first, and ties are broken with the absolute difference
  * between variable values and branch target. 
  * The suggested branching direction is stored in the direction argument. */
-int highest_score_index(int *direction, glp_tree *t, env_t *env) {
+int highest_score_index(glp_tree *t, env_t *env) {
 	samples_t *samples = env->samples;
 	double branch_target = env->params->branch_target;
 
@@ -76,7 +81,6 @@ int highest_score_index(int *direction, glp_tree *t, env_t *env) {
 
 	double candidate_frac = DBL_MAX;
 	int candidate_idx;
-	int candidate_sel;
 	int candidate_label = 2;
 	int idx_max = violation_idx(0, samples);
 	for (int i = idx_max; i > 0; i--) {
@@ -89,36 +93,39 @@ int highest_score_index(int *direction, glp_tree *t, env_t *env) {
 				break;
 			}
 			double value = glp_get_col_prim(p, i);
-			int sel;
 			if (label > 0) {
 				// positive_cnt++;
 				value = 1. - value;
-				sel = GLP_UP_BRNCH;
 			} else {
 				// negative_cnt++;
-				sel = GLP_DN_BRNCH;
 			}
 			value = fabs(value - branch_target);
 			if (value <= candidate_frac) {
 				candidate_frac = value;
 				candidate_idx = i;
 				candidate_label = label;
-				candidate_sel = sel;
 			}
 		}
 	}
-	*direction = candidate_sel;
 	return candidate_idx;
 }
 
 void ibranch(glp_tree *t, env_t *env) {
+	// ibranch initializes node data
 	int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = 
 		(node_data_t *) glp_ios_node_data(t, curr_node);
 	data->initialized = 1;
 
-	int direction;
-	int idx = highest_score_index(&direction, t, env);
+	/* Choice of branching index: try high rank first, and if that
+	 * fails move one to high score (which then becomes the next ranked
+	 * index) */
+	int idx = highest_rank_index(t, env);
+	if (idx < 0) { 
+		idx = highest_score_index(t, env);
+		append_data(env->solution_data, idx);
+	}
+	glp_assert(idx > 0);
 
-        glp_ios_branch_upon(t, idx, direction); 
+        glp_ios_branch_upon(t, idx, index_direction(idx, env->samples)); 
 }
