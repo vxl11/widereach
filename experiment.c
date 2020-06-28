@@ -6,7 +6,7 @@ int main() {
 	env_t env;
         env.params = params_default();
 	env.params->theta = 0.51;
-	env.params->branch_target = 0.5;
+	env.params->branch_target = 0.0;
 	int n = 1000;
 	env.params->lambda = 100 * (n + 1);
 	// srand48(20200621154912);

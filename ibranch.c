@@ -13,6 +13,16 @@ int wzero(glp_prob *p, int dimension) {
 	return w_cnt;
 }
 
+void branch_on(int index, int direction, glp_tree *t) {
+	int curr_node = glp_ios_curr_node(t);
+	node_data_t *data = 
+		(node_data_t *) glp_ios_node_data(t, curr_node);
+	data->initialized = 1;
+	data->branching_variable = index;
+	data->direction = direction;
+        glp_ios_branch_upon(t, index, direction); 
+}
+
 void ibranch_LFV(glp_tree *t, env_t *env) {
 	samples_t *samples = env->samples;
 	int candidate_idx;
@@ -30,7 +40,7 @@ void ibranch_LFV(glp_tree *t, env_t *env) {
 			break;
 		}
 	}
-        glp_ios_branch_upon(t, candidate_idx, candidate_sel);
+	branch_on(candidate_idx, candidate_sel, t);
 }
 
 
@@ -108,16 +118,6 @@ int highest_score_index(glp_tree *t, env_t *env) {
 		}
 	}
 	return candidate_idx;
-}
-
-void branch_on(int index, int direction, glp_tree *t) {
-	int curr_node = glp_ios_curr_node(t);
-	node_data_t *data = 
-		(node_data_t *) glp_ios_node_data(t, curr_node);
-	data->initialized = 1;
-	data->branching_variable = index;
-	data->direction = direction;
-        glp_ios_branch_upon(t, index, direction); 
 }
 
 void ibranch(glp_tree *t, env_t *env) {
