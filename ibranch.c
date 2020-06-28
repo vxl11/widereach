@@ -2,6 +2,7 @@
 #include <float.h>
 
 #include "widereach.h"
+#include "helper.h"
 
 int wzero(glp_prob *p, int dimension) {
 	int w_cnt = 0;
@@ -13,6 +14,17 @@ int wzero(glp_prob *p, int dimension) {
 	return w_cnt;
 }
 
+
+int index_label(int i, samples_t *samples) {
+	int class = index_to_class(i, samples);
+	glp_assert(class >= 0);
+	return samples->label[class];
+}
+
+int index_direction(int i, samples_t *samples) {
+	return index_label(i, samples) > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
+}
+
 void branch_on(int index, int direction, glp_tree *t) {
 	int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = 
@@ -22,6 +34,42 @@ void branch_on(int index, int direction, glp_tree *t) {
 	data->direction = direction;
         glp_ios_branch_upon(t, index, direction); 
 }
+
+
+int random_eligible(int idx_min, int idx_max, glp_tree *t) {
+	int *eligible = CALLOC(idx_max - idx_min + 1, int);
+	int eligible_cnt = 0;
+	for (int i = idx_min; i <= idx_max; i++) {
+		if (glp_ios_can_branch(t, i)) {
+			eligible[eligible_cnt++] = i;
+		}
+	}
+	int candidate = 
+		eligible_cnt > 0 ? eligible[lrand48() % eligible_cnt] : -1;
+	free(eligible);
+	return candidate;
+}
+
+void random_branch(glp_tree *t, env_t *env) {
+	samples_t *samples = env->samples;
+	int dimension = samples->dimension;
+	int positive_cnt = positives(samples);
+	// Negative candidate
+	int candidate = 
+		random_eligible(dimension + positive_cnt + 2, 
+				dimension + samples_total(samples) + 1, 
+				t);
+	if (candidate < 0) { 
+		// Positive candidate
+		candidate = 
+			random_eligible(dimension + 2, 
+				dimension + positive_cnt + 1, 
+				t);
+	}
+
+	branch_on(candidate, index_direction(candidate, samples), t);
+}
+
 
 void ibranch_LFV(glp_tree *t, env_t *env) {
 	samples_t *samples = env->samples;
@@ -43,17 +91,6 @@ void ibranch_LFV(glp_tree *t, env_t *env) {
 	branch_on(candidate_idx, candidate_sel, t);
 }
 
-
-int index_label(int i, samples_t *samples) {
-	int class = index_to_class(i, samples);
-	glp_assert(class >= 0);
-	return samples->label[class];
-}
-
-
-int index_direction(int i, samples_t *samples) {
-	return index_label(i, samples) > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
-}
 
 
 /* Return the index of the decision variable on which branching is allowed
@@ -123,8 +160,9 @@ int highest_score_index(glp_tree *t, env_t *env) {
 void ibranch(glp_tree *t, env_t *env) {
 	/*
 	ibranch_LFV(t, env);
-	return;
 	*/
+	random_branch(t, env);
+	return;
 
 	/* Choice of branching index: try high rank first, and if that
 	 * fails move one to high score (which then becomes the next ranked
