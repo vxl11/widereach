@@ -25,6 +25,10 @@ int index_direction(int i, samples_t *samples) {
 	return index_label(i, samples) > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
+int index_reverse_direction(int i, samples_t *samples) {
+	return index_label(i, samples) < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
+}
+
 void branch_on(int index, int direction, glp_tree *t) {
 	int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = 
@@ -69,6 +73,21 @@ void random_branch(glp_tree *t, env_t *env) {
 
 	branch_on(candidate, index_direction(candidate, samples), t);
 }
+
+void random_flat(glp_tree *t, env_t *env) {
+	samples_t *samples = env->samples;
+	int dimension = samples->dimension;
+	int candidate = 
+		random_eligible(dimension + 2, 
+				dimension + samples_total(samples) + 1, 
+				t);
+	// int direction = index_direction(candidate, samples);
+	int direction = drand48() > .5 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
+	// int direction = index_reverse_direction(candidate, samples);
+
+	branch_on(candidate, direction, t);
+}
+
 
 
 void ibranch_LFV(glp_tree *t, env_t *env) {
@@ -161,7 +180,7 @@ void ibranch(glp_tree *t, env_t *env) {
 	/*
 	ibranch_LFV(t, env);
 	*/
-	random_branch(t, env);
+	random_flat(t, env);
 	return;
 
 	/* Choice of branching index: try high rank first, and if that

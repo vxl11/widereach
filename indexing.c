@@ -59,7 +59,7 @@ sample_locator_t *locator(int index, samples_t *samples) {
 	}
 
 	size_t threshold = positives(samples);
-	if (offset > threshold) {
+	if (offset >= threshold) {
 		locator->class = 0;
 		locator->index = offset - threshold;
 	} else {

@@ -97,6 +97,10 @@ void test_indexing() {
 	loc = locator(9, samples);
 	CU_ASSERT_EQUAL(loc->class, -1);
 	free(loc);
+	loc = locator(7, samples);
+	CU_ASSERT_EQUAL(loc->class, 0);
+	CU_ASSERT_EQUAL(loc->index, 0);
+	free(loc);
 
 	sparse_vector_t *v = precision_row(samples, .7);
 	CU_ASSERT_EQUAL(v->len, 6);
