@@ -65,6 +65,9 @@ void iheur(glp_tree *t, env_t *env) {
 				solution[idx_max]);
 				*/
 
-	glp_ios_heur_sol(t, solution);
+	int status = glp_ios_heur_sol(t, solution);
+	if (!status) {
+		traverse(t, env);
+	}
 	free(solution);
 }
