@@ -311,6 +311,10 @@ typedef struct {
 } node_data_t;
 
 
+/** Traverse the tree from the current node to the root, while printing
+ * node data for all initialized nodes */
+void traverse(glp_tree *, env_t *);
+
 
 /* -------------------------- Callback ---------------------------------- */
 
