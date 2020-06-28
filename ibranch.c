@@ -110,7 +110,11 @@ int highest_score_index(glp_tree *t, env_t *env) {
 	return candidate_idx;
 }
 
-void branch_on(int index, int direction, glp_tree *t, node_data_t *data) {
+void branch_on(int index, int direction, glp_tree *t) {
+	int curr_node = glp_ios_curr_node(t);
+	node_data_t *data = 
+		(node_data_t *) glp_ios_node_data(t, curr_node);
+	data->initialized = 1;
 	data->branching_variable = index;
 	data->direction = direction;
         glp_ios_branch_upon(t, index, direction); 
@@ -122,12 +126,6 @@ void ibranch(glp_tree *t, env_t *env) {
 	return;
 	*/
 
-	// ibranch initializes node data
-	int curr_node = glp_ios_curr_node(t);
-	node_data_t *data = 
-		(node_data_t *) glp_ios_node_data(t, curr_node);
-	data->initialized = 1;
-
 	/* Choice of branching index: try high rank first, and if that
 	 * fails move one to high score (which then becomes the next ranked
 	 * index) */
@@ -138,7 +136,5 @@ void ibranch(glp_tree *t, env_t *env) {
 	}
 	glp_assert(idx > 0);
 
-	samples_t *samples = env->samples;
-	// print_branch_variable(idx, samples);
-	branch_on(idx, index_direction(idx, samples), t, data);
+	branch_on(idx, index_direction(idx, env->samples), t);
 }
