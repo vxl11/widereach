@@ -37,7 +37,7 @@ void ibranch_LFV(glp_tree *t, env_t *env) {
 			break;
 		}
 	}
-	print_branch_variable(candidate_idx, samples);
+	// print_branch_variable(candidate_idx, samples);
         glp_ios_branch_upon(t, candidate_idx, candidate_sel);
 }
 
@@ -118,9 +118,17 @@ int highest_score_index(glp_tree *t, env_t *env) {
 	return candidate_idx;
 }
 
+void branch_on(int index, int direction, glp_tree *t, node_data_t *data) {
+	data->branching_variable = index;
+	data->direction = direction;
+        glp_ios_branch_upon(t, index, direction); 
+}
+
 void ibranch(glp_tree *t, env_t *env) {
+	/*
 	ibranch_LFV(t, env);
 	return;
+	*/
 
 	// ibranch initializes node data
 	int curr_node = glp_ios_curr_node(t);
@@ -139,6 +147,6 @@ void ibranch(glp_tree *t, env_t *env) {
 	glp_assert(idx > 0);
 
 	samples_t *samples = env->samples;
-	print_branch_variable(idx, samples);
-        glp_ios_branch_upon(t, idx, index_direction(idx, samples)); 
+	// print_branch_variable(idx, samples);
+	branch_on(idx, index_direction(idx, samples), t, data);
 }

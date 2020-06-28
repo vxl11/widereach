@@ -11,6 +11,6 @@ params_t *params_default() {
 	params->epsilon_precision = 3e-3;
 	params->lambda = 7.;
 	params->violation_type = GLP_LO;
-	params->branch_target = 0.;
+	params->branch_target = .0;
 	return params;
 }

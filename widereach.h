@@ -304,6 +304,10 @@ glp_prob *milp(const env_t *);
 typedef struct {
 	/** Flag denoting whether the node data has been initialized */
 	int initialized;
+	/** Branching variable chosen at this node */
+	int branching_variable;
+	/** Recommended direction for the branching variable */
+	int direction;
 } node_data_t;
 
 
@@ -325,3 +329,6 @@ void iselect(glp_tree *, env_t *);
 
 /** Calculate and set the node data for the current node */
 void irowgen(glp_tree *, env_t *);
+
+/** Collect information when a better integer solution is found */
+void ibingo(glp_tree *, env_t *);
