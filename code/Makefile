@@ -33,4 +33,4 @@ experiment:	$(OBJ) $(BASE) experiment.o
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:
-	rm *.o
+	rm *.o utest itest experiment 
