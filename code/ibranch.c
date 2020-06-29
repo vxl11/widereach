@@ -81,9 +81,10 @@ void random_flat(glp_tree *t, env_t *env) {
 		random_eligible(dimension + 2, 
 				dimension + samples_total(samples) + 1, 
 				t);
-	// int direction = index_direction(candidate, samples);
-	int direction = drand48() > .5 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
+	int direction = index_direction(candidate, samples);
+	// int direction = drand48() > .5 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 	// int direction = index_reverse_direction(candidate, samples);
+	// int direction = GLP_NO_BRNCH;
 
 	branch_on(candidate, direction, t);
 }
@@ -177,6 +178,7 @@ int highest_score_index(glp_tree *t, env_t *env) {
 }
 
 void ibranch(glp_tree *t, env_t *env) {
+	// glp_printf("Chosen node (at ibranch)  %i\n", glp_ios_curr_node(t));
 	/*
 	ibranch_LFV(t, env);
 	*/
