@@ -161,15 +161,13 @@ void test_glpk() {
 extern double iheur_round(
 		int i, double solution, double *hyperplane,
 		double *X, double *Y, env_t *);
-extern double iheur_deep_round(
-		int i, double solution, double *hyperplane,
-		double *X, double *Y, env_t *);
 extern double iheur_violation(double X, double Y, params_t *);
 
 void test_iheur() {
 	env_t env;
 	samples_t *samples = random_samples(5, 3, 2);
 	env.samples = samples;
+	env.params = params_default();
 	double X = 0.;
 	double Y = 0.;
 	CU_ASSERT_DOUBLE_EQUAL(iheur_round(3, 3.14, NULL, &X, &Y, &env), 
@@ -197,6 +195,7 @@ void test_iheur() {
         CU_ASSERT_DOUBLE_EQUAL(iheur_violation(X, Y, params), 15e-4, 1e-9);
         CU_ASSERT_DOUBLE_EQUAL(iheur_violation(10., 0., params), 0., 1e-9);
 
+	/*
 	X = 0.;
 	Y = 0.;
 	double hyperplane[] = { 1., 1., .5 };
@@ -208,6 +207,7 @@ void test_iheur() {
 			iheur_deep_round(8, 0., hyperplane, &X, &Y, &env), 
 			0., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
+	*/
 
 	free(delete_samples(samples));
 	free(params);

@@ -3,62 +3,77 @@
 #include "widereach.h"
 #include "helper.h"
 
-double iheur_deep_round(
-		int i, double solution, 
-		double *hyperplane,
-		double *X, double *Y, 
+double rounded_positive(
+		sample_locator_t *loc, 
+		double solution, 
+		double *plane, 
+		env_t *env) {
+	params_t *params = env->params;
+	switch (params->iheur_method) {
+		case simple:
+			return floor(solution);
+		case deep:
+			return side(loc, env->samples, plane, 
+					params->epsilon_positive);
+	}
+	return -1.;
+}
+
+
+
+double rounded_negative(
+		sample_locator_t *loc, 
+		double solution, 
+		double *plane, 
+		env_t *env) {
+	params_t *params = env->params;
+	switch (params->iheur_method) {
+		case simple:
+			return ceil(solution);
+		case deep:
+			return side(loc, env->samples, plane, 
+					params->epsilon_negative);
+	}
+	return -1.;
+}
+
+
+double rounded(
+		sample_locator_t *loc, 
+		double solution, 
+		double *plane, 
+		double *X, 
+		double *Y, 
 		env_t *env) {
 	samples_t *samples = env->samples;
-
-	sample_locator_t *loc = locator(i, samples);
-	int class = loc->class;
-	free(loc); 
-	if (class < 0) {
-		return solution;
-	}
-	
-	params_t *params = env->params;
+	size_t class = loc->class;
+	glp_assert(class >= 0);
 	int label = samples->label[class];
 	double solution_rounded;
 	if (label > 0) {
-		solution_rounded = 
-			side(loc, samples, hyperplane, 
-					params->epsilon_positive);
+		solution_rounded = rounded_positive(loc, solution, plane, env);
 		(*X) += solution_rounded;
 	} else {
-		solution_rounded =
-		       	side(loc, samples, hyperplane, 
-					params->epsilon_negative);
+		solution_rounded = rounded_negative(loc, solution, plane, env);
 		(*Y) += solution_rounded;
 	}
-
 	return solution_rounded;
 }
 
 
 double iheur_round(
 		int i, double solution, 
-		double *hyperplane,
+		double *plane,
 		double *X, double *Y, 
 		env_t *env) {
 	samples_t *samples = env->samples;
 	sample_locator_t *loc = locator(i, samples);
-	int class = loc->class;
-	free(loc); 
-
-	if (class < 0) {
+	if (loc->class < 0) {
 		return solution;
 	}
 
-	int label = samples->label[class];
-	double solution_rounded;
-	if (label > 0) {
-		solution_rounded = floor(solution);
-		(*X) += solution_rounded;
-	} else {
-		solution_rounded = ceil(solution);
-		(*Y) += solution_rounded;
-	}
+	double solution_rounded = rounded(loc, solution, plane, X, Y, env);
+	free(loc); 
 	return solution_rounded;
 }
 
@@ -95,6 +110,7 @@ double *hyperplane(glp_prob *p, samples_t *samples) {
 
 void iheur(glp_tree *t, env_t *env) {
 	// glp_printf("Chosen node (at iheur)  %i\n", glp_ios_curr_node(t));
+	// glp_printf("------------- iheur ------\n");
 
 	glp_prob *p = glp_ios_get_prob(t);
 
@@ -106,13 +122,9 @@ void iheur(glp_tree *t, env_t *env) {
 	double *solution = CALLOC(idx_max + 1, double);
 	double X = 0.;
 	double Y = 0.;
-	// glp_printf("------------- iheur ------\n");
 	for (int i = 1; i < idx_max; i++) {
 		solution[i] = 
-			/*
 			iheur_round(i, glp_get_col_prim(p, i), plane, 
-					&X, &Y, env);*/
-			iheur_deep_round(i, glp_get_col_prim(p, i), plane, 
 					&X, &Y, env);
 	}
 	free(plane);

@@ -26,7 +26,9 @@ typedef struct {
 /** Sample locator: specifies a sample in a sample group but call and
  * index within class */
 typedef struct {
-	size_t class;
+	/** Class of the index. 
+	 * A negative class denotes a non-sample variable */
+	int class;
 	size_t index;
 } sample_locator_t;
 
@@ -143,6 +145,17 @@ int append(sparse_vector_t *,
 
 /* --------------------- Parameters                 ---------------------- */
 
+/** Heuristic method */
+typedef
+enum {
+	/** Round the fractional variable's value to the 
+	 * closest feasible integer value. */
+	simple, 
+	/** Round to the side of hyperplane */
+	deep 
+} iheur_method_t;
+
+
 /** Problem instance parameters */
 typedef struct {
 	/** Problem name */
@@ -163,6 +176,8 @@ typedef struct {
 	int violation_type;
 	/** Target value of the branching variable */
 	int branch_target;
+	/** Method to use to round to an integer solution */
+	iheur_method_t iheur_method;
 } params_t;
 
 
