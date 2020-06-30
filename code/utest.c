@@ -158,6 +158,10 @@ void test_glpk() {
 }
 
 
+extern double rounded_positive(sample_locator_t *, double , double *, env_t *);
+extern double rounded_negative(sample_locator_t *, double , double *, env_t *);
+extern double rounded(sample_locator_t *, double solution, double *plane, 
+		double *X, double *Y, env_t *);
 extern double iheur_round(
 		int i, double solution, double *hyperplane,
 		double *X, double *Y, env_t *);
@@ -195,19 +199,26 @@ void test_iheur() {
         CU_ASSERT_DOUBLE_EQUAL(iheur_violation(X, Y, params), 15e-4, 1e-9);
         CU_ASSERT_DOUBLE_EQUAL(iheur_violation(10., 0., params), 0., 1e-9);
 
-	/*
+	env.params->iheur_method = deep;
 	X = 0.;
 	Y = 0.;
-	double hyperplane[] = { 1., 1., .5 };
-	CU_ASSERT_DOUBLE_EQUAL(
-			iheur_deep_round(4, 0.14, hyperplane, &X, &Y, &env), 
+	double plane[] = { 1., 1., .5 };
+	sample_locator_t loc = { 1, 0 };
+	samples->samples[1][0][0] = 1.;
+	samples->samples[1][0][1] = -.5;
+	CU_ASSERT_DOUBLE_EQUAL(rounded_positive(&loc, .14, plane, &env), 
 			0., 1e-12);
-	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
-	CU_ASSERT_DOUBLE_EQUAL(
-			iheur_deep_round(8, 0., hyperplane, &X, &Y, &env), 
+	CU_ASSERT_DOUBLE_EQUAL(rounded(&loc, .14, plane, &X, &Y, &env),
 			0., 1e-12);
-	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
-	*/
+	CU_ASSERT_DOUBLE_EQUAL(X, 0., 1e-12);
+	loc.class = 0;
+	samples->samples[0][0][0] = 1.;
+	samples->samples[0][0][1] = -.5;
+	CU_ASSERT_DOUBLE_EQUAL(rounded_negative(&loc, .14, plane, &env),
+			1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(rounded(&loc, .14, plane, &X, &Y, &env),
+			1., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(Y, 1., 1e-12);
 
 	free(delete_samples(samples));
 	free(params);

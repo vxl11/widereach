@@ -7,6 +7,7 @@ int main() {
         env.params = params_default();
 	env.params->theta = 0.51;
 	env.params->branch_target = 0.0;
+	env.params->iheur_method = deep;
 	int n = 1000;
 	env.params->lambda = 100 * (n + 1);
 	// srand48(20200621154912);
@@ -26,7 +27,7 @@ int main() {
 	/* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
 	 * It would be similar to branch_target=1 for the positive samples,
 	 * but the opposite for negative samples */
-	// parm->br_tech = GLP_BR_LFV; 
+	parm->br_tech = GLP_BR_LFV; 
 	glp_intopt(p, parm);
 	free(parm);
 
