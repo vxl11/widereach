@@ -178,7 +178,7 @@ int highest_score_index(glp_tree *t, env_t *env) {
 }
 
 void ibranch(glp_tree *t, env_t *env) {
-	// glp_printf("Chosen node (at ibranch)  %i\n", glp_ios_curr_node(t));
+	glp_printf("Chosen node (at ibranch)  %i\n", glp_ios_curr_node(t));
 	/*
 	ibranch_LFV(t, env);
 	*/

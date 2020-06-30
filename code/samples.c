@@ -114,3 +114,24 @@ void print_samples(samples_t *samples) {
 		}
 	}
 }
+
+
+int side(
+		sample_locator_t *loc, 
+		samples_t *samples, 
+		double *hyperplane, 
+		double precision) {
+	size_t dimension = samples->dimension;
+	size_t class = loc->class;
+	double *sample = samples->samples[class][loc->index];
+	double product = 0.;
+	for (size_t i = 0; i < dimension; i++) {
+		product += sample[i] * hyperplane[i];
+	}
+	product -= hyperplane[dimension];
+	double label = (double) samples->label[class];
+	product += -label * precision;
+	glp_printf("%g > 0 XOR %g %g < 0\n", label, product ,label);
+
+	return (label > 0.)^(product * label < 0.);
+}

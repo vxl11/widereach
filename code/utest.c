@@ -25,6 +25,30 @@ void test_samples() {
 			}
 		}
 	}
+
+	double hyperplane[] = { 1., 1., .5};
+	sample_locator_t loc = { 1, 0 };
+	samples->samples[1][0][0] = 1.+2e-3;
+	samples->samples[1][0][1] = -.5;
+	CU_ASSERT(side(&loc, samples, hyperplane, 1e-3));
+	samples->samples[1][0][0] = 1.;
+	samples->samples[1][0][1] = -.5;
+	CU_ASSERT(!side(&loc, samples, hyperplane, 1e-3));
+	samples->samples[1][0][0] = 1.-1e-3;
+	samples->samples[1][0][1] = -.5;
+	CU_ASSERT(!side(&loc, samples, hyperplane, 1e-3));
+
+	loc.class = 0;
+	samples->samples[0][0][0] = 1.+1e-3;
+	samples->samples[0][0][1] = -.5;
+	CU_ASSERT(side(&loc, samples, hyperplane, 1e-3));
+	samples->samples[0][0][0] = 1.;
+	samples->samples[0][0][1] = -.5;
+	CU_ASSERT(side(&loc, samples, hyperplane, 1e-3));
+	samples->samples[0][0][0] = 1.-2e-3;
+	samples->samples[0][0][1] = -.5;
+	CU_ASSERT(!side(&loc, samples, hyperplane, 1e-3));
+
 	free(delete_samples(samples));
 }
 

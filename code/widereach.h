@@ -73,6 +73,23 @@ samples_t *random_samples(
 		size_t dimension);
 
 
+/** Find whether the given sample is on the positive or negative side 
+ * of the given hyperplane 
+ *
+ * @return 1 if the sample is on the positive side, 0 otherwise */
+int side(
+		/** Locator of the sample of interest */
+		sample_locator_t *, 
+		/** Sample collection */
+		samples_t *, 
+		/** Array of size dimension + 1 containing first the 
+		 * hyperplane coefficients w1, ... , wd, and then the 
+		 * bias c */
+		double *hyperplane,
+		/** Precision around the hyperplane */
+		double precision);
+
+
 /* ---------------------- Sparse Vectors ---------------------------- */
 
 /** Sparse vector in GLPK format */

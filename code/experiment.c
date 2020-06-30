@@ -22,6 +22,7 @@ int main() {
 
 	glp_iocp *parm = iocp(&env);
 	// parm->bt_tech = GLP_BT_DFS;
+	// parm->bt_tech = GLP_BT_BLB;
 	/* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
 	 * It would be similar to branch_target=1 for the positive samples,
 	 * but the opposite for negative samples */

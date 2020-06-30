@@ -41,9 +41,10 @@ double iheur_violation(double X, double Y, params_t *params) {
 void print_solution(int idx_max, double *solution, glp_prob *p) {
 	glp_printf("Solution\n");
 	for (int i = 1; i <= idx_max; i++) {
-		glp_printf("%s:\t%g\n",
+		glp_printf("%s:\t%g(%g)\n",
                                 glp_get_col_name(p, i), 
-				solution[i]);
+				solution[i],
+				glp_get_col_prim(p, i));
 	}
 }
 
@@ -70,7 +71,7 @@ void iheur(glp_tree *t, env_t *env) {
 
 	int status = glp_ios_heur_sol(t, solution);
 	if (!status) {
-		// print_solution(idx_max, solution, p);
+		print_solution(idx_max, solution, p);
 		traverse(solution, t, env);
 	}
 	free(solution);
