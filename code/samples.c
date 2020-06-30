@@ -131,7 +131,6 @@ int side(
 	product -= hyperplane[dimension];
 	double label = (double) samples->label[class];
 	product += -label * precision;
-	glp_printf("%g > 0 XOR %g %g < 0\n", label, product ,label);
 
 	return (label > 0.)^(product * label < 0.);
 }

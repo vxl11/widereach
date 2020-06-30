@@ -159,31 +159,36 @@ void test_glpk() {
 
 
 extern double iheur_round(
-		int i, double solution, 
-		double *X, double *Y, samples_t *);
+		int i, double solution, double *hyperplane,
+		double *X, double *Y, env_t *);
+extern double iheur_deep_round(
+		int i, double solution, double *hyperplane,
+		double *X, double *Y, env_t *);
 extern double iheur_violation(double X, double Y, params_t *);
 
 void test_iheur() {
+	env_t env;
 	samples_t *samples = random_samples(5, 3, 2);
+	env.samples = samples;
 	double X = 0.;
 	double Y = 0.;
-	CU_ASSERT_DOUBLE_EQUAL(iheur_round(3, 3.14, &X, &Y, samples), 
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(3, 3.14, NULL, &X, &Y, &env), 
 			3.14, 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(X, 0., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
-	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 0.14, &X, &Y, samples), 
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 0.14, NULL, &X, &Y, &env), 
 			0., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(X, 0., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
-	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 1., &X, &Y, samples), 
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 1., NULL, &X, &Y, &env), 
 			1., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
-	CU_ASSERT_DOUBLE_EQUAL(iheur_round(8, 0.14, &X, &Y, samples), 
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(8, 0.14, NULL, &X, &Y, &env), 
 			1., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(Y, 1., 1e-12);
-	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 0., &X, &Y, samples), 
+	CU_ASSERT_DOUBLE_EQUAL(iheur_round(4, 0., NULL, &X, &Y, &env), 
 			0., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
 	CU_ASSERT_DOUBLE_EQUAL(Y, 1., 1e-12);
@@ -191,6 +196,18 @@ void test_iheur() {
 	params_t *params = params_default();
         CU_ASSERT_DOUBLE_EQUAL(iheur_violation(X, Y, params), 15e-4, 1e-9);
         CU_ASSERT_DOUBLE_EQUAL(iheur_violation(10., 0., params), 0., 1e-9);
+
+	X = 0.;
+	Y = 0.;
+	double hyperplane[] = { 1., 1., .5 };
+	CU_ASSERT_DOUBLE_EQUAL(
+			iheur_deep_round(4, 0.14, hyperplane, &X, &Y, &env), 
+			0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(Y, 0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(
+			iheur_deep_round(8, 0., hyperplane, &X, &Y, &env), 
+			0., 1e-12);
+	CU_ASSERT_DOUBLE_EQUAL(X, 1., 1e-12);
 
 	free(delete_samples(samples));
 	free(params);
