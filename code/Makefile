@@ -12,13 +12,10 @@ BASE = widereach.h helper.h Makefile
 OBJ = samples.o sparse_vector.o env.o indexing.o glpk.o params.o callback.o iheur.o ibranch.o iselect.o irowgen.o solution_data.o ibingo.o traversal.c
 UOBJ = utest.o
 
-.PHONY: all clean
+.PHONY: all clean dependencies
 
 all:
 	echo $(CFLAGS)
-
-widereach:	$(OBJ) $(BASE)
-	$(CC) $(CFLAGS) -o $@ $(OBJ) $< $(LIBS)
 
 utest:	$(UOBJ) $(OBJ) $(BASE)
 	$(CC) $(CFLAGS) -o $@ $(UOBJ) $(OBJ) $(LIBS) -lcunit
@@ -28,6 +25,9 @@ itest:	$(OBJ) $(BASE) itest.o
 
 experiment:	$(OBJ) $(BASE) experiment.o
 	$(CC) $(CFLAGS) -o $@ $(OBJ) experiment.o $(LIBS)
+
+dependencies:
+	sudo apt install libcunit1-dev glpk-doc libglpk-dev
 
 %.o:	%.c $(BASE)
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
