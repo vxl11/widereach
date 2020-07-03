@@ -32,6 +32,7 @@
 
 \maketitle
 
+\section{Maximum Hyperplane Consistency}
 Let $P$ be a finite multiset of integer {\em positive samples\/} and 
 $N$ be a finite multiset of integer {\em negative samples\/} in $\R^n$.
 Given a multiset $X$, we denote as $\nu_X(\vect{x})$ the multiplicity of $\vect{x}$ in $X$. 
@@ -85,8 +86,8 @@ the algorithm starts with the special case of the zero sample $\vect{0}$, in whi
 case it sets the bias $c$ to maximize the number of copies of $\vect{0}$ that are satisfied by
 the assignment 
 $$c = \begin{cases} 
-1 & \text{if} \nu_N(\vect{0}) > \nu_P(\vect{0})\\
--1 & \text{if} \nu_P(\vect{0}) > \nu_C(\vect{0})\\
+1 & \text{if } \nu_N(\vect{0}) > \nu_P(\vect{0})\\
+-1 & \text{if } \nu_P(\vect{0}) > \nu_C(\vect{0})\\
 0 & \text{otherwise}
 \end{cases}$$
 At this point, the algorithm proceeds as a sequence of iterations to set the value of $\vect{w}$.
@@ -114,6 +115,24 @@ A randomized algorithm for both problem is simple and achieves an approximation 
 Set $c = 0$ and choose a random vector $\vect{w}$ on the unit hypershpere, say, with the
 method in \cite{rndvect}. Then, for any (positive) sample $\vect{x} \in P$,
 $\Pr [ \vect{w}^T \vect{x} > 0 ] = 1 / 2$.
+
+The Maximum Hyperplane Consistency problem can be generalized by associating
+non-uniform weights to the samples. 
+Furthermore, it is often required that 
+$\vect{w}^T \vect{x} \geq c + \epsilon_P$ and 
+$\vect{w}^T \vect{x} \leq c - \epsilon_N$
+for some small constants $\epsilon_P, \epsilon_N > 0$ \cite{ClassificationOptSurvey}.
+
+
+\section{Wide-Reach Classification}
+Given a hyperplane $h$, the quantity $|C(P, h)|$ is defined as the {\em reach\/},
+$|N - C(N,h)|$ as the number of {\em false positives\/},
+and $|C(P,h)| / (|C(P,h)| + |N - C(N,h)|)$ as the {\em precision\/}.
+The {\em Wide-Reach Classification\/} problem can be informally defined
+as the problem of maximizing recall subject to the constraint that the precision
+be larger than or equal to a precision threshold $\theta$.
+However, such a combinatorial formulation runs against numerical instability problem. 
+
 
 \bibliographystyle{plain}
 \bibliography{classification}
