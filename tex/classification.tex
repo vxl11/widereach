@@ -49,10 +49,10 @@ given $P$ and $N$, we wish to find a hyperplane $h$
 to maximize $|C(P, h)| + |C(N, h)|$, the number of samples 
 that are consistent with the given hyperplane \cite{countingapprox}.
 
-\iffalse
+
 The special case in which $c$ is required to be $c = 0$ is the {\em Open Hemisphere\/} problem,
 which is known to be NP-complete in general but solvable in polynomial time
-when $n$ is constant \cite{openhemisphere}.
+when $n$ is constant \cite{densehemisphere}.
 In the Open Hemisphere problem, it can be assumed without loss of generality that 
 \begin{itemize} 
 \item $N = \emptyset$ because 
@@ -60,11 +60,12 @@ any negative sample $\vect{x}$ can be replaced by the positive sample $-\vect{x}
 \item The zero vector $\vect{0}$ is not a sample because it cannot be satisfied by any hyperplane
 \end{itemize}
 
-The Maximum Hyperplane Consistency problem can be approximated within a factor of 2 \cite{mhc}.
+The Maximum Hyperplane Consistency problem can be approximated within a factor of 2 \cite{countingapprox}.
 The main idea of the algorithm is to process one dimension at a time 
 by setting the component of $w$ along that dimension to maximize the number of satisfied vectors
 whose only non-zero component is along that dimension.
 
+\iffalse
 Before discussing the algorithm, 
 consider the simple problem in which we are given $m$ rationals $r_i$ and 
 $s_i \in \{ \pm 1 \}$ coefficients ($i = 1, 2, \dots, m$),
