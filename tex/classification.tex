@@ -1,0 +1,177 @@
+Let $P$ be a finite multiset of integer {\em positive samples\/} and 
+$N$ be a finite multiset of integer {\em negative samples\/} in $\R^n$.
+Given a multiset $X$, we denote as $\vu_X(\vect{x})$ the multiplicity of $\vect{x}$ in $X$. 
+Given a hyperplane $h = (\vect{w}, c)$ $ in $\R^n$ 
+specified by a normal vector $\vect{w} = (w_1 ~ w_2 \dots w_n)^T \in \Q^n$ and a bias $c$,
+define $C(P, h) = \{ \vect{x} \in P : \vect{x}^T \vect{w} > c \}$
+to be the set of positive samples that are {\em consistent with the hyperplane\/} $(\vect{w}, c)$,
+and similarly $C(N, h) = \{ \vect{x} \in P : \vect{x}^T \vect{w} < c \}$
+to be the set of negative samples that are {\em consistent with the hyperplane\/} $(\vect{w}, c)$.
+A hyperplane $h$ will be said to {\em satisfy a sample\/} 
+$\vect{x} \in P$ ($\vect{x} \in N$)
+if $\vect{x} \in C(P, h)$ ($\vect{x} \in C(N, h)$)
+The {\em Maximum Hyperplane Consistency\/} problem is the problem in which,
+given $P$ and $N$, we wish to find a hyperplane $h$
+to maximize $|C(P, h)| + |C(N, h)|$, the number of samples 
+that are consistent with the given hyperplane \cite{mhc}.
+
+The special case in which $c$ is required to be $c = 0$ is the {\em Open Hemisphere\/} problem,
+which is known to be NP-complete in general but solvable in polynomial time
+when $n$ is constant \cite{openhemisphere}.
+In the Open Hemisphere problem, it can be assumed without loss of generality that 
+\begin{itemize} 
+\item $N = \emptyset$ because 
+any negative sample $\vect{x}$ can be replaced by the positive sample $-\vect{x}$
+\item The zero vector $\vect{0}$ is not a sample because it cannot be satisfied by any hyperplane
+\end{itemize}
+
+The Maximum Hyperplane Consistency problem can be approximated within a factor of 2 \cite{mhc}.
+The main idea of the algorithm is to process one dimension at a time 
+by setting the component of $w$ along that dimension to maximize the number of satisfied vectors
+whose only non-zero component is along that dimension.
+
+Before discussing the algorithm, 
+consider the simple problem in which we are given $m$ rationals $r_i$ and 
+$s_i \in \{ \pm 1 \}$ coefficients ($i = 1, 2, \dots, m$),
+and we wish to find a rational number $w$ that satisfies as many as possible of the inequalities
+$x_i w > r_i$.
+Let $r_i' = r_i / x_i$ and assume without loss of generality that 
+$r_1' \leq r_2' \leq \dots \leq r_m'$.
+Observe that the number of satisfied inequalities is constant in the 
+intervals of $w$ corresponding to
+$(-infty, r_1'), (r_1', r_2'), \dots (r_m', \infty)$.
+Then, the algorithm calculates the number of satisfied inequalities in each of these intervals 
+as well as in the points $r_1', r_2', \dots, r_m'$, and pick the
+value of $w$ that maximizes the number of satisfied inequalities. 
+
+Returning to the Maximum Hyperplane Consistency problem,  
+the algorithm starts with the special case of the zero sample $\vect{0}$, in which 
+case it sets the bias $c$ to maximize the number of copies of $\vect{0}$ that are satisfied by
+the assignment 
+$$c = \begin{cases} 
+1 & \text{if} \nu_N(\vect{0}) > \nu_P(\vect{0})\\
+-1 & \text{if} $\nu_P(\vect{0}) > \nu_C(\vect{0})$\\
+0 & \text{otherwise}
+\end{cases}
+At this point, the algorithm proceeds as a sequence of iterations to set the value of $\vect{w}$.
+Assume that, at the beginning of the current iteration,
+the algorithm has set the value of $c, w_{i+1}, \dots, w_n$.
+Let $r(\vect{x}) = c - \sum_{j = i + 1}^n w_j x_j$ for any sample $\vect{x}$.
+The algorithm checks if there is any sample that has a single non-zero component among its first $i$
+(in other words, given a sample $\vect{x} = (x_1 ~ x_2 \dots x_i ~ x_{i+1} ~ x_n)^T$,
+we search for a sample in which only one of $x_1, x_2, \dots , x_i$ is non zero).
+If there is no such sample, the algorithm sets $w_i = 0$ and moves on to the next iteration.
+Otherwise, assume without loss of generality that the non-zero component is the $i$th,
+and let $S_i$ be the multiset of samples that are zero save in the $i$th component. 
+The algorithm sets $w_i$ so as to maximize the number of samples in $S_i$ that are satisfied. 
+Specifically, it considers the inequalities 
+$x_i w_i > r(\vect{x})$ for $\vect{x} \in P$ and 
+$x_i w_i < r(\vect{x})$ for $\vect{x} \in N$, and
+chooses any value of $w_i$ that maximizes the number of such inequalities that are satisfied. 
+It then proceeds to the next iteration.
+To justify the correctness, note that a sample $\vect{x}$ is considered at only one iteration or,
+in other words, that the algorithm partitions the samples into the $S_i$s.
+Furthermore, the satisfied samples in $S_i$ are never less than the once that are not satisfied,
+which means that the algorithm satisfies at least half of the samples.
+
+
+their $i$th component.
+The algorithm sets the value of $w_i$ so that as many samples in $S$ as possible can be satisfied.
+
+
+whose only non-zero component is along the $i$th dimension.
+The algorithm sets the value of $w_n$ so that as many $S$ samples as possible can be satisfied,
+and checks again.  
+
+If there is such a sample $\vect{x}$, assume that $\vect{x}$ lies 
+
+
+maximize the number of samples that are satisfied by  
+
+Initially, the residuals are identically zero.
+Then, the algorithm sets the bias $c$ to be maximize the number of copies of the zero vector 
+$\vect{0}$ that are satisfied, and specifically,
+$$c = \begin{cases} 
+1 & \text{if} \nu_N(\vect{0}) > \nu_P(\vect{0})\\
+-1 & \text{if} $\nu_P(\vect{0}) > \nu_C(\vect{0})$\\
+0 & \text{otherwise}
+\end{cases}
+All copies of the $\vect{0}$ sample are removed.
+The algorithm maintains a {\em residual\/} $r(\vect{x})$ for each remaining sample $\vect{x}$,
+and the residuals are initialized to $c$.
+Then, the algorithm specifies incrementally each component of $\vect{w}$. 
+To set the next component of $\vect{w}$, the algorithm checks if there is any sample
+that has a single non-zero component. 
+If there is no such sample, the algorithm sets $w_n = 0$ and solves the 
+problem recursively in $\R^{n-1}$ disregarding the samples' last component 
+and starting from the given residuals.
+If there is such a sample $\vect{x}$, 
+assume without loss of generality that its $n$th component $x_n \neq 0$ is the only non-zero one.
+Let $S'$ be the set of samples that are non-zero only in their $n$th component.
+The algorithm seeks to maximize the number of samples in $S'$ that can be satisfied by setting
+$w_n$.  
+
+The residuals are then updated to $c$ for all positive samples and to $-c$ for all negative samples.
+
+
+At this point, the negative samples $\vect{x}$ are replaced by positive samples $- \vect{x}$.
+
+Then, the algorithm specifies incrementally each component of $\vect{w}$. 
+To set the next component of $\vect{w}$, the algorithm checks if there is any sample
+that has a single non-zero component. 
+If there is no such sample, the algorithm sets $w_n = 0$ and solves the 
+problem recursively in $\R^{n-1}$ disregarding the samples' last component with the given
+residuals.
+If there is such a sample $\vect{x}$, 
+assume without loss of generality that its $n$th component $x_n \neq 0$ is the only non-zero one.
+
+
+First, the algorithm sets $c = 0$ and replaces every negative sample $\vect{x} \in N$
+by the positive sample $- \vect{x}$. 
+Then, the algorithm specifies incrementally each component of $\vect{w}$. 
+To set the next component of $\vect{w}$, the algorithm checks if there is any sample
+that has a single non-zero component. 
+If there is no such sample, the algorithm sets $w_n = 0$ and solves recursively the 
+Maximum Hyperplane Consistency problem in $\R^{n-1}$ disregarding the samples' last component.
+If there is such a sample $\vect{x}$, 
+assume without loss of generality that its $n$th component $x_n \neq 0$ is the only non-zero one.
+Let $P'$ be the set of samples that are non-zero only in their $n$th component.
+The algorithm sets $w_n = 1$ if $P'$ contains more non-negative samples than non-positive ones,
+and $w_n = -1$ otherwise.
+Then, the algorithm solves recursively the Maximum Hyperplane Consistency problem in $\R^{n-1}$ 
+over $P - P'$ disregarding the samples' last component.
+To prove the approximatio ratio, assume by induction hypothesis that in the recursive call
+the algorithm satisfies at least one half of its samples. 
+Then, the algorithm satisfies at least $|P| / 2$ samples in the first case,
+and $|P'| / 2 + |P - P'| / 2 = |P| / 2$ samples in the second case, which proves the claim.
+Since tha algorithm always sets $c = 0$, it solves both the Maximum Hyperplane Consistency problem
+and the Open Hemishpere problem.
+
+A randomized algorithm for both problem is simple and achieves an approximation ratio of 2. 
+Set $c = 0$ and choose a random vector $\vect{w}$ on the unit hypershpere, say, with the
+method in \cite{rndvect}. Then, for any (positive) sample $\vect{x} \in P$,
+$\Pr [ \vect{w}^T \vect{x} > 0 ] = 1 / 2$.
+
+Semi-definite programming.
+Epsilon.
+
+
+@article{rndvect,
+author = {Muller, Mervin E.},
+title = {A Note on a Method for Generating Points Uniformly on N-Dimensional Spheres},
+year = {1959},
+issue_date = {April 1959},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+volume = {2},
+number = {4},
+issn = {0001-0782},
+url = {https://doi.org/10.1145/377939.377946},
+doi = {10.1145/377939.377946},
+journal = {Commun. ACM},
+month = apr,
+pages = {19–20},
+numpages = {2}
+}
+
+  
