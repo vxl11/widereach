@@ -65,7 +65,7 @@ The main idea of the algorithm is to process one dimension at a time
 by setting the component of $w$ along that dimension to maximize the number of satisfied vectors
 whose only non-zero component is along that dimension.
 
-\iffalse
+
 Before discussing the algorithm, 
 consider the simple problem in which we are given $m$ rationals $r_i$ and 
 $s_i \in \{ \pm 1 \}$ coefficients ($i = 1, 2, \dots, m$),
@@ -75,7 +75,7 @@ Let $r_i' = r_i / x_i$ and assume without loss of generality that
 $r_1' \leq r_2' \leq \dots \leq r_m'$.
 Observe that the number of satisfied inequalities is constant in the 
 intervals of $w$ corresponding to
-$(-infty, r_1'), (r_1', r_2'), \dots (r_m', \infty)$.
+$(-\infty, r_1'), (r_1', r_2'), \dots (r_m', \infty)$.
 Then, the algorithm calculates the number of satisfied inequalities in each of these intervals 
 as well as in the points $r_1', r_2', \dots, r_m'$, and pick the
 value of $w$ that maximizes the number of satisfied inequalities. 
@@ -86,9 +86,9 @@ case it sets the bias $c$ to maximize the number of copies of $\vect{0}$ that ar
 the assignment 
 $$c = \begin{cases} 
 1 & \text{if} \nu_N(\vect{0}) > \nu_P(\vect{0})\\
--1 & \text{if} $\nu_P(\vect{0}) > \nu_C(\vect{0})$\\
+-1 & \text{if} \nu_P(\vect{0}) > \nu_C(\vect{0})\\
 0 & \text{otherwise}
-\end{cases}
+\end{cases}$$
 At this point, the algorithm proceeds as a sequence of iterations to set the value of $\vect{w}$.
 Assume that, at the beginning of the current iteration,
 the algorithm has set the value of $c, w_{i+1}, \dots, w_n$.
@@ -110,7 +110,7 @@ in other words, that the algorithm partitions the samples into the $S_i$s.
 Furthermore, the satisfied samples in $S_i$ are never less than the once that are not satisfied,
 which means that the algorithm satisfies at least half of the samples.
 
-
+\iffalse
 their $i$th component.
 The algorithm sets the value of $w_i$ so that as many samples in $S$ as possible can be satisfied.
 
