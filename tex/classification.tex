@@ -22,8 +22,11 @@
 \newtheorem{example}{Example}[section]
 
 \newcommand{\R}{\mathbb{R}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\vect}[1]{\mathbf{#1}}
 
 \title{Wide-Reach Classification}
+\author{Vincenzo Liberatore}
 
 \begin{document}
 
@@ -31,9 +34,9 @@
 
 Let $P$ be a finite multiset of integer {\em positive samples\/} and 
 $N$ be a finite multiset of integer {\em negative samples\/} in $\R^n$.
-Given a multiset $X$, we denote as $\vu_X(\vect{x})$ the multiplicity of $\vect{x}$ in $X$. 
-Given a hyperplane $h = (\vect{w}, c)$ $ in $\R^n$ 
-specified by a normal vector $\vect{w} = (w_1 ~ w_2 \dots w_n)^T \in \Q^n$ and a bias $c$,
+Given a multiset $X$, we denote as $\nu_X(\vect{x})$ the multiplicity of $\vect{x}$ in $X$. 
+Given a hyperplane $h = (\vect{w}, c)$ in $\R^n$ 
+specified by a normal vector $\vect{w} = (w_1 ~ w_2 \dots ~ w_n)^T \in \Q^n$ and a bias $c \in \Q$,
 define $C(P, h) = \{ \vect{x} \in P : \vect{x}^T \vect{w} > c \}$
 to be the set of positive samples that are {\em consistent with the hyperplane\/} $(\vect{w}, c)$,
 and similarly $C(N, h) = \{ \vect{x} \in P : \vect{x}^T \vect{w} < c \}$
@@ -46,6 +49,7 @@ given $P$ and $N$, we wish to find a hyperplane $h$
 to maximize $|C(P, h)| + |C(N, h)|$, the number of samples 
 that are consistent with the given hyperplane \cite{mhc}.
 
+\iffalse
 The special case in which $c$ is required to be $c = 0$ is the {\em Open Hemisphere\/} problem,
 which is known to be NP-complete in general but solvable in polynomial time
 when $n$ is constant \cite{openhemisphere}.
@@ -206,4 +210,7 @@ pages = {19–20},
 numpages = {2}
 }
 
+\fi
+
+\end{document}
   
