@@ -1,3 +1,34 @@
+\documentclass[11pt]{article}
+
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{algorithm}
+\usepackage{algorithmic}
+
+\usepackage{graphicx}
+\graphicspath{ {figures/} }
+
+\usepackage{subcaption}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}{Lemma}[section]
+\newtheorem{corollary}{Corollary}[section]
+\newtheorem{proposition}{Proposition}[section]
+\newtheorem*{claim}{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}[section]
+\newtheorem{example}{Example}[section]
+
+\newcommand{\R}{\mathbb{R}}
+
+\title{Wide-Reach Classification}
+
+\begin{document}
+
+\maketitle
+
 Let $P$ be a finite multiset of integer {\em positive samples\/} and 
 $N$ be a finite multiset of integer {\em negative samples\/} in $\R^n$.
 Given a multiset $X$, we denote as $\vu_X(\vect{x})$ the multiplicity of $\vect{x}$ in $X$. 
@@ -152,6 +183,7 @@ Set $c = 0$ and choose a random vector $\vect{w}$ on the unit hypershpere, say, 
 method in \cite{rndvect}. Then, for any (positive) sample $\vect{x} \in P$,
 $\Pr [ \vect{w}^T \vect{x} > 0 ] = 1 / 2$.
 
+\end{document}
 Semi-definite programming.
 Epsilon.
 
