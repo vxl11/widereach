@@ -24,6 +24,7 @@
 \newcommand{\R}{\mathbb{R}}
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\vect}[1]{\mathbf{#1}}
+\newcommand{\sv}[1]{_{\vect{#1}}}
 
 \title{Wide-Reach Classification}
 \author{Vincenzo Liberatore}
@@ -35,16 +36,16 @@
 \section{Maximum Hyperplane Consistency}
 Let $P$ be a finite multiset of integer {\em positive samples\/} and 
 $N$ be a finite multiset of integer {\em negative samples\/} in $\R^n$.
-Given a multiset $X$, we denote as $\nu_X(\vect{x})$ the multiplicity of $\vect{x}$ in $X$. 
+Given a multiset $X$, we denote as $\nu_X(\vect{s})$ the multiplicity of $\vect{s}$ in $X$. 
 Given a hyperplane $h = (\vect{w}, c)$ in $\R^n$ 
 specified by a normal vector $\vect{w} = (w_1 ~ w_2 \dots ~ w_n)^T \in \Q^n$ and a bias $c \in \Q$,
-define $C(P, h) = \{ \vect{x} \in P : \vect{x}^T \vect{w} > c \}$
+define $C(P, h) = \{ \vect{s} \in P : \vect{s}^T \vect{w} > c \}$
 to be the set of positive samples that are {\em consistent with the hyperplane\/} $(\vect{w}, c)$,
-and similarly $C(N, h) = \{ \vect{x} \in P : \vect{x}^T \vect{w} < c \}$
+and similarly $C(N, h) = \{ \vect{s} \in P : \vect{s}^T \vect{w} < c \}$
 to be the set of negative samples that are {\em consistent with the hyperplane\/} $(\vect{w}, c)$.
 A hyperplane $h$ will be said to {\em satisfy a sample\/} 
-$\vect{x} \in P$ ($\vect{x} \in N$)
-if $\vect{x} \in C(P, h)$ ($\vect{x} \in C(N, h)$)
+$\vect{s} \in P$ ($\vect{s} \in N$)
+if $\vect{s} \in C(P, h)$ ($\vect{s} \in C(N, h)$)
 The {\em Maximum Hyperplane Consistency\/} problem is the problem in which,
 given $P$ and $N$, we wish to find a hyperplane $h$
 to maximize $|C(P, h)| + |C(N, h)|$, the number of samples 
@@ -57,7 +58,7 @@ when $n$ is constant \cite{densehemisphere}.
 In the Open Hemisphere problem, it can be assumed without loss of generality that 
 \begin{itemize} 
 \item $N = \emptyset$ because 
-any negative sample $\vect{x}$ can be replaced by the positive sample $-\vect{x}$
+any negative sample $\vect{s}$ can be replaced by the positive sample $-\vect{s}$
 \item The zero vector $\vect{0}$ is not a sample because it cannot be satisfied by any hyperplane
 \end{itemize}
 
@@ -93,35 +94,53 @@ $$c = \begin{cases}
 At this point, the algorithm proceeds as a sequence of iterations to set the value of $\vect{w}$.
 Assume that, at the beginning of the current iteration,
 the algorithm has set the value of $c, w_{i+1}, \dots, w_n$.
-Let $r(\vect{x}) = c - \sum_{j = i + 1}^n w_j x_j$ for any sample $\vect{x}$.
+Let $r(\vect{s}) = c - \sum_{j = i + 1}^n w_j x_j$ for any sample $\vect{s}$.
 The algorithm checks if there is any sample that has a single non-zero component among its first $i$
-(in other words, given a sample $\vect{x} = (x_1 ~ x_2 \dots x_i ~ x_{i+1} ~ x_n)^T$,
+(in other words, given a sample $\vect{s} = (x_1 ~ x_2 \dots x_i ~ x_{i+1} ~ x_n)^T$,
 we search for a sample in which only one of $x_1, x_2, \dots , x_i$ is non zero).
 If there is no such sample, the algorithm sets $w_i = 0$ and moves on to the next iteration.
 Otherwise, assume without loss of generality that the non-zero component is the $i$th,
 and let $S_i$ be the multiset of samples that are zero save in the $i$th component. 
 The algorithm sets $w_i$ so as to maximize the number of samples in $S_i$ that are satisfied. 
 Specifically, it considers the inequalities 
-$x_i w_i > r(\vect{x})$ for $\vect{x} \in P$ and 
-$x_i w_i < r(\vect{x})$ for $\vect{x} \in N$, and
+$x_i w_i > r(\vect{s})$ for $\vect{s} \in P$ and 
+$x_i w_i < r(\vect{s})$ for $\vect{s} \in N$, and
 chooses any value of $w_i$ that maximizes the number of such inequalities that are satisfied. 
 It then proceeds to the next iteration.
-To justify the correctness, note that a sample $\vect{x}$ is considered at only one iteration or,
+To justify the correctness, note that a sample $\vect{s}$ is considered at only one iteration or,
 in other words, that the algorithm partitions the samples into the $S_i$s.
 Furthermore, the satisfied samples in $S_i$ are never less than the once that are not satisfied,
 which means that the algorithm satisfies at least half of the samples.
 
 A randomized algorithm for both problem is simple and achieves an approximation ratio of 2. 
 Set $c = 0$ and choose a random vector $\vect{w}$ on the unit hypershpere, say, with the
-method in \cite{rndvect}. Then, for any (positive) sample $\vect{x} \in P$,
-$\Pr [ \vect{w}^T \vect{x} > 0 ] = 1 / 2$.
+method in \cite{rndvect}. Then, for any (positive) sample $\vect{s} \in P$,
+$\Pr [ \vect{w}^T \vect{s} > 0 ] = 1 / 2$.
 
-The Maximum Hyperplane Consistency problem can be generalized by associating
-non-uniform weights to the samples. 
-Furthermore, it is often required that 
-$\vect{w}^T \vect{x} \geq c + \epsilon_P$ and 
-$\vect{w}^T \vect{x} \leq c - \epsilon_N$
-for some small constants $\epsilon_P, \epsilon_N > 0$ \cite{ClassificationOptSurvey}.
+\section{Two-Group Misclassification}
+The {\em Two-Group Misclassification\/} problem \cite{ClassificationOptSurvey} is defined in terms of decision variables $\delta\sv{s} \in \{ 0, 1 \}$ 
+that represent whether the sample $\vect{s} \in P \cup N$ has been misclassified.
+\begin{align}
+\label{eq:twogroupmisclassification}
+\min\quad & 
+c_P \sum_{\vect{s} \in P} \delta\sv{s} + c_N \sum_{\vect{s} \in N} \delta\sv{s} \\
+\text{s.t.}\quad & 
+\delta\sv{s} \geq c - \vect{s}^T \vect{w} + \epsilon_P & & (\vect{s} \in P) \\
+& \delta\sv{s} \geq \vect{s}^T \vect{w} - c + \epsilon_N & & (\vect{s} \in N) \\
+& \delta\sv{s} \in \{ 0, 1 \} & & (\vect{s} \in P \cup N) \\
+\end{align}
+In this formulation, $\epsilon_P$ and $\epsilon_N$ are non-negative parameters.
+If $\epsilon_P = \epsilon_N = 0$, then the samples that fall on the hyperplane
+$(\vect{w}, c)$ are always considered to be correctly classified, regardless
+of whether they are positive or negative.
+In the numerical solution of \eqref{eq:twogroupmisclassification},
+due to rounding errors, some points are considered to lie on the hyperplane
+as long as $\vect{s}^T \vect{w} - c \simeq 0$.
+In turn, if $\epsilon_P = \epsilon_N = 0$, then
+the problem sometimes reduces to find a hyperplane whose neighborhood contains
+as many samples as possible. 
+Hence, most work on Two-Group Misclassification assumes that at least one of 
+the $\epsilon_P$ and $\epsilon_N$ is positive \cite{ClassificationOptSurvey}.
 
 
 \section{Wide-Reach Classification}
