@@ -37,20 +37,22 @@
 Let $P$ be a finite multiset of integer {\em positive samples\/} and 
 $N$ be a finite multiset of integer {\em negative samples\/} in $\R^n$.
 Given a multiset $X$, we denote as $\nu_X(\vect{s})$ the multiplicity of $\vect{s}$ in $X$. 
-Given a hyperplane $h = (\vect{w}, c)$ in $\R^n$ 
+Given a set $S$ of samples, a hyperplane $h = (\vect{w}, c)$ in $\R^n$ 
 specified by a normal vector $\vect{w} = (w_1 ~ w_2 \dots ~ w_n)^T \in \Q^n$ and a bias $c \in \Q$,
-define $C(P, h) = \{ \vect{s} \in P : \vect{s}^T \vect{w} > c \}$
-to be the set of positive samples that are {\em consistent with the hyperplane\/} $(\vect{w}, c)$,
-and similarly $C(N, h) = \{ \vect{s} \in P : \vect{s}^T \vect{w} < c \}$
-to be the set of negative samples that are {\em consistent with the hyperplane\/} $(\vect{w}, c)$.
+define 
+$$C^+(S, h) = \{ \vect{s} \in S : \vect{s}^T \vect{w} > c \}$$
+and 
+$$C^-(N, h) = \{ \vect{s} \in P : \vect{s}^T \vect{w} < c \}\;.$$
+Define $C^+(P, h)$ ($C^-(N, h)$) be the set of positive 
+(negative) samples that are 
+{\em consistent with the hyperplane\/} $h$.
 A hyperplane $h$ will be said to {\em satisfy a sample\/} 
 $\vect{s} \in P$ ($\vect{s} \in N$)
-if $\vect{s} \in C(P, h)$ ($\vect{s} \in C(N, h)$)
+if $\vect{s} \in C^+(P, h)$ ($\vect{s} \in C^-(N, h)$)
 The {\em Maximum Hyperplane Consistency\/} problem is the problem in which,
 given $P$ and $N$, we wish to find a hyperplane $h$
 to maximize $|C(P, h)| + |C(N, h)|$, the number of samples 
 that are consistent with the given hyperplane \cite{countingapprox}.
-
 
 The special case in which $c$ is required to be $c = 0$ is the {\em Open Hemisphere\/} problem,
 which is known to be NP-complete in general but solvable in polynomial time
@@ -118,29 +120,49 @@ method in \cite{rndvect}. Then, for any (positive) sample $\vect{s} \in P$,
 $\Pr [ \vect{w}^T \vect{s} > 0 ] = 1 / 2$.
 
 \section{Two-Group Misclassification}
-The {\em Two-Group Misclassification\/} problem \cite{ClassificationOptSurvey} is defined in terms of decision variables $\delta\sv{s} \in \{ 0, 1 \}$ 
-that represent whether the sample $\vect{s} \in P \cup N$ has been misclassified.
-\begin{align}
+The {\em Two-Group Misclassification\/} problem \cite{ClassificationOptSurvey}
+is defined as the mixed-integer linear program: 
+\begin{subequations}
 \label{eq:twogroupmisclassification}
+\begin{align}
 \min\quad & 
-c_P \sum_{\vect{s} \in P} \delta\sv{s} + c_N \sum_{\vect{s} \in N} \delta\sv{s} \\
+\pi_P \sum_{\vect{s} \in P} \delta\sv{s} + 
+\pi_N \sum_{\vect{s} \in N} \delta\sv{s} \\
 \text{s.t.}\quad & 
 \delta\sv{s} \geq c - \vect{s}^T \vect{w} + \epsilon_P & & (\vect{s} \in P) \\
 & \delta\sv{s} \geq \vect{s}^T \vect{w} - c + \epsilon_N & & (\vect{s} \in N) \\
-& \delta\sv{s} \in \{ 0, 1 \} & & (\vect{s} \in P \cup N) \\
+& \delta\sv{s} \in \{ 0, 1 \} & & (\vect{s} \in P \cup N) 
 \end{align}
-In this formulation, $\epsilon_P$ and $\epsilon_N$ are non-negative parameters.
-If $\epsilon_P = \epsilon_N = 0$, then the samples that fall on the hyperplane
-$(\vect{w}, c)$ are always considered to be correctly classified, regardless
-of whether they are positive or negative.
-In the numerical solution of \eqref{eq:twogroupmisclassification},
-due to rounding errors, some points are considered to lie on the hyperplane
-as long as $\vect{s}^T \vect{w} - c \simeq 0$.
-In turn, if $\epsilon_P = \epsilon_N = 0$, then
-the problem sometimes reduces to find a hyperplane whose neighborhood contains
-as many samples as possible. 
-Hence, most work on Two-Group Misclassification assumes that at least one of 
-the $\epsilon_P$ and $\epsilon_N$ is positive \cite{ClassificationOptSurvey}.
+\end{subequations}
+In this program, $\delta\sv{s}$ is a binary decision variable representing
+the misclassification of $\vect{s}$ in that $\delta\sv{s}$ is 
+0 if $\vect{s}$ is consistent with $h = (\vect{w}, c)$ and 
+1 otherwise.
+The program \eqref{eq:twogroupmisclassification} weights the misclassifications
+by non-negative costs $\pi_P$ and $\pi_N$ 
+for positive and negative samples respectively.
+Furthermore, it is parametric in the two non-negative 
+values of $\epsilon_P$ and $\epsilon_N$.
+
+If $\epsilon_P = \epsilon_N = 0$, then a sample $\vect{s}$ that falls on the hyperplane $h$ (i.e., $\vect{s}^T \vect{w} = c$) are always considered to be correctly classified (i.e., $\delta\sv{s} = 0$ at optimality), regardless
+of whether $\vect{s}$ is positive or negative.
+Previous work has intensively investigated the numerical solution of 
+\eqref{eq:twogroupmisclassification} \cite{ClassificationOptSurvey}, in which case 
+$\delta\sv{s} = 0$ at optimality even when $\vect{s}^T \vect{w} \simeq c$
+is within the rounding error. 
+Thus, the program \eqref{eq:twogroupmisclassification} effectively
+becomes the problem of finding
+a hyperplane in whose neighborhood most samples fall, and can lead to 
+misleading solutions. 
+As a result, most of the literature sets at least one of $\epsilon_P$ or 
+$\epsilon_N$ to be positive.
+Henceforth, we will assume $\epsilon_P, \epsilon_N > 0$
+
+Note that the Two-Group Misclassification problem always has the feasible
+solutions $\vect{w} = 0$, $c = - \epsilon_P$ ($c = \epsilon_N$)
+that classifies all positive (negative) samples correctly.
+Additionally, the null solution $\vect{w} = \vect{0}$, $c = 0$ is feasible but 
+it misclassifies all points and thus never optimal.
 
 
 \section{Wide-Reach Classification}
