@@ -30,10 +30,13 @@ int class_reverse_direction(int class, samples_t *samples) {
 }
 
 node_data_t *initialized_data(glp_tree *t) {
+    // Find and initialize node data
     int curr_node = glp_ios_curr_node(t);
     node_data_t *data = 
         (node_data_t *) glp_ios_node_data(t, curr_node);
 	data->initialized = 1;
+    
+    // Copy parent data
     int parent = glp_ios_up_node(t, curr_node);
     if (!parent) {
         return data;
@@ -55,36 +58,32 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
     glp_ios_branch_upon(t, index, direction); 
 }
 
-
-int random_eligible(int idx_min, int idx_max, glp_tree *t) {
-	int *eligible = CALLOC(idx_max - idx_min + 1, int);
+int random_bounded(int idx_min, int idx_max, glp_tree *t) {
+    int *eligible = CALLOC(idx_max - idx_min + 1, int);
 	int eligible_cnt = 0;
 	for (int i = idx_min; i <= idx_max; i++) {
 		if (glp_ios_can_branch(t, i)) {
 			eligible[eligible_cnt++] = i;
 		}
 	}
-	int candidate = 
-		eligible_cnt > 0 ? eligible[lrand48() % eligible_cnt] : -1;
+	int candidate = eligible_cnt > 0 ? eligible[lrand48() % eligible_cnt] : -1;
 	free(eligible);
 	return candidate;
 }
 
-void random_branch(glp_tree *t, env_t *env) {
+int random_eligible(int class, glp_tree *t, samples_t *samples) {
+    int idx_min = idx_extreme(0, class, 0, samples);
+    int idx_max = idx_extreme(0, class, 1, samples);
+	return random_bounded(idx_min, idx_max, t);
+}
+
+void random_branch(int class, glp_tree *t, env_t *env) {
 	samples_t *samples = env->samples;
-	int dimension = samples->dimension;
-	int positive_cnt = positives(samples);
-	// Negative candidate
-	int candidate = 
-		random_eligible(dimension + positive_cnt + 2, 
-				dimension + samples_total(samples) + 1, 
-				t);
+	// High priority class first
+	int candidate = random_eligible(class, t, samples);
 	if (candidate < 0) { 
-		// Positive candidate
-		candidate = 
-			random_eligible(dimension + 2, 
-				dimension + positive_cnt + 1, 
-				t);
+		// No candidate, trying low priority class
+		candidate = random_eligible(!class, t, samples);
 	}
 
 	branch_on(candidate, t, samples);
@@ -94,9 +93,10 @@ void random_flat(glp_tree *t, env_t *env) {
 	samples_t *samples = env->samples;
 	int dimension = samples->dimension;
 	int candidate = 
-		random_eligible(dimension + 2, 
-				dimension + samples_total(samples) + 1, 
-				t);
+		random_bounded(
+            dimension + 2, 
+            dimension + samples_total(samples) + 1, 
+            t);
 	// int direction = index_direction(candidate, samples);
 	// int direction = drand48() > .5 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 	// int direction = index_reverse_direction(candidate, samples);
@@ -186,12 +186,34 @@ int highest_score_index(glp_tree *t, env_t *env) {
 	return candidate_idx;
 }
 
+void branch_even(glp_tree *t, env_t *env) {
+    int parent = glp_ios_up_node(t, glp_ios_curr_node(t));
+    if (!parent) {
+        // At the root, branch on a random node
+        random_flat(t, env);
+        return;
+    }
+    
+    node_data_t *data = (node_data_t *) glp_ios_node_data(t, parent);
+    if (!data->class_cnt[0]) { // No negative sample set
+        // Branch on a negative sample if at all possible
+        random_branch(0, t, env);
+    } else if (!data->class_cnt[1]) { // No positive sample set
+        // Branch on a positive sample if at all possible
+        random_branch(1, t, env);
+    } else {
+        random_flat(t, env);
+    }
+    return;
+}
+
 void ibranch(glp_tree *t, env_t *env) {
 	// glp_printf("Chosen node (at ibranch)  %i\n", glp_ios_curr_node(t));
 	/*
 	ibranch_LFV(t, env);
 	*/
 	random_flat(t, env);
+	// branch_even(t, env);
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
