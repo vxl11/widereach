@@ -29,28 +29,29 @@ int class_reverse_direction(int class, samples_t *samples) {
 	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-void copy_parent_data(int curr_node, node_data_t *data, glp_tree *t) {
+node_data_t *initialized_data(glp_tree *t) {
+    int curr_node = glp_ios_curr_node(t);
+    node_data_t *data = 
+        (node_data_t *) glp_ios_node_data(t, curr_node);
+	data->initialized = 1;
     int parent = glp_ios_up_node(t, curr_node);
     if (!parent) {
-        return;
+        return data;
     }
     node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
     data->class_cnt[0] = data_parent->class_cnt[0];
     data->class_cnt[1] = data_parent->class_cnt[1];
+    return data;
 }
 
 void branch_on(int index, glp_tree *t, samples_t *samples) {
-	int curr_node = glp_ios_curr_node(t);
-	node_data_t *data = 
-		(node_data_t *) glp_ios_node_data(t, curr_node);
-	data->initialized = 1;
+	node_data_t *data = initialized_data(t);
 	data->branching_variable = index;
     int class = index_to_class(index, samples);
+    data->class_cnt[class]++;
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
 	data->direction = direction;
-    copy_parent_data(curr_node, data, t);
-    data->class_cnt[class]++;
     glp_ios_branch_upon(t, index, direction); 
 }
 
