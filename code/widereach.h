@@ -340,6 +340,9 @@ typedef struct {
 	int branching_variable;
 	/** Recommended direction for the branching variable */
 	int direction;
+    /** Number of variables that have been fixed to an integer value
+     * in the two classes */
+    int class_cnt[2];
 } node_data_t;
 
 

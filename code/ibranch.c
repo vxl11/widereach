@@ -29,14 +29,22 @@ int index_reverse_direction(int i, samples_t *samples) {
 	return index_label(i, samples) < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-void branch_on(int index, int direction, glp_tree *t) {
+void branch_on(int index, int class, int direction, glp_tree *t) {
 	int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = 
 		(node_data_t *) glp_ios_node_data(t, curr_node);
 	data->initialized = 1;
 	data->branching_variable = index;
 	data->direction = direction;
-        glp_ios_branch_upon(t, index, direction); 
+    int parent = glp_ios_up_node(t, curr_node);
+    if (parent) {
+        node_data_t *data_parent = 
+            (node_data_t *) glp_ios_node_data(t, parent);
+        data->class_cnt[0] = data_parent->class_cnt[0];
+        data->class_cnt[1] = data_parent->class_cnt[1];
+    }
+    data->class_cnt[class]++;
+    glp_ios_branch_upon(t, index, direction); 
 }
 
 
@@ -71,7 +79,10 @@ void random_branch(glp_tree *t, env_t *env) {
 				t);
 	}
 
-	branch_on(candidate, index_direction(candidate, samples), t);
+	branch_on(candidate, 
+              index_to_class(candidate, samples),
+              index_direction(candidate, samples), 
+              t);
 }
 
 void random_flat(glp_tree *t, env_t *env) {
@@ -86,7 +97,7 @@ void random_flat(glp_tree *t, env_t *env) {
 	// int direction = index_reverse_direction(candidate, samples);
 	// int direction = GLP_NO_BRNCH;
 
-	branch_on(candidate, direction, t);
+	branch_on(candidate, index_to_class(candidate, samples), direction, t);
 }
 
 
@@ -108,7 +119,10 @@ void ibranch_LFV(glp_tree *t, env_t *env) {
 			break;
 		}
 	}
-	branch_on(candidate_idx, candidate_sel, t);
+	branch_on(candidate_idx, 
+              index_to_class(candidate_idx, samples), 
+              candidate_sel, 
+              t);
 }
 
 
@@ -195,5 +209,8 @@ void ibranch(glp_tree *t, env_t *env) {
 	}
 	glp_assert(idx > 0);
 
-	branch_on(idx, index_direction(idx, env->samples), t);
+	branch_on(idx, 
+              index_to_class(idx, env->samples),
+              index_direction(idx, env->samples), 
+              t);
 }
