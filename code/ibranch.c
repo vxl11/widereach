@@ -21,28 +21,35 @@ int index_label(int i, samples_t *samples) {
 	return samples->label[class];
 }
 
-int index_direction(int i, samples_t *samples) {
-	return index_label(i, samples) > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
+int class_direction(int class, samples_t *samples) {
+	return samples->label[class] > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-int index_reverse_direction(int i, samples_t *samples) {
-	return index_label(i, samples) < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
+int class_reverse_direction(int class, samples_t *samples) {
+	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-void branch_on(int index, int class, int direction, glp_tree *t) {
+void copy_parent_data(int curr_node, node_data_t *data, glp_tree *t) {
+    int parent = glp_ios_up_node(t, curr_node);
+    if (!parent) {
+        return;
+    }
+    node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
+    data->class_cnt[0] = data_parent->class_cnt[0];
+    data->class_cnt[1] = data_parent->class_cnt[1];
+}
+
+void branch_on(int index, glp_tree *t, samples_t *samples) {
 	int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = 
 		(node_data_t *) glp_ios_node_data(t, curr_node);
 	data->initialized = 1;
 	data->branching_variable = index;
+    int class = index_to_class(index, samples);
+    int direction = class_direction(class, samples);
+    // int direction = class_reverse_direction(class, samples);
 	data->direction = direction;
-    int parent = glp_ios_up_node(t, curr_node);
-    if (parent) {
-        node_data_t *data_parent = 
-            (node_data_t *) glp_ios_node_data(t, parent);
-        data->class_cnt[0] = data_parent->class_cnt[0];
-        data->class_cnt[1] = data_parent->class_cnt[1];
-    }
+    copy_parent_data(curr_node, data, t);
     data->class_cnt[class]++;
     glp_ios_branch_upon(t, index, direction); 
 }
@@ -79,10 +86,7 @@ void random_branch(glp_tree *t, env_t *env) {
 				t);
 	}
 
-	branch_on(candidate, 
-              index_to_class(candidate, samples),
-              index_direction(candidate, samples), 
-              t);
+	branch_on(candidate, t, samples);
 }
 
 void random_flat(glp_tree *t, env_t *env) {
@@ -92,12 +96,12 @@ void random_flat(glp_tree *t, env_t *env) {
 		random_eligible(dimension + 2, 
 				dimension + samples_total(samples) + 1, 
 				t);
-	int direction = index_direction(candidate, samples);
+	// int direction = index_direction(candidate, samples);
 	// int direction = drand48() > .5 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 	// int direction = index_reverse_direction(candidate, samples);
 	// int direction = GLP_NO_BRNCH;
 
-	branch_on(candidate, index_to_class(candidate, samples), direction, t);
+	branch_on(candidate, t, samples);
 }
 
 
@@ -105,24 +109,14 @@ void random_flat(glp_tree *t, env_t *env) {
 void ibranch_LFV(glp_tree *t, env_t *env) {
 	samples_t *samples = env->samples;
 	int candidate_idx;
-	int candidate_sel;
 	int idx_max = violation_idx(0, samples);
 	for (int i = idx_max; i >= 1; i--) {
 		if (glp_ios_can_branch(t, i)) {
 			candidate_idx = i;
-			sample_locator_t *loc = locator(i, samples);
-			int class = loc->class;
-			free(loc);
-			glp_assert(class >= 0);
-			candidate_sel = samples->label[class] > 0 ? 
-				GLP_UP_BRNCH : GLP_DN_BRNCH;
 			break;
 		}
 	}
-	branch_on(candidate_idx, 
-              index_to_class(candidate_idx, samples), 
-              candidate_sel, 
-              t);
+	branch_on(candidate_idx, t, samples);
 }
 
 
@@ -209,8 +203,5 @@ void ibranch(glp_tree *t, env_t *env) {
 	}
 	glp_assert(idx > 0);
 
-	branch_on(idx, 
-              index_to_class(idx, env->samples),
-              index_direction(idx, env->samples), 
-              t);
+	branch_on(idx, t, env->samples);
 }
