@@ -360,8 +360,6 @@ void traverse(
 
 /** Node signature: parameters that affect the comparison between nodes */
 typedef struct {
-    /** Local bound at the node */
-    double value;
     /** Level of the node in the branch-and-cut tree */
     int level;
     /** Sequence number of the node: higher sequence numbers were generated
@@ -373,19 +371,22 @@ typedef struct {
 void set_signature(
     /** Signature whose values need to be set */
     node_signature_t *, 
-    /** Value field new contents */
-    double value, 
     /** Level new value */
     int level,
     /** Sequential number new value */
     int seqno);
 
+/** Copy a signature */
+void copy_signature(
+    /** Destination signature */
+    node_signature_t *dest, 
+    /** Source signature */
+    const node_signature_t *src);
+
 /** Compare two signatures. 
  * 
  * @return Comparison value, defined as in qsort(3). */
-int compare_signature(const node_signature_t *, const node_signature_t *,
-    /** Relative precision within which to compare the signatures' values */
-    double epsilon);
+int compare_signature(const node_signature_t *, const node_signature_t *);
 
 /* -------------------------- Callback ---------------------------------- */
 

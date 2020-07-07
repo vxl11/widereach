@@ -4,22 +4,17 @@
 
 void set_signature(
         node_signature_t *signature,
-        double value, 
         int level, 
         int seqno) {
-    signature->value = value;
     signature->level = level;
     signature->seqno = seqno;
 }
 
-int compare_signature(
-        const node_signature_t *a, 
-        const node_signature_t *b,
-        double epsilon) {
-    double ratio = a->value / b->value - 1.;
-    if (fabs(ratio) > epsilon) {
-        return (int) round(ratio);
-    } 
+void copy_signature(node_signature_t *dest, const node_signature_t *src) {
+    set_signature(dest, src->level, src->seqno);
+}
+
+int compare_signature(const node_signature_t *a, const node_signature_t *b) {
     int difference = a->level - b->level;
     if (difference) {
         return difference;
