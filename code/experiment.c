@@ -6,6 +6,7 @@ int main() {
 	env_t env;
         env.params = params_default();
 	env.params->theta = 0.51;
+    // env.params->theta = 0.55;
 	env.params->branch_target = 0.0;
 	env.params->iheur_method = deep;
 	int n = 1000;

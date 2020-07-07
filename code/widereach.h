@@ -358,6 +358,35 @@ void traverse(
 		glp_tree *, env_t *);
 
 
+/** Node signature: parameters that affect the comparison between nodes */
+typedef struct {
+    /** Local bound at the node */
+    double value;
+    /** Level of the node in the branch-and-cut tree */
+    int level;
+    /** Sequence number of the node: higher sequence numbers were generated
+     * later */
+    int seqno;
+} node_signature_t;
+
+/** Set signature fields to the given values */
+void set_signature(
+    /** Signature whose values need to be set */
+    node_signature_t *, 
+    /** Value field new contents */
+    double value, 
+    /** Level new value */
+    int level,
+    /** Sequential number new value */
+    int seqno);
+
+/** Compare two signatures. 
+ * 
+ * @return Comparison value, defined as in qsort(3). */
+int compare_signature(const node_signature_t *, const node_signature_t *,
+    /** Relative precision within which to compare the signatures' values */
+    double epsilon);
+
 /* -------------------------- Callback ---------------------------------- */
 
 /** Callback entry point */

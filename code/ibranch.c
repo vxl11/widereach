@@ -80,6 +80,9 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
     data->class_cnt[class]++;
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
+    /* glp_printf("%s of %i to %i\n", 
+               glp_get_col_name(glp_ios_get_prob(t), index), 
+               class, direction); */
 	data->direction = direction;
     glp_ios_branch_upon(t, index, direction); 
 }
@@ -228,8 +231,8 @@ void branch_even(glp_tree *t, env_t *env) {
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, parent);
     // int *class_cnt = data->class_cnt;
     int *class_cnt = data->directional_cnt;
-    int threshold = 1;
-    // int threshold = (int) env->samples->dimension;
+    // int threshold = 1;
+    int threshold = (int) env->samples->dimension;
     // glp_printf("count %i,%i\n", data->class_cnt[0], data->class_cnt[1]);
     if (is_first_deficient(class_cnt[0], class_cnt[1], threshold)) { 
         /* Deficient negative sample set:
