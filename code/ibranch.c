@@ -83,6 +83,7 @@ void random_branch(int class, glp_tree *t, env_t *env) {
 	int candidate = random_eligible(class, t, samples);
 	if (candidate < 0) { 
 		// No candidate, trying low priority class
+//         glp_printf("cannot find it, back to other class\n");
 		candidate = random_eligible(!class, t, samples);
 	}
 
@@ -186,6 +187,10 @@ int highest_score_index(glp_tree *t, env_t *env) {
 	return candidate_idx;
 }
 
+int is_first_deficient(int a, int b, int threshold) {
+    return a < threshold && b >= threshold;
+}
+
 void branch_even(glp_tree *t, env_t *env) {
     int parent = glp_ios_up_node(t, glp_ios_curr_node(t));
     if (!parent) {
@@ -195,13 +200,22 @@ void branch_even(glp_tree *t, env_t *env) {
     }
     
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, parent);
-    if (!data->class_cnt[0]) { // No negative sample set
-        // Branch on a negative sample if at all possible
+    int *class_cnt = data->class_cnt;
+    // int threshold = 1;
+    int threshold = (int) env->samples->dimension;
+    // glp_printf("count %i,%i\n", data->class_cnt[0], data->class_cnt[1]);
+    if (is_first_deficient(class_cnt[0], class_cnt[1], threshold)) { 
+        /* Deficient negative sample set:
+            Branch on a negative sample if at all possible */
+        // glp_printf("attempting a random negative\n");
         random_branch(0, t, env);
-    } else if (!data->class_cnt[1]) { // No positive sample set
-        // Branch on a positive sample if at all possible
+    } else if (is_first_deficient(class_cnt[1], class_cnt[0], threshold)) { 
+        /* Deficient positive sample set
+            Branch on a positive sample if at all possible */
+        // glp_printf("attempting a random positive\n");
         random_branch(1, t, env);
     } else {
+        // glp_printf("attempting a random flat\n");
         random_flat(t, env);
     }
     return;
@@ -212,8 +226,8 @@ void ibranch(glp_tree *t, env_t *env) {
 	/*
 	ibranch_LFV(t, env);
 	*/
-	random_flat(t, env);
-	// branch_even(t, env);
+	// random_flat(t, env);
+	branch_even(t, env);
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
