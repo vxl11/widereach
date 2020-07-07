@@ -343,6 +343,9 @@ typedef struct {
     /** Number of variables that have been fixed to an integer value
      * in the two classes */
     int class_cnt[2];
+    /** Number of variables that have been fixed to the corresponding
+     * integer value in the two classes */
+    int directional_cnt[2];
 } node_data_t;
 
 

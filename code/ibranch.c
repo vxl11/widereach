@@ -29,6 +29,11 @@ int class_reverse_direction(int class, samples_t *samples) {
 	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
+void initialize_count(int *cnt, int *parent_cnt) {
+    cnt[0] = parent_cnt[0];
+    cnt[1] = parent_cnt[1];
+}
+
 node_data_t *initialized_data(glp_tree *t) {
     // Find and initialize node data
     int curr_node = glp_ios_curr_node(t);
@@ -42,8 +47,7 @@ node_data_t *initialized_data(glp_tree *t) {
         return data;
     }
     node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
-    data->class_cnt[0] = data_parent->class_cnt[0];
-    data->class_cnt[1] = data_parent->class_cnt[1];
+    initialize_count(data->class_cnt, data_parent->class_cnt);
     return data;
 }
 
