@@ -235,6 +235,23 @@ void test_solution_data() {
 }
 
 
+void test_signature() {
+    node_signature_t a, b;
+    set_signature(&a, 1., 2, 3);
+    CU_ASSERT_DOUBLE_EQUAL(a.value, 1., 1e-12);
+    CU_ASSERT_EQUAL(a.level, 2);
+    CU_ASSERT_EQUAL(a.seqno, 3);
+    set_signature(&b, 1.+1e-12, 2, 3);
+    CU_ASSERT_EQUAL(compare_signature(&a, &b, 1e-6), 0);
+    set_signature(&b, 2., 2, 3);
+    CU_ASSERT(compare_signature(&a, &b, 1e-6) < 0);
+    set_signature(&b, 1., 1, 3);
+    CU_ASSERT(compare_signature(&a, &b, 1e-6) > 0);
+    set_signature(&b, 1., 2, 4);
+    CU_ASSERT(compare_signature(&a, &b, 1e-6) < 0);
+}
+
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -267,6 +284,10 @@ int main() {
 	// Solution data
 	CU_pSuite solution = CU_add_suite("solution data", init_samples, NULL);
 	CU_add_test(solution, "solution data", test_solution_data);
+
+    // Node signature
+	CU_pSuite signature = CU_add_suite("node signature", NULL, NULL);
+	CU_add_test(signature, "node signature", test_signature);
 
 	// Run tests
 	CU_basic_run_tests();

@@ -16,8 +16,8 @@ int compare_signature(
         const node_signature_t *a, 
         const node_signature_t *b,
         double epsilon) {
-    double ratio = a->value / b->value;
-    if (fabs(ratio - 1.) > epsilon) {
+    double ratio = a->value / b->value - 1.;
+    if (fabs(ratio) > epsilon) {
         return (int) round(ratio);
     } 
     int difference = a->level - b->level;
