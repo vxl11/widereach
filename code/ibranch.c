@@ -29,12 +29,28 @@ int class_reverse_direction(int class, samples_t *samples) {
 	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
+double label_expected_value(int label) {
+    return label > 0 ? 1. : 0.;
+}
+
 void initialize_count(int *cnt, int *parent_cnt) {
     cnt[0] = parent_cnt[0];
     cnt[1] = parent_cnt[1];
 }
 
-node_data_t *initialized_data(glp_tree *t) {
+int is_primary_direction(
+        int branching_variable, 
+        glp_tree *t, 
+        samples_t *samples) {
+    /* glp_printf("primary direction %s=%g\n", 
+               glp_get_col_name(glp_ios_get_prob(t), branching_variable),
+               glp_get_col_prim(glp_ios_get_prob(t), branching_variable)); */
+    return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == 
+            label_expected_value(index_label(branching_variable, samples));
+}
+
+
+node_data_t *initialized_data(glp_tree *t, samples_t *samples) {
     // Find and initialize node data
     int curr_node = glp_ios_curr_node(t);
     node_data_t *data = 
@@ -48,11 +64,17 @@ node_data_t *initialized_data(glp_tree *t) {
     }
     node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
     initialize_count(data->class_cnt, data_parent->class_cnt);
+    
+    initialize_count(data->directional_cnt, data_parent->directional_cnt);
+    int branching_variable = data_parent->branching_variable;
+    data->directional_cnt[index_to_class(branching_variable, samples)] +=
+        is_primary_direction(branching_variable, t, samples);
+    
     return data;
 }
 
 void branch_on(int index, glp_tree *t, samples_t *samples) {
-	node_data_t *data = initialized_data(t);
+	node_data_t *data = initialized_data(t, samples);
 	data->branching_variable = index;
     int class = index_to_class(index, samples);
     data->class_cnt[class]++;
@@ -204,9 +226,10 @@ void branch_even(glp_tree *t, env_t *env) {
     }
     
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, parent);
-    int *class_cnt = data->class_cnt;
-    // int threshold = 1;
-    int threshold = (int) env->samples->dimension;
+    // int *class_cnt = data->class_cnt;
+    int *class_cnt = data->directional_cnt;
+    int threshold = 1;
+    // int threshold = (int) env->samples->dimension;
     // glp_printf("count %i,%i\n", data->class_cnt[0], data->class_cnt[1]);
     if (is_first_deficient(class_cnt[0], class_cnt[1], threshold)) { 
         /* Deficient negative sample set:

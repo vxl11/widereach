@@ -18,13 +18,14 @@ void traverse(double *solution, glp_tree *t, env_t *env) {
         	data = (node_data_t *) glp_ios_node_data(t, curr_node);
 		if (data->initialized) {
 			branching_variable = data->branching_variable;
-			glp_printf("%s (%i)@%i[%i,%i]\t", 
-					glp_get_col_name(p, 
-						branching_variable), 
+			glp_printf("%s (%i)@%i[%i,%i][%i,%i]\t", 
+					glp_get_col_name(p, branching_variable), 
 					branching_variable,
 					data->direction,
                     data->class_cnt[0], 
-                    data->class_cnt[1]
+                    data->class_cnt[1],
+                    data->directional_cnt[0], 
+                    data->directional_cnt[1]
                       );
 			if (NULL != solution) {
 				glp_printf("%g\t", 
