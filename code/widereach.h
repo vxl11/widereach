@@ -358,20 +358,16 @@ typedef struct {
     /** Number of variables that have been fixed to the corresponding
      * integer value in the two classes */
     int directional_cnt[2];
+    /** Node indexes of the two children on the down- and up-branch */
+    int branch[2];
 } node_data_t;
 
 /** Computes and returns a boolean denoting whether the node was branched
- * in the primary direction. 
- * 
-    @pre the node is not the root, and the branching variable is 
-        recorded in the node's parent 
-    @return Boolean indicator as to whether the branching direction is 
-        primary */
+ * in the primary direction. */
 int is_direction_primary(
-    /** Branching variable as in the node's parent */
-    int branching_variable, 
-    glp_tree *, 
-    samples_t *); 
+    /** Index of the current node */
+    int node, 
+    glp_tree *, samples_t *); 
 
 /** Traverse the tree from the current node to the root, while printing
  * node data for all initialized nodes */

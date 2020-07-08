@@ -34,6 +34,11 @@ node_data_t *initialized_data(glp_tree *t, samples_t *samples) {
     node_data_t *data = 
         (node_data_t *) glp_ios_node_data(t, curr_node);
 	data->initialized = 1;
+    int primary = is_direction_primary(curr_node, t, samples);
+    data->primary_direction = primary;
+    int *branch = data->branch;
+    branch[0] = glp_ios_prev_node(t, 0) + 1;
+    branch[1] = branch[0] + 1;
     
     // Copy parent data
     int parent = glp_ios_up_node(t, curr_node);
@@ -46,7 +51,7 @@ node_data_t *initialized_data(glp_tree *t, samples_t *samples) {
     initialize_count(data->directional_cnt, data_parent->directional_cnt);
     int branching_variable = data_parent->branching_variable;
     data->directional_cnt[index_to_class(branching_variable, samples)] +=
-        is_direction_primary(branching_variable, t, samples);
+        primary;
     
     return data;
 }
