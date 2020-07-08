@@ -109,6 +109,10 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(idx_extreme(1, 1, 1, samples), 3);
 	CU_ASSERT_EQUAL(idx_extreme(1, 0, 0, samples), 4);
 	CU_ASSERT_EQUAL(idx_extreme(1, 0, 1, samples), 5);
+    CU_ASSERT_EQUAL(index_to_class(5, samples), 1);
+    CU_ASSERT_EQUAL(index_label(5, samples), 1);
+    CU_ASSERT_EQUAL(index_to_class(8, samples), 0);
+    CU_ASSERT_EQUAL(index_label(8, samples), -1);
 
 	sample_locator_t *loc;
 	loc = locator(5, samples);
@@ -254,8 +258,6 @@ void test_signature() {
     set_signature(&b, 2, 1, 4);
     CU_ASSERT(compare_signature(&a, &b) < 0);
 }
-/* Samples: primary_value, 
- * Indexing: index label */
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
