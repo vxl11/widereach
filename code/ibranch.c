@@ -14,13 +14,6 @@ int wzero(glp_prob *p, int dimension) {
 	return w_cnt;
 }
 
-
-int index_label(int i, samples_t *samples) {
-	int class = index_to_class(i, samples);
-	glp_assert(class >= 0);
-	return samples->label[class];
-}
-
 int class_direction(int class, samples_t *samples) {
 	return samples->label[class] > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
@@ -29,24 +22,9 @@ int class_reverse_direction(int class, samples_t *samples) {
 	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-double label_expected_value(int label) {
-    return label > 0 ? 1. : 0.;
-}
-
 void initialize_count(int *cnt, int *parent_cnt) {
     cnt[0] = parent_cnt[0];
     cnt[1] = parent_cnt[1];
-}
-
-int is_primary_direction(
-        int branching_variable, 
-        glp_tree *t, 
-        samples_t *samples) {
-    /* glp_printf("primary direction %s=%g\n", 
-               glp_get_col_name(glp_ios_get_prob(t), branching_variable),
-               glp_get_col_prim(glp_ios_get_prob(t), branching_variable)); */
-    return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == 
-            label_expected_value(index_label(branching_variable, samples));
 }
 
 
@@ -68,7 +46,7 @@ node_data_t *initialized_data(glp_tree *t, samples_t *samples) {
     initialize_count(data->directional_cnt, data_parent->directional_cnt);
     int branching_variable = data_parent->branching_variable;
     data->directional_cnt[index_to_class(branching_variable, samples)] +=
-        is_primary_direction(branching_variable, t, samples);
+        is_direction_primary(branching_variable, t, samples);
     
     return data;
 }

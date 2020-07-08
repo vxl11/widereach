@@ -43,6 +43,10 @@ samples_t *delete_samples(samples_t *samples) {
 	return samples;
 }
 
+double primary_value(int label) {
+    return label > 0 ? 1. : 0.;
+}
+
 
 double *random_point(size_t dimension) {
 	double* values = CALLOC(dimension, double);

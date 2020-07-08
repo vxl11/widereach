@@ -48,6 +48,11 @@ void print_samples(samples_t *);
  * the first of which labelled -1 and the other +1 */
 int is_binary(const samples_t *);
 
+/** Returns the primary value associated with a label. 
+ * The primary value is defined as 1 for samples with positive labels
+ * and 0 otherwise. */
+double primary_value(int label);
+
 
 /** Return the total number of samples */
 size_t samples_total(const samples_t *);
@@ -297,6 +302,9 @@ int violation_idx(
 	/** Sample collection */
 	samples_t *);
 
+/** Compute the label of the given variable */
+int index_label(int i, samples_t *);
+
 /** Fills in a sparse vector in which all decision variables of the given
  * class are assigned the given coefficient 
  *
@@ -352,6 +360,18 @@ typedef struct {
     int directional_cnt[2];
 } node_data_t;
 
+/** Computes and returns a boolean denoting whether the node was branched
+ * in the primary direction. 
+ * 
+    @pre the node is not the root, and the branching variable is 
+        recorded in the node's parent 
+    @return Boolean indicator as to whether the branching direction is 
+        primary */
+int is_direction_primary(
+    /** Branching variable as in the node's parent */
+    int branching_variable, 
+    glp_tree *, 
+    samples_t *); 
 
 /** Traverse the tree from the current node to the root, while printing
  * node data for all initialized nodes */

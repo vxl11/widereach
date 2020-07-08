@@ -25,6 +25,10 @@ void test_samples() {
 			}
 		}
 	}
+	
+	CU_ASSERT_DOUBLE_EQUAL(primary_value(1), 1., 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(primary_value(0), 0., 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(primary_value(-1), 0., 1e-12);
 
 	double hyperplane[] = { 1., 1., .5};
 	sample_locator_t loc = { 1, 0 };
@@ -250,7 +254,8 @@ void test_signature() {
     set_signature(&b, 2, 1, 4);
     CU_ASSERT(compare_signature(&a, &b) < 0);
 }
-
+/* Samples: primary_value, 
+ * Indexing: index label */
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {

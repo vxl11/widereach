@@ -119,3 +119,9 @@ int index_to_class(int idx, samples_t *samples) {
 	free(loc);
 	return class;
 }
+
+int index_label(int i, samples_t *samples) {
+	int class = index_to_class(i, samples);
+	glp_assert(class >= 0);
+	return samples->label[class];
+}
