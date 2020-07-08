@@ -362,6 +362,11 @@ void traverse(
 typedef struct {
     /** Level of the node in the branch-and-cut tree */
     int level;
+    /** Denote whether the node branched 
+     * in the right direction (1) or not (0), where 
+     the right direction is defined as 1 for positive samples and 
+     0 for negative samples */
+    int primary;
     /** Sequence number of the node: higher sequence numbers were generated
      * later */
     int seqno;
@@ -373,6 +378,9 @@ void set_signature(
     node_signature_t *, 
     /** Level new value */
     int level,
+    /** A boolean value denoting whether the node branched in the right 
+     * direction */
+    int primary,
     /** Sequential number new value */
     int seqno);
 
