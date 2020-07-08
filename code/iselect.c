@@ -26,7 +26,7 @@ void node_to_signature(node_signature_t *signature,
 }
 
 void iselect(glp_tree *t, env_t *env) {
-    // return;
+    return;
     
     int best_node = glp_ios_best_node(t);
     double best_bound = glp_ios_node_bound(t, best_node);

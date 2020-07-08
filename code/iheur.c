@@ -21,6 +21,7 @@ double rounded_positive(
         default:
             solution_rounded = -1.;
 	}
+	// Offset rounding errors
 	if (ceil(solution) == solution && solution > solution_rounded) {
             solution_rounded = solution;
     }
@@ -47,6 +48,7 @@ double rounded_negative(
         default:
             solution_rounded = -1.;
 	}
+	// Offset rounding errors
 	if (ceil(solution) == solution && solution < solution_rounded) {
             solution_rounded = solution;
     }
