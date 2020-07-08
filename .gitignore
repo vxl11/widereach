@@ -53,6 +53,9 @@ dkms.conf
 
 # vi files
 .*.swp
+
+# kate files
+*.kate-swp
  
 
 ## Core latex/pdflatex auxiliary files:
