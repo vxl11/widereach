@@ -343,6 +343,10 @@ typedef struct {
     /** Number of variables that have been fixed to an integer value
      * in the two classes */
     int class_cnt[2];
+    /** A boolean variable to denote whether the node was branched in the
+     * primary direction. The primary direction is defined as +1 for positive
+     * samples and 0 for negative samples */
+    int primary_direction;
     /** Number of variables that have been fixed to the corresponding
      * integer value in the two classes */
     int directional_cnt[2];
@@ -363,8 +367,8 @@ typedef struct {
     /** Level of the node in the branch-and-cut tree */
     int level;
     /** Denote whether the node branched 
-     * in the right direction (1) or not (0), where 
-     the right direction is defined as 1 for positive samples and 
+     * in the primary direction (1) or not (0), where 
+     the primary direction is defined as 1 for positive samples and 
      0 for negative samples */
     int primary;
     /** Sequence number of the node: higher sequence numbers were generated
@@ -378,7 +382,7 @@ void set_signature(
     node_signature_t *, 
     /** Level new value */
     int level,
-    /** A boolean value denoting whether the node branched in the right 
+    /** A boolean value denoting whether the node branched in the primary 
      * direction */
     int primary,
     /** Sequential number new value */
