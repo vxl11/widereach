@@ -7,7 +7,7 @@
 
 int is_node_primary(int node, glp_tree *t, samples_t *samples) {
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
-    glp_printf("(node %i initialized: %i)", node, data->initialized);
+    // glp_printf("(node %i initialized: %i)", node, data->initialized);
     if (data->initialized) {
         return data->primary_direction;
     }
@@ -21,6 +21,7 @@ void node_to_signature(node_signature_t *signature,
     set_signature(signature, 
                   glp_ios_node_level(t, node), 
                   is_node_primary(node, t, samples), 
+                  glp_ios_node_bound(t, node),
                   node);
 }
 
@@ -41,19 +42,19 @@ void iselect(glp_tree *t, env_t *env) {
          node != 0;
          node = glp_ios_next_node(t, node)) {
         double bound = glp_ios_node_bound(t, node);
-        glp_printf("%i(%g,", node, bound);
         if (bound >= best_bound) {
+            glp_printf("%i(%g,", node, bound);
             node_to_signature(&signature_current, node, t, samples);
             glp_printf("%i,%i", 
-                       signature_current.level, signature_current.primary);
+                       signature_current.level, signature_current.primary); 
             if (compare_signature(&best_signature, &signature_current) < 0) {
                 copy_signature(&best_signature, &signature_current);
             }
+            glp_printf(") ");
         }
-        glp_printf(") ");
     }
     glp_printf("\n");
     
-    // glp_printf("(%i)\n", best_signature.seqno);
+    glp_printf("(%i)\n", best_signature.seqno);
     glp_ios_select_node(t, best_signature.seqno);
 }

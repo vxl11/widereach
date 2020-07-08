@@ -133,8 +133,8 @@ int side(
 		product += sample[i] * hyperplane[i];
 	}
 	product -= hyperplane[dimension];
-	double label = (double) samples->label[class];
-	product += -label * precision;
+    // glp_printf("%i,%i -> %.18g\n", loc->class, loc->index, product);
+	product *= (double) samples->label[class];
 
-	return (label > 0.)^(product * label < 0.);
+	return product >= precision ? class : !class;
 }

@@ -387,6 +387,8 @@ typedef struct {
      the primary direction is defined as 1 for positive samples and 
      0 for negative samples */
     int primary;
+    /** Local bound at the current node */
+    double bound;
     /** Sequence number of the node: higher sequence numbers were generated
      * later */
     int seqno;
@@ -401,6 +403,8 @@ void set_signature(
     /** A boolean value denoting whether the node branched in the primary 
      * direction */
     int primary,
+    /** Local bound */
+    double bound,
     /** Sequential number new value */
     int seqno);
 

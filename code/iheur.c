@@ -8,15 +8,23 @@ double rounded_positive(
 		double solution, 
 		double *plane, 
 		env_t *env) {
+    double solution_rounded;
 	params_t *params = env->params;
 	switch (params->iheur_method) {
 		case simple:
-			return floor(solution);
+			solution_rounded = floor(solution);
+            break;
 		case deep:
-			return side(loc, env->samples, plane, 
-					params->epsilon_positive);
+			solution_rounded = side(loc, env->samples, plane, 
+                                    params->epsilon_positive);
+            break;
+        default:
+            solution_rounded = -1.;
 	}
-	return -1.;
+	if (ceil(solution) == solution && solution > solution_rounded) {
+            solution_rounded = solution;
+    }
+    return solution_rounded;
 }
 
 
@@ -26,15 +34,23 @@ double rounded_negative(
 		double solution, 
 		double *plane, 
 		env_t *env) {
+    double solution_rounded;
 	params_t *params = env->params;
 	switch (params->iheur_method) {
 		case simple:
-			return ceil(solution);
+			solution_rounded = ceil(solution);
+            break;
 		case deep:
-			return side(loc, env->samples, plane, 
-					params->epsilon_negative);
+			solution_rounded = side(loc, env->samples, plane, 
+                                    params->epsilon_negative);
+            break;
+        default:
+            solution_rounded = -1.;
 	}
-	return -1.;
+	if (ceil(solution) == solution && solution < solution_rounded) {
+            solution_rounded = solution;
+    }
+    return solution_rounded;
 }
 
 
@@ -91,8 +107,8 @@ double iheur_violation(double X, double Y, params_t *params) {
 void print_solution(int idx_max, double *solution, glp_prob *p) {
 	glp_printf("Solution\n");
 	for (int i = 1; i <= idx_max; i++) {
-		glp_printf("%s:\t%g(%g)\n",
-                                glp_get_col_name(p, i), 
+		glp_printf("%s:\t%g(%.18g)\n",
+                glp_get_col_name(p, i), 
 				solution[i],
 				glp_get_col_prim(p, i));
 	}
@@ -109,7 +125,7 @@ double *hyperplane(glp_prob *p, samples_t *samples) {
 }
 
 void iheur(glp_tree *t, env_t *env) {
-	glp_printf("Chosen node (at iheur)  %i\n", glp_ios_curr_node(t));
+	// glp_printf("Chosen node (at iheur)  %i\n", glp_ios_curr_node(t));
 	// glp_printf("------------- iheur ------\n");
 
 	glp_prob *p = glp_ios_get_prob(t);

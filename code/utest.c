@@ -245,17 +245,18 @@ void test_solution_data() {
 
 void test_signature() {
     node_signature_t a, b;
-    set_signature(&a, 2, 1, 3);
+    set_signature(&a, 2, 1, 2., 3);
     CU_ASSERT_EQUAL(a.level, 2);
     CU_ASSERT_EQUAL(a.primary, 1);
+    CU_ASSERT_DOUBLE_EQUAL(a.bound, 2., 1e-12);
     CU_ASSERT_EQUAL(a.seqno, 3);
     copy_signature(&b, &a);
     CU_ASSERT_EQUAL(compare_signature(&a, &b), 0);
-    set_signature(&b, 1, 1, 3);
+    set_signature(&b, 1, 1, 1., 3);
     CU_ASSERT(compare_signature(&a, &b) > 0);
-    set_signature(&b, 2, 0, 5);
+    set_signature(&b, 2, 0, 1., 5);
     CU_ASSERT(compare_signature(&a, &b) > 0);
-    set_signature(&b, 2, 1, 4);
+    set_signature(&b, 2, 1, 1., 4);
     CU_ASSERT(compare_signature(&a, &b) < 0);
 }
 
