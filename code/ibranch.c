@@ -14,6 +14,22 @@ int wzero(glp_prob *p, int dimension) {
 	return w_cnt;
 }
 
+double integer_infeasibility(glp_tree *t, samples_t *samples) {
+    glp_prob *p = glp_ios_get_prob(t);
+    int idx_min = idx_extreme(0, 1, 0, samples);
+    int idx_max = idx_extreme(0, 0, 1, samples);
+    double infeasibility = 0.;
+    double iptr;
+    for (int i = idx_min; i <= idx_max; i++) {
+        double value = glp_get_col_prim(p, i);
+        if (value > 0.5) {
+            value = 1. - value;
+        }
+        infeasibility += modf(value, &iptr);
+    }
+    return infeasibility;
+}
+
 int class_direction(int class, samples_t *samples) {
 	return samples->label[class] > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
@@ -34,6 +50,7 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
                glp_get_col_name(glp_ios_get_prob(t), index), 
                class, direction); */
 	branch_data->direction = direction;
+    branch_data->ii_sum = integer_infeasibility(t, samples);
     data->initialized = 2;
  
     glp_ios_branch_upon(t, index, direction); 

@@ -210,6 +210,7 @@ void initialize_count(int *cnt, int *parent_cnt) {
     cnt[1] = parent_cnt[1];
 }
 
+
 node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     // Find and initialize node data
     node_data_t *data = 

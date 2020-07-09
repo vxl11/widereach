@@ -255,7 +255,7 @@ int idx(
 	/** 0: return column index, 1: row index */
 	int direction, 
 	/** Sample class */
-        int class, 
+    int class, 
 	/** Sample index within class */
 	size_t sample_index, 
 	/** Sample collection */
@@ -282,7 +282,7 @@ int idx_extreme(
 	/** 0: return column index, 1: row index */
 	int direction, 
 	/** Sample class */
-        int class, 
+    int class, 
 	/** 0: return the minimum index, 1: max */
 	int extreme,
 	/** Sample collection */
@@ -349,6 +349,8 @@ typedef struct {
     /** Number of variables that have been fixed to an integer value
      * in the two classes */
     int class_cnt[2];
+    /** Sum of integer infeasibilities */
+    double ii_sum;
 } branch_data_t;
 
 /** Additional data to be stored in each tree node */
@@ -367,7 +369,7 @@ typedef struct {
     /** Number of variables that have been fixed to the primary
      * integer value in the two classes */
     int directional_cnt[2];
-    /** Node indexes of the two children on the down- and up-branch
+    /* Node indexes of the two children on the down- and up-branch
         (currently unused) */
     // int branch[2];
 } node_data_t;
