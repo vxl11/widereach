@@ -7,18 +7,9 @@
 #define TOLERANCE 1e-10
 
 int is_node_primary(int node, glp_tree *t, samples_t *samples) {
-    node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
+    node_data_t *data = initialize_data(node, t, samples);
     // glp_printf("(node %i initialized: %i)", node, data->initialized);
-    if (data->initialized) {
-        return data->primary_direction;
-    }
-    int parent = glp_ios_up_node(t, node);
-    if (!parent) {
-        return 1;
-    }
-    node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
-    return is_direction_primary(data_parent->branch_data.branching_variable, 
-                                t, samples);
+    return data->primary_direction;
 }
 
 void node_to_signature(node_signature_t *signature, 
@@ -34,7 +25,7 @@ void node_to_signature(node_signature_t *signature,
 
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
-    return;
+    // return;
     
     int best_node = glp_ios_best_node(t);
     double best_bound = glp_ios_node_bound(t, best_node);

@@ -210,26 +210,27 @@ void initialize_count(int *cnt, int *parent_cnt) {
     cnt[1] = parent_cnt[1];
 }
 
-node_data_t *initialize_data(glp_tree *t, samples_t *samples) {
+node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     // Find and initialize node data
-    int curr_node = glp_ios_curr_node(t);
     node_data_t *data = 
-        (node_data_t *) glp_ios_node_data(t, curr_node);
+        (node_data_t *) glp_ios_node_data(t, node);
     if (data->initialized) {
         return data;
     }
     branch_data_t *branch_data = &(data->branch_data);
     
     // Copy parent data
-    int parent = glp_ios_up_node(t, curr_node);
+    int parent = glp_ios_up_node(t, node);
     if (!parent) {
         data->primary_direction = 1;
+        data->initialized = 1;
         return data;
     }
     node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
     branch_data_t *branch_data_parent = &(data_parent->branch_data);
     initialize_count(branch_data->class_cnt, branch_data_parent->class_cnt);
     
+    // Update counts
     initialize_count(data->directional_cnt, data_parent->directional_cnt);
     int branching_variable = branch_data_parent->branching_variable;
     int primary = is_direction_primary(branching_variable, t, samples);

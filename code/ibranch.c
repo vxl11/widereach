@@ -23,7 +23,7 @@ int class_reverse_direction(int class, samples_t *samples) {
 }
 
 void branch_on(int index, glp_tree *t, samples_t *samples) {
-	node_data_t *data = initialize_data(t, samples);
+	node_data_t *data = initialize_data(glp_ios_curr_node(t), t, samples);
     branch_data_t *branch_data = &(data->branch_data);
 	branch_data->branching_variable = index;
     int class = index_to_class(index, samples);
