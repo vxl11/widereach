@@ -34,6 +34,7 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
                glp_get_col_name(glp_ios_get_prob(t), index), 
                class, direction); */
 	branch_data->direction = direction;
+    data->initialized = 2;
  
     glp_ios_branch_upon(t, index, direction); 
 }

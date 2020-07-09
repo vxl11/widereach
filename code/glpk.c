@@ -218,8 +218,6 @@ node_data_t *initialize_data(glp_tree *t, samples_t *samples) {
     if (data->initialized) {
         return data;
     }
-    
-	data->initialized = 1;
     branch_data_t *branch_data = &(data->branch_data);
     
     // Copy parent data
@@ -238,6 +236,7 @@ node_data_t *initialize_data(glp_tree *t, samples_t *samples) {
     data->primary_direction = primary;
     data->directional_cnt[index_to_class(branching_variable, samples)] +=
         primary;
-    
+        
+    data->initialized = 1;
     return data;
 }
