@@ -11,7 +11,12 @@ int is_node_primary(int node, glp_tree *t, samples_t *samples) {
     if (data->initialized) {
         return data->primary_direction;
     }
-    return is_direction_primary(node, t, samples);
+    int parent = glp_ios_up_node(t, curr_node);
+    if (!parent) {
+        return 1;
+    }
+    node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
+    return is_direction_primary(data_parent->branching_variable, t, samples);
 }
 
 void node_to_signature(node_signature_t *signature, 
