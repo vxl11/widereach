@@ -340,27 +340,33 @@ glp_iocp *iocp(const env_t *);
 glp_prob *milp(const env_t *);
 
 
-/** Additional data to be stored in each tree node */
+/** Data recording the branching decision */
 typedef struct {
-	/** Flag denoting whether the node data has been initialized */
-	int initialized;
-	/** Branching variable chosen at this node */
+    /** Branching variable chosen at this node */
 	int branching_variable;
 	/** Recommended direction for the branching variable */
 	int direction;
     /** Number of variables that have been fixed to an integer value
      * in the two classes */
     int class_cnt[2];
+} branch_data_t;
+
+/** Additional data to be stored in each tree node */
+typedef struct {
+	/** Flag denoting whether the node data has been initialized */
+	int initialized;
+    /** Branching data */
+    branch_data_t branch_data;
     /** A boolean variable to denote whether the node was branched in the
      * primary direction. The primary direction is defined as +1 for positive
      * samples and 0 for negative samples */
     int primary_direction;
-    /** Number of variables that have been fixed to the corresponding
+    /** Number of variables that have been fixed to the primary
      * integer value in the two classes */
     int directional_cnt[2];
     /** Node indexes of the two children on the down- and up-branch
         (currently unused) */
-    int branch[2];
+    // int branch[2];
 } node_data_t;
 
 /** Computes and returns a boolean denoting whether the node was branched
