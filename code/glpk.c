@@ -196,13 +196,10 @@ glp_prob *milp(const env_t *env) {
 }
 
 
-int is_direction_primary(int node, glp_tree *t, samples_t *samples) {
-     int parent = glp_ios_up_node(t, node);
-     if (!parent) {
-         return 1;
-     }
-     node_data_t *parent_data = (node_data_t *) glp_ios_node_data(t, parent);
-     return node ==
-        parent_data->branch[index_to_class(parent_data->branching_variable, 
-                                           samples)];
+int is_direction_primary(
+        int branching_variable, 
+        glp_tree *t, 
+        samples_t *samples) {
+    glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == 
+        primary_value(index_label(branching_variable, samples));
 }

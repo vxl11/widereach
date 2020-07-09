@@ -358,7 +358,8 @@ typedef struct {
     /** Number of variables that have been fixed to the corresponding
      * integer value in the two classes */
     int directional_cnt[2];
-    /** Node indexes of the two children on the down- and up-branch */
+    /** Node indexes of the two children on the down- and up-branch
+        (currently unused) */
     int branch[2];
 } node_data_t;
 
