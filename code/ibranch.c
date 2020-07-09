@@ -21,11 +21,11 @@ double integer_infeasibility(glp_tree *t, samples_t *samples) {
     double infeasibility = 0.;
     double iptr;
     for (int i = idx_min; i <= idx_max; i++) {
-        double value = glp_get_col_prim(p, i);
+        double value = modf(glp_get_col_prim(p, i), &iptr);
         if (value > 0.5) {
             value = 1. - value;
         }
-        infeasibility += modf(value, &iptr);
+        infeasibility += value;
     }
     return infeasibility;
 }
