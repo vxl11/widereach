@@ -8,6 +8,10 @@ double rounded_positive(
 		double solution, 
 		double *plane, 
 		env_t *env) {
+    if (1. == solution) {
+        return solution;
+    }
+    
     double solution_rounded;
 	params_t *params = env->params;
 	switch (params->iheur_method) {
@@ -21,10 +25,6 @@ double rounded_positive(
         default:
             solution_rounded = -1.;
 	}
-	// Offset rounding errors
-	if (ceil(solution) == solution && solution > solution_rounded) {
-            solution_rounded = solution;
-    }
     return solution_rounded;
 }
 
@@ -35,6 +35,10 @@ double rounded_negative(
 		double solution, 
 		double *plane, 
 		env_t *env) {
+    if (0. == solution) {
+        return solution;
+    }
+    
     double solution_rounded;
 	params_t *params = env->params;
 	switch (params->iheur_method) {
