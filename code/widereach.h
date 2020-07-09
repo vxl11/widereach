@@ -369,6 +369,9 @@ typedef struct {
     // int branch[2];
 } node_data_t;
 
+/** Initialize and return the node data at the current node */
+node_data_t *initialize_data(glp_tree *, samples_t *);
+
 /** Computes and returns a boolean denoting whether the node was branched
  * in the primary direction. */
 int is_direction_primary(
