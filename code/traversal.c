@@ -18,7 +18,7 @@ void traverse(double *solution, glp_tree *t, env_t *env) {
 			curr_node = glp_ios_up_node(t, curr_node)) {
         data = (node_data_t *) glp_ios_node_data(t, curr_node);
         branch_data = &(data->branch_data);
-		if (data->initialized >= 2) {
+		if (data->initialized && branch_data->initialized) {
 			branching_variable = data->branch_data.branching_variable;
 			glp_printf("%s (%i)@%i[%i,%i][%i,%i]\t", 
 					glp_get_col_name(p, branching_variable), 

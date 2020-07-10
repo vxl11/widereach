@@ -342,6 +342,8 @@ glp_prob *milp(const env_t *);
 
 /** Data recording the branching decision */
 typedef struct {
+    /** Flag denoting whether the branch data has been initialized */
+    int initialized;
     /** Branching variable chosen at this node */
 	int branching_variable;
 	/** Recommended direction for the branching variable */
@@ -362,10 +364,8 @@ typedef struct {
 
 /** Additional data to be stored in each tree node */
 typedef struct {
-	/** Flag denoting whether the node data has been initialized:
-     - 0 not initialized
-     - 1 initialized but branch data is in the default state
-     - 2 initialized, including branch data */
+	/** Flag denoting whether the top level node data has been initialized
+     * (branch data has only been initialized to the default state */
 	int initialized;
     /** Branching data */
     branch_data_t branch_data;

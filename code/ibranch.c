@@ -63,8 +63,7 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
                                                     samples)] +=
                 primary;
     }
-    
-    data->initialized = 2;
+    branch_data->initialized = 1;
  
     glp_ios_branch_upon(t, index, direction); 
 }
