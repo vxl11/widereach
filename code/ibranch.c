@@ -201,14 +201,13 @@ int is_first_deficient(int a, int b, int threshold) {
 }
 
 void branch_even(glp_tree *t, env_t *env) {
-    int parent = glp_ios_up_node(t, glp_ios_curr_node(t));
-    if (!parent) {
+    node_data_t *data = parent_data(glp_ios_curr_node(t), t);
+    if (NULL == data) {
         // At the root, branch on a random node
         random_flat(t, env);
         return;
     }
-    
-    node_data_t *data = (node_data_t *) glp_ios_node_data(t, parent);
+
     // int *class_cnt = data->class_cnt;
     int *class_cnt = data->branch_data.directional_cnt;
     int threshold = 1;
