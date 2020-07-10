@@ -57,7 +57,7 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
     if (data_parent != NULL) {
         branch_data_t branch_data_parent = data_parent->branch_data;
         int branching_variable = branch_data_parent.branching_variable;
-        int primary = is_direction_primary(branching_variable, t, samples);
+        int primary = is_direction_primary(curr_node, t, samples);
         branch_data->primary_direction = primary;
         branch_data->directional_cnt[index_to_class(branching_variable, 
                                                     samples)] +=

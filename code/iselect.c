@@ -69,7 +69,6 @@ void iselect(glp_tree *t, env_t *env) {
     for (int node = glp_ios_next_node(t, 0);
          node != 0;
          node = glp_ios_next_node(t, node)) {
-        update_parent(node, t);
         double bound = glp_ios_node_bound(t, node);
         if (bound >= best_bound) {
             // glp_printf("%i(%g,", node, bound);

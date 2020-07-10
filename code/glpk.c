@@ -196,13 +196,23 @@ glp_prob *milp(const env_t *env) {
 }
 
 
-int is_direction_primary(
-        int branching_variable, 
-        glp_tree *t, 
-        samples_t *samples) {
-    // TODO case when parent knows its children
-    return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == 
-        primary_value(index_label(branching_variable, samples));
+int is_direction_primary(int node, glp_tree *t, samples_t *samples) {
+    node_data_t *data_parent = parent_data(node, t);
+    if (NULL == data_parent) {
+        return -1;
+    }
+        
+    int branching_variable = data_parent->branch_data.branching_variable;
+    int primary = primary_value(index_label(branching_variable, samples));
+    
+    // First, attempt to find the answer from the child data
+    int direction = child_direction(&(data_parent->child_data), node);
+    if (direction > 0) {
+        return direction == primary;
+    }
+    
+    // Otherwise, consult the solution to the relaxation
+    return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == primary;
 }
 
 

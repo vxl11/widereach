@@ -404,7 +404,7 @@ node_data_t *initialize_data(int node, glp_tree *, samples_t *);
 node_data_t *parent_data(int node, glp_tree *);
 
 /** Computes and returns a boolean denoting whether the node was branched
- * in the primary direction. */
+ * in the primary direction. If unknown, return -1. */
 int is_direction_primary(
     /** Index of the current node */
     int node, 
