@@ -33,6 +33,15 @@ void node_to_signature(node_signature_t *signature,
                   node);
 }
 
+void update_parent(int node, glp_tree *t) {
+    node_data_t data = parent_data(node, t);
+    if (data != NULL) {
+        add_child(&(data->child_data), node);
+    }
+}
+    
+    
+
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
     // return;

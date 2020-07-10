@@ -371,6 +371,9 @@ typedef struct {
     int child[2];
 } child_data_t;
 
+/** Add the given node as a child */
+int add_child(child_data_t *, int node);
+
 /** Additional data to be stored in each tree node */
 typedef struct {
 	/** Flag denoting whether the top level node data has been initialized

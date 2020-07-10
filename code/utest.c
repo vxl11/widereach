@@ -264,6 +264,18 @@ void test_signature() {
     CU_ASSERT(compare_signature(&a, &b) < 0); */
 }
 
+void test_children() {
+    child_data_t data;
+    data.child_cnt = 0;
+    CU_ASSERT_EQUAL(add_child(&data, 2), 1);
+    CU_ASSERT_EQUAL(add_child(&data, 2), -1);
+    CU_ASSERT_EQUAL(data.child_cnt, 1);
+    CU_ASSERT_EQUAL(data.child[0], 2);
+    CU_ASSERT_EQUAL(add_child(&data, 1), 1);
+    CU_ASSERT_EQUAL(data.child[0], 1);
+    CU_ASSERT_EQUAL(data.child[1], 2);
+}
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -300,6 +312,10 @@ int main() {
     // Node signature
 	CU_pSuite signature = CU_add_suite("node signature", NULL, NULL);
 	CU_add_test(signature, "node signature", test_signature);
+    
+    // Children
+	CU_pSuite children = CU_add_suite("children", NULL, NULL);
+	CU_add_test(children, "children", test_children);
 
 	// Run tests
 	CU_basic_run_tests();
