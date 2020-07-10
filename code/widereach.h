@@ -374,6 +374,13 @@ typedef struct {
 /** Add the given node as a child */
 int add_child(child_data_t *, int node);
 
+/** Return the direction of the given node as a child of the current one:
+ * - 0: down branch
+ * - 1: up branch
+ * - -1: the direction cannot be determined (for example, the node is not a 
+ * child, or less than two children are on record for this node) */
+int child_direction(child_data_t *, int node);
+
 /** Additional data to be stored in each tree node */
 typedef struct {
 	/** Flag denoting whether the top level node data has been initialized

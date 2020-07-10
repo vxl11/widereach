@@ -200,6 +200,7 @@ int is_direction_primary(
         int branching_variable, 
         glp_tree *t, 
         samples_t *samples) {
+    // TODO case when parent knows its children
     return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == 
         primary_value(index_label(branching_variable, samples));
 }

@@ -24,3 +24,16 @@ int add_child(child_data_t *child_data, int node) {
     sort_children(child_data);
     return 1;
 }
+
+int child_direction(child_data_t *child_data, int node) {
+    if (child_data->child_cnt < 2) {
+        return -1;
+    }
+    int *child = child_data->child;
+    for (int i =0; i< 2; i++) {
+        if (child[i] == node) {
+            return i;
+        }
+    }
+    return -1;
+}
