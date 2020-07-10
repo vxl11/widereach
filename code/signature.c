@@ -7,15 +7,22 @@ void set_signature(
         int level, 
         int primary,
         double bound,
+        double ii_sum,
         int seqno) {
     signature->level = level;
     signature->primary = primary;
     signature->bound = bound;
+    signature->ii_sum = ii_sum;
     signature->seqno = seqno;
 }
 
 void copy_signature(node_signature_t *dest, const node_signature_t *src) {
-    set_signature(dest, src->level, src->primary, src->bound, src->seqno);
+    set_signature(dest, 
+                  src->level, 
+                  src->primary, 
+                  src->bound, 
+                  src->ii_sum, 
+                  src->seqno);
 }
 
 int compare_signature(const node_signature_t *a, const node_signature_t *b) {

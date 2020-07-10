@@ -404,6 +404,8 @@ typedef struct {
     int primary;
     /** Local bound at the current node */
     double bound;
+    /** Sum of integer infeasibilities in the parent's node */
+    double ii_sum;
     /** Sequence number of the node: higher sequence numbers were generated
      * later */
     int seqno;
@@ -420,6 +422,8 @@ void set_signature(
     int primary,
     /** Local bound */
     double bound,
+    /** Parent's sum of integer infeasibilities */
+    double ii_sum,
     /** Sequential number new value */
     int seqno);
 

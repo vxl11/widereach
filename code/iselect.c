@@ -20,6 +20,7 @@ void node_to_signature(node_signature_t *signature,
                   glp_ios_node_level(t, node), 
                   is_node_primary(node, t, samples), 
                   glp_ios_node_bound(t, node),
+                  0., // TODO
                   node);
 }
 
