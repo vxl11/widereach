@@ -12,6 +12,14 @@ int is_node_primary(int node, glp_tree *t, samples_t *samples) {
     return data->primary_direction;
 }
 
+double ii_sum_parent(int node, glp_tree *t) {
+    glp_assert(node);
+    node_data_t *data = parent_data(node, t);
+    return data != NULL && data->initialized >= 2 ? 
+        data->branch_data.ii_sum : -1.;
+}
+    
+
 void node_to_signature(node_signature_t *signature, 
                        int node, 
                        glp_tree *t, 
@@ -20,7 +28,7 @@ void node_to_signature(node_signature_t *signature,
                   glp_ios_node_level(t, node), 
                   is_node_primary(node, t, samples), 
                   glp_ios_node_bound(t, node),
-                  0., // TODO
+                  ii_sum_parent(node, t),
                   node);
 }
 

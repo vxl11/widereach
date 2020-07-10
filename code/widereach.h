@@ -377,6 +377,12 @@ typedef struct {
 /** Initialize and return the node data at the given node. */
 node_data_t *initialize_data(int node, glp_tree *, samples_t *);
 
+/** Return the node data of the given node, or 
+ * NULL if the node is the root 
+ 
+    @pre node is a valid non-zero node identifier */
+node_data_t *parent_data(int node, glp_tree *);
+
 /** Computes and returns a boolean denoting whether the node was branched
  * in the primary direction. */
 int is_direction_primary(

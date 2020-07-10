@@ -242,3 +242,9 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     data->initialized = 1;
     return data;
 }
+
+node_data_t *parent_data(int node, glp_tree *t) {
+    glp_assert(node);
+    int parent = glp_ios_up_node(t, node);
+    return 0 == parent ? NULL : (node_data_t *) glp_ios_node_data(t, parent);
+}
