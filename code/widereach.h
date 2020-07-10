@@ -362,6 +362,15 @@ typedef struct {
     double ii_sum;
 } branch_data_t;
 
+/** Data recoding the identities of the children of the current node */
+typedef struct {
+    /** Counter of how many children are known */
+    int child_cnt;
+    /** Node identifiers of the children. If both elements are present,
+     * the first denotes the downbrach, the second the upbranch */
+    int child[2];
+} child_data_t;
+
 /** Additional data to be stored in each tree node */
 typedef struct {
 	/** Flag denoting whether the top level node data has been initialized
@@ -369,9 +378,8 @@ typedef struct {
 	int initialized;
     /** Branching data */
     branch_data_t branch_data;
-    /* Node indexes of the two children on the down- and up-branch
-        (currently unused) */
-    // int branch[2];
+    /** Node indexes of the two children on the down- and up-branch */
+    child_data_t child_data;
 } node_data_t;
 
 /** Initialize and return the node data, except branch data,
