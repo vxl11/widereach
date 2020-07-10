@@ -211,6 +211,13 @@ void initialize_count(int *cnt, int *parent_cnt) {
 }
 
 
+node_data_t *parent_data(int node, glp_tree *t) {
+    glp_assert(node);
+    int parent = glp_ios_up_node(t, node);
+    return 0 == parent ? NULL : (node_data_t *) glp_ios_node_data(t, parent);
+}
+
+
 node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     // Find and initialize node data
     node_data_t *data = 
@@ -221,13 +228,13 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     branch_data_t *branch_data = &(data->branch_data);
     
     // Copy parent data
-    int parent = glp_ios_up_node(t, node);
-    if (!parent) {
+    node_data_t *data_parent = parent_data(node, t);
+    if (NULL == data_parent) {
         data->primary_direction = 1;
         data->initialized = 1;
         return data;
     }
-    node_data_t *data_parent = (node_data_t *) glp_ios_node_data(t, parent);
+    
     branch_data_t *branch_data_parent = &(data_parent->branch_data);
     initialize_count(branch_data->class_cnt, branch_data_parent->class_cnt);
     
@@ -241,10 +248,4 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
         
     data->initialized = 1;
     return data;
-}
-
-node_data_t *parent_data(int node, glp_tree *t) {
-    glp_assert(node);
-    int parent = glp_ios_up_node(t, node);
-    return 0 == parent ? NULL : (node_data_t *) glp_ios_node_data(t, parent);
 }

@@ -65,5 +65,5 @@ void iselect(glp_tree *t, env_t *env) {
     // glp_printf("\n");
     
     // glp_printf("(%i)\n", best_signature.seqno);
-    glp_ios_select_node(t, best_signature.seqno);
+    // glp_ios_select_node(t, best_signature.seqno);
 }
