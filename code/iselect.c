@@ -34,7 +34,7 @@ void node_to_signature(node_signature_t *signature,
 }
 
 void update_parent(int node, glp_tree *t) {
-    node_data_t data = parent_data(node, t);
+    node_data_t *data = parent_data(node, t);
     if (data != NULL) {
         add_child(&(data->child_data), node);
     }
@@ -60,6 +60,7 @@ void iselect(glp_tree *t, env_t *env) {
     for (int node = glp_ios_next_node(t, 0);
          node != 0;
          node = glp_ios_next_node(t, node)) {
+        update_parent(node, t);
         double bound = glp_ios_node_bound(t, node);
         if (bound >= best_bound) {
             // glp_printf("%i(%g,", node, bound);
