@@ -45,7 +45,6 @@ void iselect(glp_tree *t, env_t *env) {
     node_signature_t best_signature;
     samples_t *samples = env->samples;
     node_to_signature(&best_signature, best_node, t, samples); 
-    return;
     
     // glp_printf("------- iselect ----------- \n");
     node_signature_t signature_current;

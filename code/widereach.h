@@ -364,7 +364,7 @@ typedef struct {
 typedef struct {
 	/** Flag denoting whether the node data has been initialized:
      - 0 not initialized
-     - 1 initialized except branch data
+     - 1 initialized but branch data is in the default state
      - 2 initialized, including branch data */
 	int initialized;
     /** Branching data */

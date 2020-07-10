@@ -50,6 +50,9 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
 	branch_data->direction = direction;
+    branch_data->ii_sum = integer_infeasibility(t, samples);
+    
+    // Update branch data that depend on the parent's
     node_data_t *data_parent = parent_data(curr_node, t);
     if (data_parent != NULL) {
         branch_data_t branch_data_parent = data_parent->branch_data;
@@ -60,7 +63,7 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
                                                     samples)] +=
                 primary;
     }
-    branch_data->ii_sum = integer_infeasibility(t, samples);
+    
     data->initialized = 2;
  
     glp_ios_branch_upon(t, index, direction); 
