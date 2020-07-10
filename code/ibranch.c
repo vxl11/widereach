@@ -51,17 +51,16 @@ void branch_on(int index, glp_tree *t, samples_t *samples) {
     // int direction = class_reverse_direction(class, samples);
 	branch_data->direction = direction;
     branch_data->ii_sum = integer_infeasibility(t, samples);
+    int primary = is_direction_primary(curr_node, t, samples);
+    branch_data->primary_direction = primary;
     
     // Update branch data that depend on the parent's
     node_data_t *data_parent = parent_data(curr_node, t);
     if (data_parent != NULL) {
-        branch_data_t branch_data_parent = data_parent->branch_data;
-        int branching_variable = branch_data_parent.branching_variable;
-        int primary = is_direction_primary(curr_node, t, samples);
-        branch_data->primary_direction = primary;
-        branch_data->directional_cnt[index_to_class(branching_variable, 
-                                                    samples)] +=
-                primary;
+        int branching_class = 
+            index_to_class(data_parent->branch_data.branching_variable, 
+                           samples);
+        branch_data->directional_cnt[branching_class] += primary;
     }
     branch_data->initialized = 1;
  
