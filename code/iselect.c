@@ -39,12 +39,21 @@ void update_parent(int node, glp_tree *t) {
         add_child(&(data->child_data), node);
     }
 }
+
+void update_active_nodes(glp_tree *t) {
+    for (int node = glp_ios_next_node(t, 0);
+         node != 0;
+         node = glp_ios_next_node(t, node)) {
+        update_parent(node, t);
+    }
+}
     
     
 
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
     // return;
+    update_active_nodes(t);
     
     int best_node = glp_ios_best_node(t);
     double best_bound = glp_ios_node_bound(t, best_node);
