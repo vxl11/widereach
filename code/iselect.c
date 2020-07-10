@@ -7,9 +7,10 @@
 #define TOLERANCE 1e-10
 
 int is_node_primary(int node, glp_tree *t, samples_t *samples) {
+    // node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
     node_data_t *data = initialize_data(node, t, samples);
     // glp_printf("(node %i initialized: %i)", node, data->initialized);
-    return data->primary_direction;
+    return data->branch_data.primary_direction;
 }
 
 double ii_sum_parent(int node, glp_tree *t) {
@@ -43,7 +44,8 @@ void iselect(glp_tree *t, env_t *env) {
     best_bound = best_bound - TOLERANCE * (1. + fabs(best_bound));
     node_signature_t best_signature;
     samples_t *samples = env->samples;
-    node_to_signature(&best_signature, best_node, t, samples);
+    node_to_signature(&best_signature, best_node, t, samples); 
+    return;
     
     // glp_printf("------- iselect ----------- \n");
     node_signature_t signature_current;

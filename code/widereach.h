@@ -349,6 +349,13 @@ typedef struct {
     /** Number of variables that have been fixed to an integer value
      * in the two classes */
     int class_cnt[2];
+    /** A boolean variable to denote whether the node was branched in the
+     * primary direction. The primary direction is defined as +1 for positive
+     * samples and 0 for negative samples */
+    int primary_direction;
+    /** Number of variables that have been fixed to the primary
+     * integer value in the two classes */
+    int directional_cnt[2];
     /** Sum of integer infeasibilities */
     double ii_sum;
 } branch_data_t;
@@ -362,19 +369,14 @@ typedef struct {
 	int initialized;
     /** Branching data */
     branch_data_t branch_data;
-    /** A boolean variable to denote whether the node was branched in the
-     * primary direction. The primary direction is defined as +1 for positive
-     * samples and 0 for negative samples */
-    int primary_direction;
-    /** Number of variables that have been fixed to the primary
-     * integer value in the two classes */
-    int directional_cnt[2];
     /* Node indexes of the two children on the down- and up-branch
         (currently unused) */
     // int branch[2];
 } node_data_t;
 
-/** Initialize and return the node data at the given node. */
+/** Initialize and return the node data, except branch data,
+ * at the given node. If initialize_data has already been invoked
+ for this node, it does nothing. */
 node_data_t *initialize_data(int node, glp_tree *, samples_t *);
 
 /** Return the node data of the given node, or 

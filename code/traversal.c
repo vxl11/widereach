@@ -26,8 +26,8 @@ void traverse(double *solution, glp_tree *t, env_t *env) {
 					branch_data->direction,
                     branch_data->class_cnt[0], 
                     branch_data->class_cnt[1],
-                    data->directional_cnt[0], 
-                    data->directional_cnt[1]);
+                    branch_data->directional_cnt[0], 
+                    branch_data->directional_cnt[1]);
 			if (NULL != solution) {
 				glp_printf("%g\t", 
 						solution[branching_variable]);

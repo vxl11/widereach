@@ -39,17 +39,27 @@ int class_reverse_direction(int class, samples_t *samples) {
 }
 
 void branch_on(int index, glp_tree *t, samples_t *samples) {
-	node_data_t *data = initialize_data(glp_ios_curr_node(t), t, samples);
+    // Update branch data
+    int curr_node = glp_ios_curr_node(t);
+	node_data_t *data = initialize_data(curr_node, t, samples);
     branch_data_t *branch_data = &(data->branch_data);
+    
 	branch_data->branching_variable = index;
     int class = index_to_class(index, samples);
     branch_data->class_cnt[class]++;
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
-    /* glp_printf("%s of %i to %i\n", 
-               glp_get_col_name(glp_ios_get_prob(t), index), 
-               class, direction); */
 	branch_data->direction = direction;
+    node_data_t *data_parent = parent_data(curr_node, t);
+    if (data_parent != NULL) {
+        branch_data_t branch_data_parent = data_parent->branch_data;
+        int branching_variable = branch_data_parent.branching_variable;
+        int primary = is_direction_primary(branching_variable, t, samples);
+        branch_data->primary_direction = primary;
+        branch_data->directional_cnt[index_to_class(branching_variable, 
+                                                    samples)] +=
+                primary;
+    }
     branch_data->ii_sum = integer_infeasibility(t, samples);
     data->initialized = 2;
  
@@ -199,7 +209,7 @@ void branch_even(glp_tree *t, env_t *env) {
     
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, parent);
     // int *class_cnt = data->class_cnt;
-    int *class_cnt = data->directional_cnt;
+    int *class_cnt = data->branch_data.directional_cnt;
     int threshold = 1;
     // int threshold = (int) env->samples->dimension;
     // glp_printf("count %i,%i\n", data->class_cnt[0], data->class_cnt[1]);

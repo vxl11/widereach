@@ -220,8 +220,7 @@ node_data_t *parent_data(int node, glp_tree *t) {
 
 node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     // Find and initialize node data
-    node_data_t *data = 
-        (node_data_t *) glp_ios_node_data(t, node);
+    node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
     if (data->initialized) {
         return data;
     }
@@ -230,21 +229,18 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     // Copy parent data
     node_data_t *data_parent = parent_data(node, t);
     if (NULL == data_parent) {
-        data->primary_direction = 1;
+        branch_data->primary_direction = 1;
         data->initialized = 1;
         return data;
     }
-    
+
     branch_data_t *branch_data_parent = &(data_parent->branch_data);
-    initialize_count(branch_data->class_cnt, branch_data_parent->class_cnt);
-    
-    // Update counts
-    initialize_count(data->directional_cnt, data_parent->directional_cnt);
-    int branching_variable = branch_data_parent->branching_variable;
-    int primary = is_direction_primary(branching_variable, t, samples);
-    data->primary_direction = primary;
-    data->directional_cnt[index_to_class(branching_variable, samples)] +=
-        primary;
+    /* Initialize data counts to the default value,
+        to be revised when the branching decision takes place */
+    initialize_count(branch_data->class_cnt, 
+                     branch_data_parent->class_cnt);
+    initialize_count(branch_data->directional_cnt, 
+                     branch_data_parent->directional_cnt);
         
     data->initialized = 1;
     return data;
