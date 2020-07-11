@@ -65,6 +65,10 @@ void branch_on(int index, glp_tree *t, env_t *env) {
         branch_data->directional_cnt[branching_class] += primary;
     }
     branch_data->initialized = 1;
+    
+    // Update last branching node
+    env->solution_data->branching_node = curr_node;
+    glp_printf("branch from %i\n", curr_node);
  
     glp_ios_branch_upon(t, index, direction); 
 }
