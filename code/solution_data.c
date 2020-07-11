@@ -5,6 +5,7 @@ solution_data_t *solution_data_init(size_t size) {
 	solution_data_t *data = CALLOC(1, solution_data_t);
 	data->rank_significant = 0;
 	data->rank = CALLOC(size, int);
+    data->branching_node = 0;
 	return data;
 }
 

@@ -9,7 +9,7 @@
 double ii_sum_parent(int node, glp_tree *t) {
     glp_assert(node);
     node_data_t *data = parent_data(node, t);
-    return data != NULL && data->initialized >= 2 ? 
+    return data != NULL && data->branch_data.initialized ? 
         data->branch_data.ii_sum : -1.;
 }
     
@@ -50,9 +50,9 @@ void iselect(glp_tree *t, env_t *env) {
     
     int best_node = glp_ios_best_node(t);
     double best_bound = glp_ios_node_bound(t, best_node);
-    // glp_printf("Best node %i(%g)\t", best_node, best_bound);
+    glp_printf("Best node %i(%g)\t", best_node, best_bound);
     // Bound similar to glpk-4.65 glpios12.c:best_node
-    best_bound = best_bound - TOLERANCE * (1. + fabs(best_bound));
+    best_bound -= TOLERANCE * (1. + fabs(best_bound));
     node_signature_t best_signature;
     samples_t *samples = env->samples;
     node_to_signature(&best_signature, best_node, t, samples); 
@@ -63,18 +63,19 @@ void iselect(glp_tree *t, env_t *env) {
          node != 0;
          node = glp_ios_next_node(t, node)) {
         double bound = glp_ios_node_bound(t, node);
+        glp_printf("%i(%g", node, bound);
         if (bound >= best_bound) {
-            // glp_printf("%i(%g,", node, bound);
             node_to_signature(&signature_current, node, t, samples);
+            glp_printf(",%g", signature_current.ii_sum);
             // glp_printf("%i,%i", 
-               //        signature_current.level, signature_current.primary); 
+                       //signature_current.level, signature_current.primary); 
             if (compare_signature(&best_signature, &signature_current) < 0) {
                 copy_signature(&best_signature, &signature_current);
             }
-            // glp_printf(") ");
         }
+        glp_printf(") ");
     }
-    // glp_printf("\n");
+    glp_printf("\n");
     
     // glp_printf("(%i)\n", best_signature.seqno);
     // glp_ios_select_node(t, best_signature.seqno);

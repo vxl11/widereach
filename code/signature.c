@@ -27,6 +27,9 @@ void copy_signature(node_signature_t *dest, const node_signature_t *src) {
 
 int compare_signature(const node_signature_t *a, const node_signature_t *b) {
     int difference;
+    difference = (int) round(a->ii_sum - b->ii_sum);
+    return difference;
+    
     difference = a->primary - b->primary;
     // difference = b->primary - a->primary;
     if (difference) {

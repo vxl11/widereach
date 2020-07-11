@@ -198,6 +198,8 @@ typedef struct {
 	size_t rank_significant;
 	/** Sorted list of indexes in order of branching priority */
 	int *rank;
+    /** Last node that branched */
+    int branching_node;
 } solution_data_t;
 
 
