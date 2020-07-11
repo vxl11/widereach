@@ -12,18 +12,29 @@ double ii_sum_parent(int node, glp_tree *t) {
     return data != NULL && data->branch_data.initialized ? 
         data->branch_data.ii_sum : -1.;
 }
+
+int direction_to_class(int direction) {
+    if (GLP_DN_BRNCH == direction) {
+        return 0;
+    } else if (GLP_UP_BRNCH == direction) {
+        return 1;
+    }
+    return -1;
+}
     
 
 void node_to_signature(node_signature_t *signature, 
                        int node, 
                        glp_tree *t, 
-                       samples_t *samples) {
+                       env_t *env) {
+    samples_t *samples = env->samples;
     set_signature(signature, 
                   glp_ios_node_level(t, node), 
                   is_direction_primary(node, 0, t, samples), 
                   glp_ios_node_bound(t, node),
                   ii_sum_parent(node, t),
-                  node);
+                  node,
+                  0);
 }
 
 void update_parent(int node, glp_tree *t) {
@@ -54,8 +65,7 @@ void iselect(glp_tree *t, env_t *env) {
     // Bound similar to glpk-4.65 glpios12.c:best_node
     best_bound -= TOLERANCE * (1. + fabs(best_bound));
     node_signature_t best_signature;
-    samples_t *samples = env->samples;
-    node_to_signature(&best_signature, best_node, t, samples); 
+    node_to_signature(&best_signature, best_node, t, env); 
     
     // glp_printf("------- iselect ----------- \n");
     node_signature_t signature_current;
@@ -65,7 +75,7 @@ void iselect(glp_tree *t, env_t *env) {
         double bound = glp_ios_node_bound(t, node);
         glp_printf("%i(%g", node, bound);
         if (bound >= best_bound) {
-            node_to_signature(&signature_current, node, t, samples);
+            node_to_signature(&signature_current, node, t, env);
             glp_printf(",%g", signature_current.ii_sum);
             // glp_printf("%i,%i", 
                        //signature_current.level, signature_current.primary); 

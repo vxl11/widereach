@@ -8,12 +8,14 @@ void set_signature(
         int primary,
         double bound,
         double ii_sum,
-        int seqno) {
+        int seqno,
+        int last_primary) {
     signature->level = level;
     signature->primary = primary;
     signature->bound = bound;
     signature->ii_sum = ii_sum;
     signature->seqno = seqno;
+    signature->last_primary = last_primary;
 }
 
 void copy_signature(node_signature_t *dest, const node_signature_t *src) {
@@ -22,7 +24,8 @@ void copy_signature(node_signature_t *dest, const node_signature_t *src) {
                   src->primary, 
                   src->bound, 
                   src->ii_sum, 
-                  src->seqno);
+                  src->seqno,
+                  src->last_primary);
 }
 
 int compare_signature(const node_signature_t *a, const node_signature_t *b) {

@@ -348,7 +348,7 @@ typedef struct {
     int initialized;
     /** Branching variable chosen at this node */
 	int branching_variable;
-	/** Recommended direction for the branching variable */
+	/** Recommended direction for the branching variable, as a GLP enum */
 	int direction;
     /** Number of variables that have been fixed to an integer value
      * in the two classes */
@@ -442,6 +442,9 @@ typedef struct {
     /** Sequence number of the node: higher sequence numbers were generated
      * later */
     int seqno;
+    /** A Boolean denoting whether this node is the primary child of the
+     * last branching node */
+    int last_primary;
 } node_signature_t;
 
 /** Set signature fields to the given values */
@@ -458,7 +461,9 @@ void set_signature(
     /** Parent's sum of integer infeasibilities */
     double ii_sum,
     /** Sequential number new value */
-    int seqno);
+    int seqno,
+    /** A flag to denote whether this node is the primary of the last */
+    int last_primary);
 
 /** Copy a signature */
 void copy_signature(

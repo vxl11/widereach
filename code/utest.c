@@ -245,12 +245,13 @@ void test_solution_data() {
 
 void test_signature() {
     node_signature_t a;
-    set_signature(&a, 2, 1, 2., .1, 3);
+    set_signature(&a, 2, 1, 2., .1, 3, 0);
     CU_ASSERT_EQUAL(a.level, 2);
     CU_ASSERT_EQUAL(a.primary, 1);
     CU_ASSERT_DOUBLE_EQUAL(a.bound, 2., 1e-12);
     CU_ASSERT_DOUBLE_EQUAL(a.ii_sum, .1, 1e-12);
     CU_ASSERT_EQUAL(a.seqno, 3);
+    CU_ASSERT_EQUAL(a.last_primary, 0);
     /* Compare signature cannnot be tested yet, because it is experimental
      * and thus still changing all the time
     node_signature_t b;
