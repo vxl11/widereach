@@ -374,7 +374,8 @@ typedef struct {
 /** Add the given node as a child */
 int add_child(child_data_t *, int node);
 
-/** Return the direction of the given node as a child of the current one:
+/** Return the direction of the given node as a child of the one
+ * whose child data is given:
  * - 0: down branch
  * - 1: up branch
  * - -1: the direction cannot be determined (for example, the node is not a 
@@ -408,6 +409,10 @@ node_data_t *parent_data(int node, glp_tree *);
 int is_direction_primary(
     /** Index of the current node */
     int node, 
+    /** A Boolean to determine whetehr the value of the relaxation
+     * at the current node (which may or may not be the argument)
+     * should be used */
+    int relaxation,
     glp_tree *, samples_t *); 
 
 /** Traverse the tree from the current node to the root, while printing

@@ -196,7 +196,8 @@ glp_prob *milp(const env_t *env) {
 }
 
 
-int is_direction_primary(int node, glp_tree *t, samples_t *samples) {
+int is_direction_primary(int node, int relaxation, 
+                         glp_tree *t, samples_t *samples) {
     node_data_t *data_parent = parent_data(node, t);
     if (NULL == data_parent) {
         return -1;
@@ -212,7 +213,12 @@ int is_direction_primary(int node, glp_tree *t, samples_t *samples) {
     }
     
     // Otherwise, consult the solution to the relaxation
-    return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == primary;
+    if (relaxation) {
+        return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == 
+                primary;
+    }
+    
+    return -1;
 }
 
 
@@ -246,8 +252,8 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     }
 
     branch_data_t *branch_data_parent = &(data_parent->branch_data);
-    /* Initialize data counts to the default value,
-        to be revised when the branching decision takes place */
+    /* Initialize class counts to the default value,
+        The counts can be revised when the branching decision takes place */
     initialize_count(branch_data->class_cnt, 
                      branch_data_parent->class_cnt);
     initialize_count(branch_data->directional_cnt, 

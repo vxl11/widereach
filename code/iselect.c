@@ -6,13 +6,6 @@
 
 #define TOLERANCE 1e-10
 
-int is_node_primary(int node, glp_tree *t, samples_t *samples) {
-    // node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
-    node_data_t *data = initialize_data(node, t, samples);
-    // glp_printf("(node %i initialized: %i)", node, data->initialized);
-    return data->branch_data.primary_direction;
-}
-
 double ii_sum_parent(int node, glp_tree *t) {
     glp_assert(node);
     node_data_t *data = parent_data(node, t);
@@ -27,7 +20,7 @@ void node_to_signature(node_signature_t *signature,
                        samples_t *samples) {
     set_signature(signature, 
                   glp_ios_node_level(t, node), 
-                  is_node_primary(node, t, samples), 
+                  is_direction_primary(node, 0, t, samples), 
                   glp_ios_node_bound(t, node),
                   ii_sum_parent(node, t),
                   node);
