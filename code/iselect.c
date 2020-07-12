@@ -76,6 +76,7 @@ void update_active_nodes(
          node != 0;
          node = glp_ios_next_node(t, node)) {
         update_parent(node, t);
+    // glp_printf("(%i -> %i) ", glp_ios_up_node(t, node), node);
         *active_children = *active_children || 
             (last_branching == glp_ios_up_node(t, node));
     }
@@ -94,7 +95,11 @@ void iselect(glp_tree *t, env_t *env) {
         #ifdef EXPERIMENTAL
             glp_printf("Branching %i <- %i\n", node, last_branching);
         #endif
-        active_children = node; // to placate the compiler for now
+        if (node) {
+            glp_ios_select_node(t, node);
+            return;
+        }
+        // return;
     } 
     
     int best_node = glp_ios_best_node(t);

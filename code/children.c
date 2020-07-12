@@ -21,7 +21,6 @@ int add_child(child_data_t *child_data, int node) {
         return -1;
     }
     child_data->child[(child_data->child_cnt)++] = node;
-    sort_children(child_data);
     return 1;
 }
 
