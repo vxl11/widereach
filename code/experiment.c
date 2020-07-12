@@ -4,16 +4,16 @@
 
 int main() {
 	env_t env;
-        env.params = params_default();
+    env.params = params_default();
 	env.params->theta = 0.51;
     // env.params->theta = 0.55;
 	env.params->branch_target = 0.0;
 	env.params->iheur_method = deep;
 	int n = 1000;
 	env.params->lambda = 100 * (n + 1);
-	// srand48(20200621154912);
+	srand48(20200621154912);
 	// srand48(20200623170005);
-	srand48(85287339);
+	// srand48(85287339);  // 412
         env.samples = random_samples(n, n / 2, 2);
 	// print_samples(env.samples);
 	env.solution_data = solution_data_init(n);
@@ -23,6 +23,7 @@ int main() {
 	glp_simplex(p, NULL);
 
 	glp_iocp *parm = iocp(&env);
+    parm->tm_lim = 120000;
 	// parm->bt_tech = GLP_BT_DFS;
 	// parm->bt_tech = GLP_BT_BLB;
 	/* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
