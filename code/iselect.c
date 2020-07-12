@@ -4,6 +4,7 @@
 
 #include "widereach.h"
 
+#define EXPERIMENTAL
 #define TOLERANCE 1e-10
 
 double ii_sum_parent(int node, glp_tree *t) {
@@ -84,17 +85,19 @@ int update_active_nodes(int last_branching, glp_tree *t) {
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
     // return;
-    int *last_branching = &(env->solution_data->branching_node);
-    if (update_active_nodes(*last_branching, t)) {
-        glp_printf("Branching %i <- %i\n", 
-                    next_depth_node(*last_branching, t), *last_branching);
-    } else {
-        *last_branching = 0;
-    }
+    int last_branching = env->solution_data->branching_node;
+    if (update_active_nodes(last_branching, t)) {
+        #ifdef EXPERIMENTAL
+            glp_printf("Branching %i <- %i\n", 
+                        next_depth_node(last_branching, t), last_branching);
+        #endif
+    } 
     
     int best_node = glp_ios_best_node(t);
     double best_bound = glp_ios_node_bound(t, best_node);
-    glp_printf("Best node %i(%g)\t", best_node, best_bound);
+    #ifdef EXPERIMENTAL
+        glp_printf("Best node %i(%g)\t", best_node, best_bound);
+    #endif
     // Bound similar to glpk-4.65 glpios12.c:best_node
     best_bound -= TOLERANCE * (1. + fabs(best_bound));
     node_signature_t best_signature;
@@ -107,18 +110,26 @@ void iselect(glp_tree *t, env_t *env) {
          node = glp_ios_next_node(t, node)) {
         double bound = glp_ios_node_bound(t, node);
         if (bound >= best_bound) {
-            glp_printf("%i(%g", node, bound);
+            #ifdef EXPERIMENTAL
+                glp_printf("%i(%g", node, bound);
+            #endif
             node_to_signature(&signature_current, node, t, env);
-            glp_printf(",%g", signature_current.ii_sum);
-            // glp_printf("%i,%i", 
-                       //signature_current.level, signature_current.primary); 
+            #ifdef EXPERIMENTAL
+                glp_printf(",%g", signature_current.ii_sum);
+                // glp_printf("%i,%i", 
+                        //signature_current.level, signature_current.primary); 
+            #endif
             if (compare_signature(&best_signature, &signature_current) < 0) {
                 copy_signature(&best_signature, &signature_current);
             }
-            glp_printf(") ");
+            #ifdef EXPERIMENTAL
+                glp_printf(") ");
+            #endif
         }
     }
-    glp_printf("\n");
+    #ifdef EXPERIMENTAL
+        glp_printf("\n");
+    #endif
     
     // glp_printf("(%i)\n", best_signature.seqno);
     // glp_ios_select_node(t, best_signature.seqno);
