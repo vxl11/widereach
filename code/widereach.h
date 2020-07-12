@@ -393,6 +393,9 @@ typedef struct {
     branch_data_t branch_data;
     /** Node indexes of the two children on the down- and up-branch */
     child_data_t child_data;
+    /** A Boolean denoting 
+     * whether iheur has already been invoked on this node */
+    int iheur;
 } node_data_t;
 
 /** Initialize and return the node data, except branch data,

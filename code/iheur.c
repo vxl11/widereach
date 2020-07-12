@@ -131,7 +131,12 @@ double *hyperplane(glp_prob *p, samples_t *samples) {
 }
 
 void iheur(glp_tree *t, env_t *env) {
-	glp_printf("Chosen node (at iheur)  %i\n", glp_ios_curr_node(t));
+    int curr_node = glp_ios_curr_node(t);
+	glp_printf("Chosen node (at iheur)  %i\n", curr_node);
+    node_data_t *data = (node_data_t *) glp_ios_node_data(t, curr_node);
+    if (data->iheur) {
+        return;
+    }
 	// glp_printf("------------- iheur ------\n");
 
 	glp_prob *p = glp_ios_get_prob(t);
@@ -161,4 +166,6 @@ void iheur(glp_tree *t, env_t *env) {
 		traverse(solution, t, env);
 	}
 	free(solution);
+    
+    data->iheur = 1;
 }

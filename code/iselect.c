@@ -31,17 +31,6 @@ int is_active(int node, glp_tree *t) {
     return 0;
 }
 
-int validate_last_branching(glp_tree *t, env_t *env) {
-    int *last_branching = &(env->solution_data->branching_node);
-    // Checks whether the last branching node has been pruned
-    int node_cnt;
-    glp_ios_tree_size(t, NULL, &node_cnt, NULL);
-    if (*last_branching >= node_cnt) {
-        *last_branching = 0;
-    }
-    return *last_branching;
-}
-
 int next_depth_node(int last_branching, glp_tree *t) {
     if (!last_branching) {
         return 0;
@@ -95,11 +84,12 @@ int update_active_nodes(int last_branching, glp_tree *t) {
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
     // return;
-    int last_branching = env->solution_data->branching_node;
-    if (update_active_nodes(last_branching, t)) {
-      // int last_branching = validate_last_branching(t, env);
-      glp_printf("Branching %i <- %i\n", 
-                 next_depth_node(last_branching, t), last_branching);
+    int *last_branching = &(env->solution_data->branching_node);
+    if (update_active_nodes(*last_branching, t)) {
+        glp_printf("Branching %i <- %i\n", 
+                    next_depth_node(*last_branching, t), *last_branching);
+    } else {
+        *last_branching = 0;
     }
     
     int best_node = glp_ios_best_node(t);
