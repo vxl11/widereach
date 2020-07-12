@@ -17,12 +17,22 @@ int wzero(glp_prob *p, int dimension) {
 double integer_infeasibility(glp_tree *t, samples_t *samples) {
     glp_prob *p = glp_ios_get_prob(t);
     int idx_min = idx_extreme(0, 1, 0, samples);
+    int idx_bnd = idx_extreme(0, 1, 1, samples);
     int idx_max = idx_extreme(0, 0, 1, samples);
     double infeasibility = 0.;
     double iptr;
     for (int i = idx_min; i <= idx_max; i++) {
         double value = modf(glp_get_col_prim(p, i), &iptr);
+        /* Commonly accepted definition of infeasibility 328
         if (value > 0.5) {
+            value = 1. - value;
+        }*/
+        // Closeness to hyperplane 327
+        /* if (i <= idx_bnd) {
+            value = 1. - value;
+        }*/
+        // Distance from hyperplane
+        if (i > idx_bnd) {
             value = 1. - value;
         }
         infeasibility += value;

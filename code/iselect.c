@@ -4,7 +4,8 @@
 
 #include "widereach.h"
 
-#define TOLERANCE 1e-10
+// #define TOLERANCE 1e-10 /// glpk tolerance parameter
+#define TOLERANCE 1e-1
 
 double ii_sum_parent(int node, glp_tree *t) {
     glp_assert(node);
@@ -99,7 +100,6 @@ void iselect(glp_tree *t, env_t *env) {
             glp_ios_select_node(t, node);
             return;
         }
-        // return;
     } 
     
     int best_node = glp_ios_best_node(t);
@@ -141,5 +141,5 @@ void iselect(glp_tree *t, env_t *env) {
     #endif
     
     // glp_printf("(%i)\n", best_signature.seqno);
-    // glp_ios_select_node(t, best_signature.seqno);
+    glp_ios_select_node(t, best_signature.seqno);
 }
