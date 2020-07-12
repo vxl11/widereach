@@ -4,7 +4,6 @@
 
 #include "widereach.h"
 
-// #define EXPERIMENTAL
 #define TOLERANCE 1e-10
 
 double ii_sum_parent(int node, glp_tree *t) {

@@ -132,7 +132,9 @@ double *hyperplane(glp_prob *p, samples_t *samples) {
 
 void iheur(glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
-	glp_printf("Chosen node (at iheur)  %i\n", curr_node);
+    #ifdef EXPERIMENTAL
+        glp_printf("Chosen node (at iheur)  %i\n", curr_node);
+    #endif
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, curr_node);
     if (data->iheur) {
         return;

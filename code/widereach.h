@@ -1,6 +1,8 @@
 #include <stdlib.h>
 #include <glpk.h>
 
+// #define EXPERIMENTAL
+
 /** Widereach Classification */
 
 /* --------------------------- Samples -------------------------------- */

@@ -68,7 +68,9 @@ void branch_on(int index, glp_tree *t, env_t *env) {
     
     // Update last branching node
     env->solution_data->branching_node = curr_node;
-    glp_printf("branch from %i\n", curr_node);
+    #ifdef EXPERIMENTAL
+        glp_printf("branch from %i\n", curr_node);
+    #endif
  
     glp_ios_branch_upon(t, index, direction); 
 }
