@@ -11,9 +11,9 @@ int main() {
 	env.params->iheur_method = deep;
 	int n = 1000;
 	env.params->lambda = 100 * (n + 1);
-	srand48(20200621154912);
-	// srand48(20200623170005);
-	// srand48(85287339);  // 412
+	// srand48(20200621154912); // 378
+	// srand48(20200623170005); // 433
+	srand48(85287339);  // 412
         env.samples = random_samples(n, n / 2, 2);
 	// print_samples(env.samples);
 	env.solution_data = solution_data_init(n);
