@@ -4,7 +4,7 @@
 
 #include "widereach.h"
 
-#define EXPERIMENTAL
+// #define EXPERIMENTAL
 #define TOLERANCE 1e-10
 
 double ii_sum_parent(int node, glp_tree *t) {
@@ -68,16 +68,15 @@ void update_parent(int node, glp_tree *t) {
     }
 }
 
-int update_active_nodes(int last_branching, glp_tree *t) {
-    int active_children = 0;
+void update_active_nodes(int last_branching, int *active_children, glp_tree *t) {
+    *active_children = 0;
     for (int node = glp_ios_next_node(t, 0);
          node != 0;
          node = glp_ios_next_node(t, node)) {
         update_parent(node, t);
-        active_children = active_children || 
+        *active_children = active_children || 
             (last_branching == glp_ios_up_node(t, node));
     }
-    return active_children;
 }
     
     
@@ -86,7 +85,9 @@ int update_active_nodes(int last_branching, glp_tree *t) {
 void iselect(glp_tree *t, env_t *env) {
     // return;
     int last_branching = env->solution_data->branching_node;
-    if (update_active_nodes(last_branching, t)) {
+    int active_children;
+    update_active_nodes(last_branching, &active_children, t);
+    if (active_children) {
         #ifdef EXPERIMENTAL
             glp_printf("Branching %i <- %i\n", 
                         next_depth_node(last_branching, t), last_branching);
