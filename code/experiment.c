@@ -33,13 +33,14 @@ int main() {
 	glp_intopt(p, parm);
 	free(parm);
 
+    /*
 	int index_max = violation_idx(0, env.samples);
 	for (int i = 1; i <= index_max; i++) {
 		glp_printf("%s:\t%g\n", 
 				glp_get_col_name(p, i), 
 				glp_mip_col_val(p, i));
-	}
+	}*/
 
 	glp_delete_prob(p);
-        delete_env(&env);
+    delete_env(&env);
 }
