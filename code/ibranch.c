@@ -228,8 +228,8 @@ void branch_even(glp_tree *t, env_t *env) {
 
     // int *class_cnt = data->class_cnt;
     int *class_cnt = data->branch_data.directional_cnt;
-    int threshold = 1;
-    // int threshold = (int) env->samples->dimension;
+    // int threshold = 1;
+    int threshold = (int) env->samples->dimension; // next
     // glp_printf("count %i,%i\n", data->class_cnt[0], data->class_cnt[1]);
     if (is_first_deficient(class_cnt[0], class_cnt[1], threshold)) { 
         /* Deficient negative sample set:
@@ -253,8 +253,8 @@ void ibranch(glp_tree *t, env_t *env) {
 	/*
 	ibranch_LFV(t, env); 
 	*/
-	random_flat(t, env); 
-	// branch_even(t, env); 
+	// random_flat(t, env); 
+	branch_even(t, env); 
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
