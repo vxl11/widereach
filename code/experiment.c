@@ -2,6 +2,13 @@
 
 #include "widereach.h"
 
+#define SAMPLE_SEEDS 3
+unsigned long int samples_seeds[SAMPLE_SEEDS] = {
+    85287339, // 412
+    20200621154912, // 378
+    20200623170005 // 433
+};
+
 #define MIP_SEEDS 30
 unsigned int mip_seeds[MIP_SEEDS] = {
     734517477, 145943044, 869199209, 499223379, 523437323, 964156444,
@@ -56,16 +63,16 @@ int main() {
     int n = 1000;
     env.params->lambda = 100 * (n + 1);
     
-    // srand48(20200621154912); // 378
-    // srand48(20200623170005); // 433
-    srand48(85287339);  // 412
+    for (int s = 0; s < SAMPLE_SEEDS; s++) {
+        srand48(samples_seeds[s]);
     
-    samples_t *samples = random_samples(n, n / 2, 2);
-    // print_samples(env.samples);
-    env.samples = samples;
+        samples_t *samples = random_samples(n, n / 2, 2);
+        // print_samples(env.samples);
+        env.samples = samples;
     
-    for (int t = 0; t <= MIP_SEEDS; t++) {    
-    // for (int t = 0; t < 1; t++) {
-        single_run(t, &env);
+        // for (int t = 0; t <= MIP_SEEDS; t++) {    
+        for (int t = 0; t < 1; t++) {
+            single_run(t, &env);
+        }
     }
 }
