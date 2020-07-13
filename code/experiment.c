@@ -24,17 +24,18 @@ void single_run(int t, env_t *env) {
     glp_simplex(p, NULL);
 
     glp_iocp *parm = iocp(env);
-    // parm->tm_lim = 120000;
-    parm->tm_lim = 10000;
+    parm->tm_lim = 120000;
+    // parm->tm_lim = 10000;
     // parm->bt_tech = GLP_BT_DFS;
-    // parm->bt_tech = GLP_BT_BLB;
+    parm->bt_tech = GLP_BT_BLB;
     /* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
     * It would be similar to branch_target=1 for the positive samples,
     * but the opposite for negative samples */
-    // parm->br_tech = GLP_BR_LFV; 
+    parm->br_tech = GLP_BR_LFV;
     glp_intopt(p, parm);
     free(parm);
 
+    glp_printf("Objective: %g\n", glp_mip_obj_val(p));
     /*
     int index_max = violation_idx(0, env.samples);
     for (int i = 1; i <= index_max; i++) {

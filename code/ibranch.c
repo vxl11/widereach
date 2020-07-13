@@ -251,10 +251,10 @@ void branch_even(glp_tree *t, env_t *env) {
 void ibranch(glp_tree *t, env_t *env) {
 	// glp_printf("Chosen node (at ibranch)  %i\n", glp_ios_curr_node(t));
 	/*
-	ibranch_LFV(t, env);
+	ibranch_LFV(t, env); 
 	*/
-	// random_flat(t, env);
-	branch_even(t, env);
+	// random_flat(t, env); //  next, also comment br_tech
+	// branch_even(t, env); // after next
 	return;
 
 	/* Choice of branching index: try high rank first, and if that

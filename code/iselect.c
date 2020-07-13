@@ -87,7 +87,7 @@ void update_active_nodes(
 
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
-    // return;
+    return;
     int last_branching = env->solution_data->branching_node;
     int active_children;
     update_active_nodes(last_branching, &active_children, t);
