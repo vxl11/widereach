@@ -38,7 +38,7 @@ void single_run(int t, env_t *env) {
     /* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
     * It would be similar to branch_target=1 for the positive samples,
     * but the opposite for negative samples */
-    parm->br_tech = GLP_BR_LFV;
+    // parm->br_tech = GLP_BR_LFV;
     glp_intopt(p, parm);
     free(parm);
 
@@ -70,8 +70,8 @@ int main() {
         // print_samples(env.samples);
         env.samples = samples;
     
-        // for (int t = 0; t <= MIP_SEEDS; t++) {    
-        for (int t = 0; t < 1; t++) {
+        for (int t = 0; t <= MIP_SEEDS; t++) {    
+        // for (int t = 0; t < 1; t++) {
             single_run(t, &env);
         }
     }
