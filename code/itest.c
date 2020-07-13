@@ -37,5 +37,5 @@ int main() {
 	free(parm);
 
 	glp_delete_prob(p);
-        delete_env(&env);
+    delete_env(&env);
 }

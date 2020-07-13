@@ -274,9 +274,9 @@ void test_children() {
     CU_ASSERT_EQUAL(data.child_cnt, 1);
     CU_ASSERT_EQUAL(data.child[0], 2);
     CU_ASSERT_EQUAL(add_child(&data, 1), 1);
-    CU_ASSERT_EQUAL(data.child[0], 1);
-    CU_ASSERT_EQUAL(data.child[1], 2);
-    CU_ASSERT_EQUAL(child_direction(&data, 2), 1);
+    CU_ASSERT_EQUAL(data.child[0], 2);
+    CU_ASSERT_EQUAL(data.child[1], 1);
+    CU_ASSERT_EQUAL(child_direction(&data, 2), 0);
     CU_ASSERT_EQUAL(child_direction(&data, 3), -1);
 }
 

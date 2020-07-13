@@ -23,18 +23,18 @@ double integer_infeasibility(glp_tree *t, samples_t *samples) {
     double iptr;
     for (int i = idx_min; i <= idx_max; i++) {
         double value = modf(glp_get_col_prim(p, i), &iptr);
-        /* Commonly accepted definition of infeasibility 328
+        /* Commonly accepted definition of infeasibility 328 (1e-1), 412 (1e-12)
         if (value > 0.5) {
             value = 1. - value;
         }*/
-        // Closeness to hyperplane 327
-        /* if (i <= idx_bnd) {
-            value = 1. - value;
-        }*/
-        // Distance from hyperplane
-        if (i > idx_bnd) {
+        // Closeness to hyperplane 327(1e-1) 327 (1e-2), 412 (1e-12)
+        if (i <= idx_bnd) {
             value = 1. - value;
         }
+        // Distance from hyperplane 125
+        /* if (i > idx_bnd) {
+            value = 1. - value;
+        } */
         infeasibility += value;
     }
     return infeasibility;

@@ -30,19 +30,27 @@ void copy_signature(node_signature_t *dest, const node_signature_t *src) {
 
 int compare_signature(const node_signature_t *a, const node_signature_t *b) {
     int difference;
-    difference = (int) round(a->ii_sum - b->ii_sum);
-    return difference;
+    
+    // drand48(); // (out: 412) 329 (1e-12)
+    // return (int) round(drand48() - .5); // 327 (1e-12)
     
     difference = a->primary - b->primary;
     // difference = b->primary - a->primary;
     if (difference) {
         return difference;
     }
-    // difference = a->level - b->level;
-    difference = b->level - a->level;
+    
+    difference = a->level - b->level;
+    // difference = b->level - a->level;
     if (difference) {
         return difference;
     }
+    
+    difference = (int) round(a->ii_sum - b->ii_sum);
+    if (difference) {
+        return difference;
+    }
+    
     difference = (int) round(a->bound - b->bound);
     if (difference) {
         return difference;

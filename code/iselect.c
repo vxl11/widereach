@@ -4,8 +4,8 @@
 
 #include "widereach.h"
 
-// #define TOLERANCE 1e-10 /// glpk tolerance parameter
-#define TOLERANCE 1e-1
+#define TOLERANCE 1e-10 /// glpk tolerance parameter
+// #define TOLERANCE 1e-3
 
 double ii_sum_parent(int node, glp_tree *t) {
     glp_assert(node);
