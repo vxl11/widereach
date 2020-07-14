@@ -63,7 +63,8 @@ int main() {
     int n = 1000;
     env.params->lambda = 100 * (n + 1);
     
-    for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    // for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
     
         samples_t *samples = random_samples(n, n / 2, 2);

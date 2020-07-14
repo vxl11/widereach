@@ -48,46 +48,54 @@ int class_reverse_direction(int class, samples_t *samples) {
 	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-void branch_on(int index, glp_tree *t, env_t *env) {
-    samples_t *samples = env->samples;
-    
-    // Update branch data
+branch_data_t *initialize_branch_data(
+        int index, 
+        glp_tree *t, 
+        samples_t *samples) {
     int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = initialize_data(curr_node, t, samples);
     branch_data_t *branch_data = &(data->branch_data);
+    if (branch_data->initialized) {
+        return branch_data;
+    }
     
-	branch_data->branching_variable = index;
+    // Update core branch data
     int class = index_to_class(index, samples);
-    branch_data->class_cnt[class]++;
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
     // int direction = GLP_NO_BRNCH;
-	branch_data->direction = direction;
+    branch_data->branching_variable = index;
+    branch_data->class_cnt[class]++;
+    branch_data->direction = direction;
     branch_data->ii_sum = integer_infeasibility(t, samples);
     int primary = is_direction_primary(curr_node, 1, t, samples);
-    if (primary >= 0) {
-        branch_data->primary_direction = primary;
-    }
+    branch_data->primary_direction = primary;
     
     // Update branch data that depend on the parent's
     node_data_t *data_parent = parent_data(curr_node, t);
     if (data_parent != NULL) {
         int branching_class = 
-            index_to_class(data_parent->branch_data.branching_variable, 
-                           samples);
-        if (primary >= 0) {
-            branch_data->directional_cnt[branching_class] += primary;
-        }
+                index_to_class(data_parent->branch_data.branching_variable, 
+                                samples);
+        branch_data->directional_cnt[branching_class] += primary;
     }
+    
     branch_data->initialized = 1;
+    return branch_data;
+}
+    
+
+void branch_on(int index, glp_tree *t, env_t *env) {
+    branch_data_t *branch_data = initialize_branch_data(index, t, env->samples);
     
     // Update last branching node
+    int curr_node = glp_ios_curr_node(t);
     env->solution_data->branching_node = curr_node;
     #ifdef EXPERIMENTAL
         glp_printf("branch from %i\n", curr_node);
     #endif
  
-    glp_ios_branch_upon(t, index, direction); 
+    glp_ios_branch_upon(t, index, branch_data->direction); 
 }
 
 int random_bounded(int idx_min, int idx_max, glp_tree *t) {
