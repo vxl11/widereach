@@ -61,10 +61,13 @@ void branch_on(int index, glp_tree *t, env_t *env) {
     branch_data->class_cnt[class]++;
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
+    // int direction = GLP_NO_BRNCH;
 	branch_data->direction = direction;
     branch_data->ii_sum = integer_infeasibility(t, samples);
     int primary = is_direction_primary(curr_node, 1, t, samples);
-    branch_data->primary_direction = primary;
+    if (primary >= 0) {
+        branch_data->primary_direction = primary;
+    }
     
     // Update branch data that depend on the parent's
     node_data_t *data_parent = parent_data(curr_node, t);
@@ -72,7 +75,9 @@ void branch_on(int index, glp_tree *t, env_t *env) {
         int branching_class = 
             index_to_class(data_parent->branch_data.branching_variable, 
                            samples);
-        branch_data->directional_cnt[branching_class] += primary;
+        if (primary >= 0) {
+            branch_data->directional_cnt[branching_class] += primary;
+        }
     }
     branch_data->initialized = 1;
     
@@ -228,8 +233,8 @@ void branch_even(glp_tree *t, env_t *env) {
 
     // int *class_cnt = data->class_cnt;
     int *class_cnt = data->branch_data.directional_cnt;
-    // int threshold = 1;
-    int threshold = (int) env->samples->dimension; // next
+    int threshold = 1;
+    // int threshold = (int) env->samples->dimension; // next
     // glp_printf("count %i,%i\n", data->class_cnt[0], data->class_cnt[1]);
     if (is_first_deficient(class_cnt[0], class_cnt[1], threshold)) { 
         /* Deficient negative sample set:

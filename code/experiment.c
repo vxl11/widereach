@@ -34,7 +34,7 @@ void single_run(int t, env_t *env) {
     parm->tm_lim = 120000;
     // parm->tm_lim = 10000;
     // parm->bt_tech = GLP_BT_DFS;
-    parm->bt_tech = GLP_BT_BLB;
+    // parm->bt_tech = GLP_BT_BLB;
     /* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
     * It would be similar to branch_target=1 for the positive samples,
     * but the opposite for negative samples */
@@ -57,7 +57,7 @@ int main() {
     env_t env;
     env.params = params_default();
     env.params->theta = 0.51;
-    // env.params->theta = 0.55;
+    env.params->theta = 0.7;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 1000;
@@ -70,8 +70,8 @@ int main() {
         // print_samples(env.samples);
         env.samples = samples;
     
-        for (int t = 0; t <= MIP_SEEDS; t++) {    
-        // for (int t = 0; t < 1; t++) {
+        // for (int t = 0; t <= MIP_SEEDS; t++) {    
+        for (int t = 0; t < 1; t++) {
             single_run(t, &env);
         }
     }
