@@ -207,11 +207,10 @@ int is_direction_primary(int node, int relaxation,
     int primary = primary_value(index_label(branching_variable, samples));
     
     // First, attempt to find the answer from the child data
-    /*
     int direction = child_direction(&(data_parent->child_data), node);
     if (direction > 0) {
         return direction == primary;
-    }*/
+    }
     
     // Otherwise, consult the solution to the relaxation
     if (relaxation) {

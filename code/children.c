@@ -29,7 +29,7 @@ int child_direction(child_data_t *child_data, int node) {
         return -1;
     }
     int *child = child_data->child;
-    for (int i =0; i< 2; i++) {
+    for (int i =0; i < 2; i++) {
         if (child[i] == node) {
             return i;
         }
