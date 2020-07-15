@@ -167,6 +167,8 @@ void iheur(glp_tree *t, env_t *env) {
 		print_solution(idx_max, solution, p);
 		traverse(solution, t, env);
 	}
+	// glp_printf("objv %g @ %i\n", glp_get_obj_val(p), curr_node);
+	// traverse(solution, t, env);
 	free(solution);
     
     data->iheur = 1;

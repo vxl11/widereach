@@ -32,6 +32,8 @@ int compare_signature(const node_signature_t *a, const node_signature_t *b) {
     // drand48(); // (out: 412) 329 (1e-12)
     // return (int) round(drand48() - .5); // 327 (1e-12)
     
+   //  return a->last_primary - b->last_primary;
+    
     int difference;
     difference = (int) round(a->ii_sum - b->ii_sum);
     return difference;

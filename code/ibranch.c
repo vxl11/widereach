@@ -95,7 +95,12 @@ void branch_on(int index, glp_tree *t, env_t *env) {
         glp_printf("branch from %i\n", curr_node);
     #endif
  
-    glp_ios_branch_upon(t, index, branch_data->direction); 
+    /* Note that if this node has been branched from already, 
+     * the index is ignored in favor of the previous branching variable */
+    int branching_variable = branch_data->branching_variable;
+    if (glp_ios_can_branch(t, branching_variable)) {
+        glp_ios_branch_upon(t, branching_variable, branch_data->direction); 
+    }
 }
 
 int random_bounded(int idx_min, int idx_max, glp_tree *t) {
@@ -228,7 +233,7 @@ int highest_score_index(glp_tree *t, env_t *env) {
 }
 
 int is_first_deficient(int a, int b, int threshold) {
-    return a < threshold && b >= threshold;
+    return a < threshold && threshold <= b;
 }
 
 void branch_even(glp_tree *t, env_t *env) {
@@ -271,11 +276,18 @@ void ibranch(glp_tree *t, env_t *env) {
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
-	 * fails move one to high score (which then becomes the next ranked
+	 * fails move one to random flat (which then becomes the next ranked
 	 * index) */
 	int idx = highest_rank_index(t, env);
 	if (idx < 0) { 
-		idx = highest_score_index(t, env);
+		// idx = highest_score_index(t, env);
+        samples_t *samples = env->samples;
+        int dimension = samples->dimension;
+        idx = 
+            random_bounded(
+                dimension + 2, 
+                dimension + samples_total(samples) + 1, 
+                t);
 		append_data(env->solution_data, idx);
 	}
 	glp_assert(idx > 0);
