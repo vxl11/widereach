@@ -83,7 +83,7 @@ void update_active_nodes(
     for (int node = glp_ios_next_node(t, 0);
          node != 0;
          node = glp_ios_next_node(t, node)) {
-        clear_parent_child(node, t);
+        // clear_parent_child(node, t);
     }
     
     *active_children = 0;
