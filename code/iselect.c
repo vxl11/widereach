@@ -81,7 +81,7 @@ void update_active_nodes(
     for (int node = glp_ios_next_node(t, 0);
          node != 0;
          node = glp_ios_next_node(t, node)) {
-        update_parent(node, t);
+        // update_parent(node, t);
         // glp_printf("(%i -> %i) ", glp_ios_up_node(t, node), node);
         *active_children = *active_children || 
             (last_branching == glp_ios_up_node(t, node));
