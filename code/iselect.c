@@ -65,6 +65,11 @@ void update_parent(int node, glp_tree *t) {
     node_data_t *data = parent_data(node, t);
     if (data != NULL) {
         add_child(&(data->child_data), node);
+        
+        int bv = data->branch_data.branching_variable;
+        glp_prob *p = glp_ios_get_prob(t);
+        glp_printf("%g <= index(%i) <= %g\n",
+                   glp_get_col_lb(p, bv), bv, glp_get_col_ub(p, bv));
     }
 }
 
@@ -77,7 +82,7 @@ void update_active_nodes(
          node != 0;
          node = glp_ios_next_node(t, node)) {
         update_parent(node, t);
-    // glp_printf("(%i -> %i) ", glp_ios_up_node(t, node), node);
+        // glp_printf("(%i -> %i) ", glp_ios_up_node(t, node), node);
         *active_children = *active_children || 
             (last_branching == glp_ios_up_node(t, node));
     }
