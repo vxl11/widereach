@@ -105,8 +105,31 @@ void update_active_nodes(
             (last_branching == glp_ios_up_node(t, node));
     }
 }
-    
-    
+ 
+ 
+/* Find the deepest node whose parent is consistent with the best 
+ * integer solution found by iheur so far.
+ * If no such node exists, returns 0. */
+int consistent_node(double intobj, glp_tree *t) {
+    int best_node = 0;
+    int best_level = 0;
+    for (int node = glp_ios_next_node(t, 0);
+         node != 0;
+         node = glp_ios_next_node(t, node)) {
+        node_data_t *data = parent_data(node, t);
+        if (NULL == data) {
+            continue;
+        }
+        int curr_level = glp_ios_node_level(t, node);
+        if (data->branch_data.intobj >= intobj && curr_level > best_level) {
+            best_node = node;
+            best_level = curr_level;
+        }
+    }
+    return best_node;
+}
+
+
 
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
