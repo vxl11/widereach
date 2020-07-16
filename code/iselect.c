@@ -108,7 +108,7 @@ void iselect(glp_tree *t, env_t *env) {
     if (active_children >= 2) {
         int node = next_depth_node(last_branching, t);
         #ifdef EXPERIMENTAL
-            glp_printf("Branching %i <- %i\n", node, last_branching);
+            glp_printf("Branching (primary) %i <- %i\n", node, last_branching);
         #endif
         glp_ios_select_node(t, node);
         return;
@@ -151,7 +151,6 @@ void iselect(glp_tree *t, env_t *env) {
     #ifdef EXPERIMENTAL
         glp_printf("\n");
     #endif
-    
-    // glp_printf("(%i)\n", best_signature.seqno);
+    // glp_printf("Branching (backtrack) %i\n", best_signature.seqno);
     glp_ios_select_node(t, best_signature.seqno);
 }

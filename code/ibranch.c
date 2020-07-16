@@ -84,6 +84,7 @@ branch_data_t *initialize_branch_data(
 
 void branch_on(int index, glp_tree *t, env_t *env) {
     branch_data_t *branch_data = initialize_branch_data(index, t, env->samples);
+ 
     
     // Update last branching node
     int curr_node = glp_ios_curr_node(t);
@@ -265,6 +266,11 @@ void branch_even(glp_tree *t, env_t *env) {
 
 void ibranch(glp_tree *t, env_t *env) {
 	// glp_printf("Chosen node (at ibranch)  %i\n", glp_ios_curr_node(t));
+    node_data_t *data = glp_ios_node_data(t, glp_ios_curr_node(t));
+    /*
+    if (data->branch_data.initialized) {
+        glp_printf("rebranching\n");
+    }*/
 	/*
 	ibranch_LFV(t, env); 
 	*/
