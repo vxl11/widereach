@@ -40,11 +40,13 @@ double integer_infeasibility(glp_tree *t, samples_t *samples) {
     return infeasibility;
 }
 
-int integer_class(int index, glp_tree *t, env_t *env) {
+int integer_class(int index, double *intobj, glp_tree *t, env_t *env) {
+    *intopt = -DBL_MAX;
     samples_t *samples = env->samples;
     int class = index_to_class(index, samples);
     
-    double *integer_solution = env->solution_data->integer_solution;
+    solution_data_t *solution_data = env->solution_data;
+    double *integer_solution = solution_data->integer_solution;
     if (NULL == integer_solution) {
         return class;
     }
@@ -54,6 +56,7 @@ int integer_class(int index, glp_tree *t, env_t *env) {
     double *local_relaxation = solution_values(curr_node, glp_ios_get_prob(t));
     if (are_consistent(branching, integer_solution, local_relaxation)) {
         class = (int) integer_solution[index];
+        *intopt = solution_data->intopt;
     }
     free(local_relaxation);
     free(branching);
