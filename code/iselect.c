@@ -135,7 +135,7 @@ int consistent_node(double intopt, glp_tree *t) {
         }
     }
     #ifdef EXPERIMENTAL
-        glp_printf("\n");
+        if (best_node) glp_printf("-> %i\n", best_node);
     #endif
     return best_node;
 }
