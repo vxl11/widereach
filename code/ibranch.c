@@ -41,7 +41,7 @@ double integer_infeasibility(glp_tree *t, samples_t *samples) {
 }
 
 int integer_class(int index, double *intobj, glp_tree *t, env_t *env) {
-    *intopt = -DBL_MAX;
+    *intobj = -DBL_MAX;
     samples_t *samples = env->samples;
     int class = index_to_class(index, samples);
     
@@ -56,7 +56,7 @@ int integer_class(int index, double *intobj, glp_tree *t, env_t *env) {
     double *local_relaxation = solution_values(curr_node, glp_ios_get_prob(t));
     if (are_consistent(branching, integer_solution, local_relaxation)) {
         class = (int) integer_solution[index];
-        *intopt = solution_data->intopt;
+        *intobj = solution_data->intopt;
     }
     free(local_relaxation);
     free(branching);
@@ -80,7 +80,7 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     
     // Update core branch data
     // int class = index_to_class(index, samples);
-    int class = integer_class(index, t, env);
+    int class = integer_class(index, &(branch_data->intobj), t, env);
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
     // int direction = GLP_NO_BRNCH;
