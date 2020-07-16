@@ -76,8 +76,8 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     branch_data_t *branch_data = &(data->branch_data);
     
     // Update core branch data
-    int class = index_to_class(index, samples);
-    // int class = integer_class(index, solution, t, env);
+    // int class = index_to_class(index, samples);
+    int class = integer_class(index, t, env);
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
     // int direction = GLP_NO_BRNCH;
