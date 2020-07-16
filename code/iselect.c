@@ -79,7 +79,8 @@ void update_active_nodes(
         int last_branching, 
         int *active_children, 
         glp_tree *t) {
-    /* Wipe out children to avoid problems with possible rebranching */
+    /* Wipe out children in the active nodes' parents
+     * to avoid problems with possible rebranching */
     for (int node = glp_ios_next_node(t, 0);
          node != 0;
          node = glp_ios_next_node(t, node)) {
@@ -92,7 +93,7 @@ void update_active_nodes(
          node = glp_ios_next_node(t, node)) {
         update_parent(node, t);
         // glp_printf("(%i -> %i) ", glp_ios_up_node(t, node), node);
-        *active_children = *active_children || 
+        *active_children +=
             (last_branching == glp_ios_up_node(t, node));
     }
 }
@@ -104,15 +105,13 @@ void iselect(glp_tree *t, env_t *env) {
     int last_branching = env->solution_data->branching_node;
     int active_children;
     update_active_nodes(last_branching, &active_children, t);
-    if (active_children) {
+    if (active_children >= 2) {
         int node = next_depth_node(last_branching, t);
         #ifdef EXPERIMENTAL
             glp_printf("Branching %i <- %i\n", node, last_branching);
         #endif
-        if (node) {
-            glp_ios_select_node(t, node);
-            return;
-        }
+        glp_ios_select_node(t, node);
+        return;
     } 
     
     int best_node = glp_ios_best_node(t);
