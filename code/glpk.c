@@ -259,3 +259,13 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     data->initialized = 1;
     return data;
 }
+
+
+double *solution_values(int node, glp_prob *p) {
+    int n = glp_get_num_cols(p);
+    double *lp = CALLOC(n + 1, double);
+    for (int i = 1; i <= n; i++) {
+        lp[i] = glp_get_col_prim(p, i);
+    }
+    return lp;
+}

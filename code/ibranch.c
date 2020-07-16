@@ -40,21 +40,25 @@ double integer_infeasibility(glp_tree *t, samples_t *samples) {
     return infeasibility;
 }
 
-int integer_class(
-        int index, 
-        double *local_relaxation, 
-        glp_tree *t, 
-        env_t *env) {
-    double *integer_solution = env->solution_data->integer_solution;
+int integer_class(int index, glp_tree *t, env_t *env) {
     samples_t *samples = env->samples;
-    if (NULL == integer_solution || 
-        !are_consistent(
-            branching_variables(glp_ios_curr_node(t), t, samples),
-            integer_solution, 
-            local_relaxation)) {
-        return index_to_class(index, samples);
+    int class = index_to_class(index, samples);
+    
+    double *integer_solution = env->solution_data->integer_solution;
+    if (NULL == integer_solution) {
+        return class;
     }
-    return (int) integer_solution[index]; 
+    
+    int curr_node = glp_ios_curr_node(t);
+    int *branching = branching_variables(curr_node, t, samples);
+    double *local_relaxation = solution_values(curr_node, glp_ios_get_prob(t));
+    if (are_consistent(branching, integer_solution, local_relaxation)) {
+        class = (int) integer_solution[index];
+    }
+    free(local_relaxation);
+    free(branching);
+    
+    return class; 
 }
 
 int class_direction(int class, samples_t *samples) {
@@ -73,6 +77,7 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     
     // Update core branch data
     int class = index_to_class(index, samples);
+    // int class = integer_class(index, solution, t, env);
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
     // int direction = GLP_NO_BRNCH;

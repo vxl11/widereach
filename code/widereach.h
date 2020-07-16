@@ -502,6 +502,11 @@ void copy_signature(
  * @return Comparison value, defined as in qsort(3). */
 int compare_signature(const node_signature_t *, const node_signature_t *);
 
+
+/** Return a new array containing the value of the decision variables in
+ * the solution of the given problem. */
+double *solution_values(int node, glp_prob *);
+
 /* -------------------------- Callback ---------------------------------- */
 
 /** Callback entry point */
