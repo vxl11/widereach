@@ -335,6 +335,15 @@ sparse_vector_t *precision_row(
 int index_to_class(int idx, samples_t *);
 
 
+/* ----------------------------- Paths ---------------------------------- */
+/** Check whether the arrays are consistent along the given indexes */
+int are_consistent(
+    /** An array of indexes along which the next two arrays are supposed
+     * to be consistent. The comparison stops at the first zero index. */
+    int *index, 
+    double *, double *);
+
+
 /* ----------------------------- GLPK ----------------------------------- */
 
 /** Return GLPK solver parameters initialized from the given parameters */

@@ -245,7 +245,7 @@ void test_solution_data() {
 
 void test_signature() {
     node_signature_t a;
-    set_signature(&a, 2, 1, 2., .1, 3, 0);
+    set_signature(&a, 2, 1, 2., .1, 3, 0, 0);
     CU_ASSERT_EQUAL(a.level, 2);
     CU_ASSERT_EQUAL(a.primary, 1);
     CU_ASSERT_DOUBLE_EQUAL(a.bound, 2., 1e-12);
@@ -278,6 +278,19 @@ void test_children() {
     CU_ASSERT_EQUAL(data.child[1], 1);
     CU_ASSERT_EQUAL(child_direction(&data, 2), 0);
     CU_ASSERT_EQUAL(child_direction(&data, 3), -1);
+}
+
+void test_paths() {
+    int index[3];
+    memset(index, 0, sizeof(index));
+    double a[5] = { .1, .2, .3, .4, .5 };
+    double b[5] = { 1., .2, 3., .4, .5 };
+    CU_ASSERT(are_consistent(index, a, b));
+    index[0] = 2;
+    CU_ASSERT_FALSE(are_consistent(index, a, b));
+    index[0] = 1; 
+    index[1] = 4;
+    CU_ASSERT(are_consistent(index, a, b));
 }
 
 int main() {
@@ -320,6 +333,10 @@ int main() {
     // Children
 	CU_pSuite children = CU_add_suite("children", NULL, NULL);
 	CU_add_test(children, "children", test_children);
+
+    // Paths
+	CU_pSuite paths = CU_add_suite("paths", NULL, NULL);
+	CU_add_test(paths, "children", test_paths);
 
 	// Run tests
 	CU_basic_run_tests();

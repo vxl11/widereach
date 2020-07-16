@@ -57,22 +57,4 @@ int *branching_variables(int node, glp_tree *t, samples_t *samples) {
     return bv;
 }
 
-int is_consistent(
-        double *integer_solution, 
-        double *local_relaxation, 
-        int *branching_variables) {
-    int branching_variable;
-    
-    /* Check whether the local relaxation and the integer solution are 
-     * consistent along the branching variables */
-    for (int j = 0; branching_variables[j] != 0; j++) {
-        branching_variable = branching_variables[j];
-        if (integer_solution[branching_variable] != 
-            local_relaxation[branching_variable]) {
-            return 0;
-        }
-    }
-    
-    
-    return 1;
-}
+
