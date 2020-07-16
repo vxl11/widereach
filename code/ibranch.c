@@ -85,7 +85,6 @@ branch_data_t *initialize_branch_data(
 void branch_on(int index, glp_tree *t, env_t *env) {
     branch_data_t *branch_data = initialize_branch_data(index, t, env->samples);
  
-    
     // Update last branching node
     int curr_node = glp_ios_curr_node(t);
     env->solution_data->branching_node = curr_node;

@@ -202,6 +202,8 @@ typedef struct {
 	int *rank;
     /** Last node that branched */
     int branching_node;
+    /** Best integer solution found by iheur */
+    double *integer_solution;
 } solution_data_t;
 
 
