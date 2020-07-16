@@ -441,6 +441,11 @@ void traverse(
 		double *solution, 
 		glp_tree *, env_t *);
 
+/** Return the set of variables along which it was branched from the root
+ * to this node. The returned value is ordered from the leaf to the root
+ * and terminates when a zero is reached. */
+int *branching_variables(int node, glp_tree *, samples_t *);
+
 
 /** Node signature: parameters that affect the comparison between nodes */
 typedef struct {

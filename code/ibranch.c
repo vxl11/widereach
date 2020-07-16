@@ -40,6 +40,23 @@ double integer_infeasibility(glp_tree *t, samples_t *samples) {
     return infeasibility;
 }
 
+int integer_class(
+        int index, 
+        double *local_relaxation, 
+        glp_tree *t, 
+        env_t *env) {
+    double *integer_solution = env->solution_data->integer_solution;
+    samples_t *samples = env->samples;
+    if (NULL == integer_solution || 
+        !are_consistent(
+            branching_variables(glp_ios_curr_node(t), t, samples),
+            integer_solution, 
+            local_relaxation)) {
+        return index_to_class(index, samples);
+    }
+    return (int) integer_solution[index]; 
+}
+
 int class_direction(int class, samples_t *samples) {
 	return samples->label[class] > 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
@@ -48,11 +65,9 @@ int class_reverse_direction(int class, samples_t *samples) {
 	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-branch_data_t *initialize_branch_data(
-        int index, 
-        glp_tree *t, 
-        samples_t *samples) {
+branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
+    samples_t *samples = env->samples;
 	node_data_t *data = initialize_data(curr_node, t, samples);
     branch_data_t *branch_data = &(data->branch_data);
     
@@ -83,7 +98,7 @@ branch_data_t *initialize_branch_data(
     
 
 void branch_on(int index, glp_tree *t, env_t *env) {
-    branch_data_t *branch_data = initialize_branch_data(index, t, env->samples);
+    branch_data_t *branch_data = initialize_branch_data(index, t, env);
  
     // Update last branching node
     int curr_node = glp_ios_curr_node(t);
