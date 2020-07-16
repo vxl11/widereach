@@ -85,7 +85,7 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     // int direction = class_reverse_direction(class, samples);
     // int direction = GLP_NO_BRNCH;
     branch_data->branching_variable = index;
-    branch_data->class_cnt[class]++;
+    branch_data->class_cnt[index_to_class(index, samples)]++;
     branch_data->direction = direction;
     branch_data->ii_sum = integer_infeasibility(t, samples);
     int primary = is_direction_primary(curr_node, 1, t, samples);

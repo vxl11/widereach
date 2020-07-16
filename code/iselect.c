@@ -122,6 +122,7 @@ int consistent_node(double intopt, glp_tree *t) {
         }
         glp_assert(data->branch_data.initialized);
         int curr_level = glp_ios_node_level(t, node);
+    // TODO: may need to update branch_data.intopt?
         if (data->branch_data.intobj >= intopt && curr_level > best_level) {
             best_node = node;
             best_level = curr_level;
