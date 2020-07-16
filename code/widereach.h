@@ -204,6 +204,8 @@ typedef struct {
     int branching_node;
     /** Best integer solution found by iheur */
     double *integer_solution;
+    /** Objective value achieved by the best integer solution */
+    double intopt;
 } solution_data_t;
 
 
@@ -375,6 +377,9 @@ typedef struct {
     int directional_cnt[2];
     /** Sum of integer infeasibilities */
     double ii_sum;
+    /** Objective value of an integer solution with which this node
+     * is consistent */
+    double intobj;
 } branch_data_t;
 
 /** Data recoding the identities of the children of the current node */

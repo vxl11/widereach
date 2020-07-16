@@ -166,11 +166,13 @@ void iheur(glp_tree *t, env_t *env) {
 	if (!status) {
 		print_solution(idx_max, solution, p);
 		traverse(solution, t, env);
-        double **integer_solution = &(env->solution_data->integer_solution);
+        solution_data_t *solution_data = env->solution_data;
+        double **integer_solution = &(solution_data->integer_solution);
         if (*integer_solution != NULL) {
             free(*integer_solution);
         }
         *integer_solution = solution;
+        solution_data->intopt = X - env->params->lambda * solution[idx_max];
 	} else {
         free(solution);
     }
