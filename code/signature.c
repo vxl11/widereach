@@ -39,11 +39,23 @@ int compare_signature(const node_signature_t *a, const node_signature_t *b) {
    //  return a->last_primary - b->last_primary;
     
     int difference;
-    difference = (int) round(a->ii_sum - b->ii_sum);
-    return difference;
+    
+    difference = a->directional - b->directional;
     if (difference) {
         return difference;
     }
+    
+    difference = (int) round(a->bound - b->bound);
+    if (difference) {
+        return difference;
+    }
+    
+    difference = (int) round(a->ii_sum - b->ii_sum);
+    if (difference) {
+        return difference;
+    }
+    
+    return a->seqno - b->seqno;
     
     difference = a->level - b->level;
     // difference = b->level - a->level;

@@ -238,9 +238,6 @@ node_data_t *parent_data(int node, glp_tree *t) {
 node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     // Find and initialize node data
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
-    if (data->initialized) {
-        return data;
-    }
     branch_data_t *branch_data = &(data->branch_data);
     
     // Copy parent data

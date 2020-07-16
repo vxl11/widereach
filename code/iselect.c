@@ -128,7 +128,8 @@ void iselect(glp_tree *t, env_t *env) {
         glp_printf("Best node %i(%g)\t", best_node, best_bound);
     #endif
     // Bound similar to glpk-4.65 glpios12.c:best_node
-    best_bound -= TOLERANCE * (1. + fabs(best_bound));
+    // best_bound -= TOLERANCE * (1. + fabs(best_bound));
+    best_bound = -DBL_MAX;
     node_signature_t best_signature;
     node_to_signature(&best_signature, best_node, t, env); 
     
