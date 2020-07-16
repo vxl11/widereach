@@ -111,6 +111,9 @@ void update_active_nodes(
  * integer solution found by iheur so far.
  * If no such node exists, returns 0. */
 int consistent_node(double intopt, glp_tree *t) {
+    #ifdef EXPERIMENTAL
+        glp_printf("consistent(%g) ", intopt);
+    #endif
     int best_node = 0;
     int best_level = 0;
     for (int node = glp_ios_next_node(t, 0);
@@ -122,12 +125,18 @@ int consistent_node(double intopt, glp_tree *t) {
         }
         glp_assert(data->branch_data.initialized);
         int curr_level = glp_ios_node_level(t, node);
-    // TODO: may need to update branch_data.intopt?
+        #ifdef EXPERIMENTAL
+            glp_printf("%i(%g,%i) ", 
+                       node, data->branch_data.intobj, curr_level);
+        #endif
         if (data->branch_data.intobj >= intopt && curr_level > best_level) {
             best_node = node;
             best_level = curr_level;
         }
     }
+    #ifdef EXPERIMENTAL
+        glp_printf("\n");
+    #endif
     return best_node;
 }
 
