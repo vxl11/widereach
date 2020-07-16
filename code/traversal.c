@@ -1,4 +1,7 @@
+#include <string.h>
+
 #include "widereach.h"
+#include "helper.h"
 
 void print_branch_variable(int idx, samples_t *samples) {
 	sample_locator_t *loc = locator(idx, samples);
@@ -35,4 +38,41 @@ void traverse(double *solution, glp_tree *t, env_t *env) {
 			print_branch_variable(branching_variable, samples);
 		}
 	}
+}
+
+int *branching_variables(int node, glp_tree *t, samples_t *samples) {
+    size_t n = samples_total(samples);
+    int *bv = CALLOC(n, int);
+    memset(bv, 0, sizeof(*bv));
+    int j = 0;
+    for (int curr_node = glp_ios_up_node(t, glp_ios_curr_node(t));
+         curr_node != 0;
+         curr_node = glp_ios_up_node(t, curr_node)) {
+        node_data_t *data = (node_data_t *) glp_ios_node_data(t, curr_node);
+        glp_assert(data != NULL && data->initialized);
+        branch_data_t *branch_data = &(data->branch_data);
+        glp_assert(branch_data->initialized);
+        bv[j++] = branch_data->branching_variable;
+    }
+    return bv;
+}
+
+int is_consistent(
+        double *integer_solution, 
+        double *local_relaxation, 
+        int *branching_variables) {
+    int branching_variable;
+    
+    /* Check whether the local relaxation and the integer solution are 
+     * consistent along the branching variables */
+    for (int j = 0; branching_variables[j] != 0; j++) {
+        branching_variable = branching_variables[j];
+        if (integer_solution[branching_variable] != 
+            local_relaxation[branching_variable]) {
+            return 0;
+        }
+    }
+    
+    
+    return 1;
 }
