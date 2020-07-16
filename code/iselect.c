@@ -149,6 +149,8 @@ void iselect(glp_tree *t, env_t *env) {
     
     int node = consistent_node(solution_data->intopt, t);
     if (node) {
+        glp_ios_select_node(t, node);
+        return;
     }
     return;
     
