@@ -450,6 +450,8 @@ typedef struct {
     /** A Boolean denoting whether this node is the primary child of the
      * last branching node */
     int last_primary;
+    /** The directional count of the negative samples at the parent node */
+    int directional;
 } node_signature_t;
 
 /** Set signature fields to the given values */
@@ -468,7 +470,9 @@ void set_signature(
     /** Sequential number new value */
     int seqno,
     /** A flag to denote whether this node is the primary of the last */
-    int last_primary);
+    int last_primary,
+    /** The directional count of negative samples at the parent */
+    int directional);
 
 /** Copy a signature */
 void copy_signature(

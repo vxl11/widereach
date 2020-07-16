@@ -45,6 +45,12 @@ int next_depth_node(int last_branching, glp_tree *t) {
         child_data->child[direction_to_class(data->branch_data.direction)];
     return is_active(next_node, t) ? next_node : 0;
 }
+
+
+int parent_directional(int node, glp_tree *t) {
+    node_data_t *data = parent_data(node, t);
+    return data != NULL ? data->branch_data.directional_cnt[0] : -1;
+}
     
 
 void node_to_signature(node_signature_t *signature, 
@@ -58,7 +64,9 @@ void node_to_signature(node_signature_t *signature,
                   glp_ios_node_bound(t, node),
                   ii_sum_parent(node, t),
                   node,
-                  node == env->solution_data->branching_node);
+                  node == env->solution_data->branching_node,
+                  parent_directional(node, t)
+                 );
 }
 
 void update_parent(int node, glp_tree *t) {
