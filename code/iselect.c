@@ -145,7 +145,7 @@ void iselect(glp_tree *t, env_t *env) {
             #endif
             node_to_signature(&signature_current, node, t, env);
             #ifdef EXPERIMENTAL
-                glp_printf(",%g", signature_current.ii_sum);
+                glp_printf(",%u", signature_current.directional);
                 // glp_printf("%i,%i", 
                         //signature_current.level, signature_current.primary); 
             #endif
