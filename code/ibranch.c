@@ -55,9 +55,6 @@ branch_data_t *initialize_branch_data(
     int curr_node = glp_ios_curr_node(t);
 	node_data_t *data = initialize_data(curr_node, t, samples);
     branch_data_t *branch_data = &(data->branch_data);
-    if (branch_data->initialized) {
-        return branch_data;
-    }
     
     // Update core branch data
     int class = index_to_class(index, samples);
