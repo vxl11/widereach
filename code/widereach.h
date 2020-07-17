@@ -368,6 +368,9 @@ typedef struct {
     /** Number of variables that have been fixed to an integer value
      * in the two classes */
     int class_cnt[2];
+    /** Value of the parent's branching variable at this node or,
+     * whether the node was branched in the positive or negative direction */
+    double branching_value;
     /** A boolean variable to denote whether the node was branched in the
      * primary direction. The primary direction is defined as +1 for positive
      * samples and 0 for negative samples */

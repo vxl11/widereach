@@ -94,9 +94,10 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     // Update branch data that depend on the parent's
     node_data_t *data_parent = parent_data(curr_node, t);
     if (data_parent != NULL) {
-        int branching_class = 
-                index_to_class(data_parent->branch_data.branching_variable, 
-                                samples);
+        int branching_variable = data_parent->branch_data.branching_variable;
+        branch_data->branching_value = 
+            glp_get_col_prim(glp_ios_get_prob(t), branching_variable);
+        int branching_class = index_to_class(branching_variable, samples);
         branch_data->directional_cnt[branching_class] += primary;
     }
     
