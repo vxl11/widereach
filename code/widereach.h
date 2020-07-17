@@ -144,7 +144,7 @@ sparse_vector_t *multiply(sparse_vector_t *, double);
  * the amount of extra space after the insertion. */
 int append(sparse_vector_t *, 
 	/** Index of the new element.
-            It is assumed that this index has not been previously defined. */
+        It is assumed that this index has not been previously defined. */
 	int ind, 
 	/** Value to be inserted */
 	double val);
@@ -380,6 +380,8 @@ typedef struct {
     /** Objective value of an integer solution with which this node
      * is consistent */
     double intobj;
+    /** Solution to the linear relaxation at this node */
+    double *solution;
 } branch_data_t;
 
 /** Data recoding the identities of the children of the current node */

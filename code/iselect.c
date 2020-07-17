@@ -123,13 +123,17 @@ int consistent_node(double intopt, glp_tree *t) {
         if (NULL == data) {
             continue;
         }
-        glp_assert(data->branch_data.initialized);
+        branch_data_t *branch_data = &(data->branch_data);
+        glp_assert(branch_data->initialized);
+        if (branch_data->intobj < intopt) {
+            // TODO update consistency
+        }
         int curr_level = glp_ios_node_level(t, node);
         #ifdef EXPERIMENTAL
             glp_printf("%i(%g,%i) ", 
-                       node, data->branch_data.intobj, curr_level);
+                       node, branch_data->intobj, curr_level);
         #endif
-        if (data->branch_data.intobj >= intopt && curr_level > best_level) {
+        if (branch_data->intobj >= intopt && curr_level > best_level) {
             best_node = node;
             best_level = curr_level;
         }
