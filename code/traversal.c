@@ -62,9 +62,8 @@ sparse_vector_t *initialized_path(int node, glp_tree *t) {
         return NULL;
     }
     
-    node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
-    branch_data_t *branch_data = &(data->branch_data);
-    if (!branch_data->initialized) {
+    branch_data_t *data = branch_data(node, t);
+    if (!data->initialized) {
         return NULL;
     }
     
@@ -88,18 +87,14 @@ sparse_vector_t *path(int node, glp_tree *t, samples_t *samples) {
         }
         
         // Find the cursor's branch data and its parent's
-        node_data_t *data = (node_data_t *) glp_ios_node_data(t, curr_node);
-        branch_data_t *branch_data = &(data->branch_data);
-        glp_assert(branch_data->initialized);
-        node_data_t *data_parent = parent_data(curr_node, t);
-        glp_assert(data_parent != NULL && data_parent->initialized);
-        branch_data_t *parent_branch_data = &(data_parent->branch_data);
-        glp_assert(parent_branch_data->initialized);
+        branch_data_t *data = branch_data(curr_node, t);
+        glp_assert(data->initialized);
+        branch_data_t *parent_data = branch_data(parent, t);
+        glp_assert(parent_data->initialized);
         
         // Append an element to the path
-        append(p, 
-               parent_branch_data->branching_variable, 
-               branch_data->branching_value);
+        append(p, parent_data->branching_variable, data->branching_value);
+        
         curr_node = parent;
     }
     return p;

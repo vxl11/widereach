@@ -228,6 +228,14 @@ void initialize_count(int *cnt, int *parent_cnt) {
 }
 
 
+branch_data_t *branch_data(int node, glp_tree *t) {
+    node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
+    if (NULL == data) {
+        return NULL;
+    }
+    return &(data->branch_data);
+}
+
 node_data_t *parent_data(int node, glp_tree *t) {
     glp_assert(node);
     int parent = glp_ios_up_node(t, node);

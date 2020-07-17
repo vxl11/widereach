@@ -385,6 +385,9 @@ typedef struct {
     double intobj;
 } branch_data_t;
 
+/** Return the branch data of the given node, or NULL if the node has no data */
+branch_data_t *branch_data(int node, glp_tree *);
+
 /** Data recoding the identities of the children of the current node */
 typedef struct {
     /** Counter of how many children are known */
