@@ -347,6 +347,9 @@ int are_consistent(
     int *index, 
     double *, double *);
 
+/** Similar to are_consistent, except that the first array and the index
+ * vectors are replaced by a sparse vector */
+int is_path_consistent(sparse_vector_t *, double *);
 
 /* ----------------------------- GLPK ----------------------------------- */
 

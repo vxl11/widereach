@@ -291,6 +291,15 @@ void test_paths() {
     index[0] = 1; 
     index[1] = 4;
     CU_ASSERT(are_consistent(index, a, b));
+    
+    sparse_vector_t *path = sparse_vector_blank(4);
+    append(path, 3, .4);
+    CU_ASSERT(is_path_consistent(path, a));
+    append(path, 4, .5);
+    CU_ASSERT(is_path_consistent(path, a));
+    append(path, 1, .1);
+    CU_ASSERT_FALSE(is_path_consistent(path, a));
+    free(path);
 }
 
 int main() {
@@ -336,7 +345,7 @@ int main() {
 
     // Paths
 	CU_pSuite paths = CU_add_suite("paths", NULL, NULL);
-	CU_add_test(paths, "children", test_paths);
+	CU_add_test(paths, "paths", test_paths);
 
 	// Run tests
 	CU_basic_run_tests();
