@@ -383,9 +383,12 @@ typedef struct {
     int directional_cnt[2];
     /** Sum of integer infeasibilities */
     double ii_sum;
-    /** Objective value of an integer solution with which this node
-     * is consistent */
+    /** Objective value of an integer solution with which this node was 
+        evaluated for consistency. */
     double intobj;
+    /** A boolean denoting whether the node was consistent with the integer
+     * solution */
+    int is_consistent;
 } branch_data_t;
 
 /** Return the branch data of the given node, or NULL if the node has no data */

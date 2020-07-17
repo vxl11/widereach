@@ -129,16 +129,16 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
         glp_assert(data->initialized);
         if (data->intobj < intopt) {
             sparse_vector_t *p = path(parent, t);
-            if (p != NULL && is_path_consistent(p, integer_solution)) {
-                data->intobj = solution_data->intopt;
-            }
+            data->is_consistent = 
+                p != NULL && is_path_consistent(p, integer_solution);
             free(p);
+            data->intobj = solution_data->intopt;
         }
         int curr_level = glp_ios_node_level(t, node);
         #ifdef EXPERIMENTAL
             glp_printf("%i(%g,%i) ", node, data->intobj, curr_level);
         #endif
-        if (data->intobj >= intopt && curr_level > best_level) {
+        if (data->is_consistent && curr_level > best_level) {
             best_node = node;
             best_level = curr_level;
         }

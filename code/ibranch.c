@@ -91,8 +91,8 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     }
     
     // Update core branch data
-    int class = integer_class(index, &(branch_data->intobj), t, env);
-    class = index_to_class(index, samples);
+    // int class = integer_class(index, &(branch_data->intobj), t, env);
+    int class = index_to_class(index, samples);
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
     // int direction = GLP_NO_BRNCH;
@@ -101,6 +101,8 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     branch_data->direction = direction;
     branch_data->ii_sum = integer_infeasibility(t, samples);
     branch_data->primary_direction = primary;
+    branch_data->intobj = -DBL_MAX;
+    branch_data->is_consistent = 0;
     
     branch_data->initialized = 1;
     return branch_data;
