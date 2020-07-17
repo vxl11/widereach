@@ -57,4 +57,19 @@ int *branching_variables(int node, glp_tree *t, samples_t *samples) {
     return bv;
 }
 
+sparse_vector_t *path(int node, glp_tree *t, samples_t *samples) {
+    int level = glp_ios_node_level(t, node);
+    sparse_vector_t *p = sparse_vector_blank(level);
+    for (int curr_node = glp_ios_up_node(t, glp_ios_curr_node(t));
+         curr_node != 0;
+         curr_node = glp_ios_up_node(t, curr_node)) {
+        node_data_t *data = (node_data_t *) glp_ios_node_data(t, curr_node);
+        glp_assert(data != NULL && data->initialized);
+        branch_data_t *branch_data = &(data->branch_data);
+        glp_assert(branch_data->initialized);
+        append(p, branch_data->branching_variable, 0); // TODO
+    }
+    return p;
+}
+
 

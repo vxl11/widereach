@@ -380,8 +380,6 @@ typedef struct {
     /** Objective value of an integer solution with which this node
      * is consistent */
     double intobj;
-    /** Solution to the linear relaxation at this node */
-    double *solution;
 } branch_data_t;
 
 /** Data recoding the identities of the children of the current node */
