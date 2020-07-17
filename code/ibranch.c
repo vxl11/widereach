@@ -79,8 +79,8 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     branch_data_t *branch_data = &(data->branch_data);
     
     // Update branch data that depend on the parent's
-    node_data_t *data_parent = parent_data(curr_node, t);
     int primary = is_direction_primary(curr_node, 1, t, samples);
+    node_data_t *data_parent = parent_data(curr_node, t);
     if (data_parent != NULL) {
         int branching_variable = data_parent->branch_data.branching_variable;
         branch_data->branching_value = 
