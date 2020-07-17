@@ -105,17 +105,35 @@ void update_active_nodes(
             (last_branching == glp_ios_up_node(t, node));
     }
 }
- 
+
+
+branch_data_t *update_consistency(
+        int parent, 
+        solution_data_t *solution_data, 
+        glp_tree *t) {
+    glp_assert(parent > 0);
+    branch_data_t *data = branch_data(parent, t);
+    glp_assert(data->initialized);
+    double intopt = solution_data->intopt;
+    if (data->intobj < intopt) {
+        sparse_vector_t *p = path(parent, t);
+        data->is_consistent = 
+            p != NULL && is_path_consistent(p, solution_data->integer_solution);
+        free(p);
+        data->intobj = intopt;
+    }
+    return data;
+}
  
 /* Find the deepest node whose parent is consistent with the best 
  * integer solution found by iheur so far.
  * If no such node exists, returns 0. */
 int consistent_node(glp_tree *t, solution_data_t *solution_data) {
-    double intopt = solution_data->intopt;
+
     #ifdef EXPERIMENTAL
+        double intopt = solution_data->intopt;
         glp_printf("consistent(%g) ", intopt);
     #endif
-    double *integer_solution = solution_data->integer_solution;
     int best_node = 0;
     int best_level = 0;
     for (int node = glp_ios_next_node(t, 0);
@@ -124,19 +142,12 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
         int parent = glp_ios_up_node(t, node);
         if (0 == parent) {
             continue;
-        }
-        branch_data_t *data = branch_data(parent, t);
-        glp_assert(data->initialized);
-        if (data->intobj < intopt) {
-            sparse_vector_t *p = path(parent, t);
-            data->is_consistent = 
-                p != NULL && is_path_consistent(p, integer_solution);
-            free(p);
-            data->intobj = solution_data->intopt;
-        }
+        }        
+        branch_data_t *data = update_consistency(parent, solution_data, t);
+
         int curr_level = glp_ios_node_level(t, node);
         #ifdef EXPERIMENTAL
-            glp_printf("%i(%g,%i) ", node, data->intobj, curr_level);
+            glp_printf("%i(%i,%i) ", node, data->is_consistent, curr_level);
         #endif
         if (data->is_consistent && curr_level > best_level) {
             best_node = node;
