@@ -78,6 +78,17 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
 	node_data_t *data = initialize_data(curr_node, t, samples);
     branch_data_t *branch_data = &(data->branch_data);
     
+    // Update branch data that depend on the parent's
+    node_data_t *data_parent = parent_data(curr_node, t);
+    int primary = is_direction_primary(curr_node, 1, t, samples);
+    if (data_parent != NULL) {
+        int branching_variable = data_parent->branch_data.branching_variable;
+        branch_data->branching_value = 
+            glp_get_col_prim(glp_ios_get_prob(t), branching_variable);
+        int branching_class = index_to_class(branching_variable, samples);
+        branch_data->directional_cnt[branching_class] += primary;
+    }
+    
     // Update core branch data
     int class = integer_class(index, &(branch_data->intobj), t, env);
     class = index_to_class(index, samples);
@@ -88,18 +99,7 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     branch_data->class_cnt[index_to_class(index, samples)]++;
     branch_data->direction = direction;
     branch_data->ii_sum = integer_infeasibility(t, samples);
-    int primary = is_direction_primary(curr_node, 1, t, samples);
     branch_data->primary_direction = primary;
-    
-    // Update branch data that depend on the parent's
-    node_data_t *data_parent = parent_data(curr_node, t);
-    if (data_parent != NULL) {
-        int branching_variable = data_parent->branch_data.branching_variable;
-        branch_data->branching_value = 
-            glp_get_col_prim(glp_ios_get_prob(t), branching_variable);
-        int branching_class = index_to_class(branching_variable, samples);
-        branch_data->directional_cnt[branching_class] += primary;
-    }
     
     branch_data->initialized = 1;
     return branch_data;
