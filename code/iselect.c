@@ -110,10 +110,12 @@ void update_active_nodes(
 /* Find the deepest node whose parent is consistent with the best 
  * integer solution found by iheur so far.
  * If no such node exists, returns 0. */
-int consistent_node(double intopt, glp_tree *t) {
+int consistent_node(glp_tree *t, solution_data_t *solution_data) {
+    double intopt = solution_data->intopt;
     #ifdef EXPERIMENTAL
         glp_printf("consistent(%g) ", intopt);
     #endif
+    double *integer_solution = solution_data->integer_solution;
     int best_node = 0;
     int best_level = 0;
     for (int node = glp_ios_next_node(t, 0);
@@ -126,7 +128,11 @@ int consistent_node(double intopt, glp_tree *t) {
         branch_data_t *data = branch_data(parent, t);
         glp_assert(data->initialized);
         if (data->intobj < intopt) {
-            // TODO update consistency
+            sparse_vector_t *p = path(parent, t);
+            if (p != NULL && is_path_consistent(p, integer_solution)) {
+                data->intobj = solution_data->intopt;
+            }
+            free(p);
         }
         int curr_level = glp_ios_node_level(t, node);
         #ifdef EXPERIMENTAL
@@ -138,7 +144,8 @@ int consistent_node(double intopt, glp_tree *t) {
         }
     }
     #ifdef EXPERIMENTAL
-        if (best_node) glp_printf("-> %i\n", best_node);
+        if (best_node) glp_printf("-> %i", best_node);
+        glp_printf("\n");
     #endif
     return best_node;
 }
@@ -160,7 +167,7 @@ void iselect(glp_tree *t, env_t *env) {
         return;
     } 
     
-    int node = consistent_node(solution_data->intopt, t);
+    int node = consistent_node(t, solution_data);
     if (node) {
         glp_ios_select_node(t, node);
         return;
