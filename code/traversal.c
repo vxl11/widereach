@@ -72,7 +72,7 @@ sparse_vector_t *initialized_path(int node, glp_tree *t) {
     return p;
 }
 
-sparse_vector_t *path(int node, glp_tree *t, samples_t *samples) {
+sparse_vector_t *path(int node, glp_tree *t) {
     sparse_vector_t *p = initialized_path(node, t);
     if (NULL == p) {
         return p;

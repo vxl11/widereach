@@ -460,6 +460,12 @@ void traverse(
  * and terminates when a zero is reached. */
 int *branching_variables(int node, glp_tree *, samples_t *);
 
+/** Returns the path from the given node to the root as a sparse vector
+ * containing the branching variables along the paths and their values.
+    It returns NULL if the node is invalid or if its branch data have
+    not been initialized. */
+sparse_vector_t *path(int node, glp_tree *);
+
 
 /** Node signature: parameters that affect the comparison between nodes */
 typedef struct {

@@ -52,14 +52,15 @@ int integer_class(int index, double *intobj, glp_tree *t, env_t *env) {
     }
     
     int curr_node = glp_ios_curr_node(t);
-    int *branching = branching_variables(curr_node, t, samples);
-    double *local_relaxation = solution_values(curr_node, glp_ios_get_prob(t));
-    if (are_consistent(branching, integer_solution, local_relaxation)) {
+    sparse_vector_t *p = path(curr_node, t);
+    if (NULL == p) {
+        return class;
+    }
+    if (is_path_consistent(p, integer_solution)) {
         class = (int) integer_solution[index];
         *intobj = solution_data->intopt;
     }
-    free(local_relaxation);
-    free(branching);
+    free(p);
     
     return class; 
 }
