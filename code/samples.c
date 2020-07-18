@@ -151,3 +151,19 @@ int side(
 
 	return product >= precision ? class : !class;
 }
+
+int side_cnt(
+		int class, 
+		samples_t *samples, 
+		double *hyperplane,
+		double precision) {
+    sample_locator_t loc;
+    loc.class = (int) class;
+    int positive_cnt = 0;
+    size_t count = samples->count[class];
+    for (size_t i = 0; i < count; i++) {
+        loc.index = i;
+        positive_cnt += side(&loc, samples, hyperplane, precision);
+    }
+    return positive_cnt;
+}

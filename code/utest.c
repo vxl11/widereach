@@ -35,14 +35,18 @@ void test_samples() {
 	samples->samples[1][0][0] = 1.+2e-3;
 	samples->samples[1][0][1] = -.5;
 	CU_ASSERT(side(&loc, samples, hyperplane, 1e-3));
-	samples->samples[1][0][0] = 1.;
-	samples->samples[1][0][1] = -.5;
+    loc.index = 1;
+	samples->samples[1][1][0] = 1.;
+	samples->samples[1][1][1] = -.5;
 	CU_ASSERT(!side(&loc, samples, hyperplane, 1e-3));
-	samples->samples[1][0][0] = 1.-1e-3;
-	samples->samples[1][0][1] = -.5;
+    loc.index = 2;
+	samples->samples[1][2][0] = 1.-1e-3;
+	samples->samples[1][2][1] = -.5;
 	CU_ASSERT(!side(&loc, samples, hyperplane, 1e-3));
+    CU_ASSERT_EQUAL(side_cnt(1, samples, hyperplane, 1e-3), 1);
 
 	loc.class = 0;
+    loc.index = 0;
 	samples->samples[0][0][0] = 1.+1e-3;
 	samples->samples[0][0][1] = -.5;
 	CU_ASSERT(side(&loc, samples, hyperplane, 1e-3));
@@ -157,7 +161,7 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(v->ind[2], 5);
 	CU_ASSERT_DOUBLE_EQUAL(v->val[2], 1., 1e-12);
 	free(delete_sparse_vector(v));
-}
+}  
 
 void test_glpk() {
 	env_t env;
