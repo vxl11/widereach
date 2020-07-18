@@ -25,7 +25,7 @@ typedef struct {
 } samples_t;
 
 
-/** Sample locator: specifies a sample in a sample group but call and
+/** Sample locator: specifies a sample in a sample group by class and
  * index within class */
 typedef struct {
 	/** Class of the index. 
@@ -81,6 +81,9 @@ samples_t *random_samples(
                 /** Dimension of the sample space */
 		size_t dimension);
 
+
+/** Returns a new hyperplane defined as a unit vector followed by a bias */
+double *random_hyperplane(size_t dimension);
 
 /** Find whether the given sample is on the positive or negative side 
  * of the given hyperplane 

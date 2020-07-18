@@ -54,6 +54,9 @@ void test_samples() {
 	CU_ASSERT(!side(&loc, samples, hyperplane, 1e-3));
 
 	free(delete_samples(samples));
+    
+    double *rnd_plane = random_hyperplane(2);
+    free(rnd_plane);
 }
 
 

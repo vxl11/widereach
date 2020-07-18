@@ -56,6 +56,19 @@ double *random_point(size_t dimension) {
 	return values;
 }
 
+double *random_hyperplane(size_t dimension) {
+    double *w = CALLOC(dimension + 1, double);
+    random_unit_vector(dimension, w);
+    double *origin = random_point(dimension);
+    w[dimension] = 0.;
+    for (size_t i = 0; i < dimension; i++) {
+        w[dimension] -= w[i] * origin[i];
+    }
+    free(origin);
+    return w;
+}
+    
+
 
 double **random_points(size_t count, size_t dimension) {
 	double **samples = CALLOC(count, double *);

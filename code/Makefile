@@ -28,6 +28,9 @@ itest:	$(OBJ) $(BASE) itest.o
 experiment:	$(OBJ) $(BASE) experiment.o
 	$(CC) $(CFLAGS) -o $@ $(OBJ) experiment.o $(LIBS)
 
+hyperrnd:	$(OBJ) $(BASE) hyperrnd.o
+	$(CC) $(CFLAGS) -o $@ $(OBJ) hyperrnd.o $(LIBS)
+
 dependencies:
 	sudo apt install libcunit1-dev glpk-doc libglpk-dev
 
