@@ -302,6 +302,22 @@ void test_paths() {
     free(path);
 }
 
+void test_random() {
+    double w[] = { 0., 0. };
+    CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 0., 1e-9);
+    w[0] = -1.;
+    CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 1., 1e-9);
+    w[1] = 1.;
+    CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 2., 1e-6);
+    multiply_basic(2., 2, w);
+    CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 8., 1e-6);
+    
+    srand48(20200718110752);
+    double x[7];
+    random_unit_vector(7, x);
+    CU_ASSERT_DOUBLE_EQUAL(length_squared(7, x), 1., 1e-6);
+}
+
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
@@ -346,6 +362,10 @@ int main() {
     // Paths
 	CU_pSuite paths = CU_add_suite("paths", NULL, NULL);
 	CU_add_test(paths, "paths", test_paths);
+    
+    // Random
+	CU_pSuite random = CU_add_suite("random", NULL, NULL);
+	CU_add_test(random, "random", test_random);
 
 	// Run tests
 	CU_basic_run_tests();
