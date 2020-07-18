@@ -19,7 +19,7 @@ unsigned int hyper_seeds[HYPER_SEEDS] = {
     83898336, 41744843, 153111583, 318522606, 952537249, 298531860
 };
 
-#define CONTINUATION 10000
+#define CONTINUATION 100
 
 double single_run(int t, env_t *env) {
     if (t > 0) {
@@ -66,14 +66,10 @@ int main() {
         // print_samples(env.samples);
         env.samples = samples;
     
-        double best_value = -DBL_MAX;
-        for (int t = 0; t <= HYPER_SEEDS; t++) {    
-        // for (int t = 0; t < 1; t++) {
+        // for (int t = 0; t <= HYPER_SEEDS; t++) {    
+        for (int t = 0; t < 1; t++) {
             double value = single_run(t, &env);
-            if (value > best_value) {
-                best_value = value;
-                glp_printf("%g\n", value);
-            }
+            glp_printf("%g\n", value);
         }
         glp_printf("---\n");
     }
