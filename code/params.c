@@ -13,5 +13,6 @@ params_t *params_default() {
 	params->violation_type = GLP_LO;
 	params->branch_target = .0;
 	params->iheur_method = simple;
+    params->rnd_trials = 0;
 	return params;
 }

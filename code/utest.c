@@ -316,14 +316,38 @@ void test_random() {
     CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 1., 1e-9);
     w[1] = 1.;
     CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 2., 1e-6);
-    multiply_basic(2., 2, w);
+    multiply_scalar(2., 2, w);
     CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 8., 1e-6);
     
     srand48(20200718110752);
     double x[7];
     random_unit_vector(7, x);
     CU_ASSERT_DOUBLE_EQUAL(length_squared(7, x), 1., 1e-6);
+    
+    double *pt = random_point(2);
+    CU_ASSERT(0. <= pt[0] && pt[0] < 1.);
+    CU_ASSERT(0. <= pt[1] && pt[1] < 1.);
+    free(pt);
 }
+
+void test_hyperplane() {
+    double w[3] = {.5, .3, -.1 };
+    double w1[3];
+    copy_hyperplane(2, w1, w);
+    for (size_t i = 0; i <= 2; i++) {
+        CU_ASSERT_DOUBLE_EQUAL(w1[i], w[i], 1e-12);
+    }
+    
+    free(random_hyperplane(16));
+    
+    env_t env;
+    env.params = params_default();
+    env.params->rnd_trials = 1;
+	env.samples = random_samples(5, 3, 2);
+	env.solution_data = solution_data_init(5);
+    free(best_random_hyperplane(&env));
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -373,6 +397,10 @@ int main() {
     // Random
 	CU_pSuite random = CU_add_suite("random", NULL, NULL);
 	CU_add_test(random, "random", test_random);
+    
+    // Hyperplane
+	CU_pSuite hyperplane = CU_add_suite("hyperplane", init_samples, NULL);
+	CU_add_test(hyperplane, "hyperplane", test_hyperplane);
 
 	// Run tests
 	CU_basic_run_tests();

@@ -33,6 +33,7 @@ double single_run(int t, env_t *env) {
         double *hyperplane = random_hyperplane(samples->dimension);
         int X = side_cnt(1, samples, hyperplane, params->epsilon_positive);
         int Y = side_cnt(0, samples, hyperplane, params->epsilon_positive);
+        free(hyperplane);
         double theta = params->theta;
         double violation = 
             (theta - 1.) * X + theta * (Y + params->epsilon_precision);

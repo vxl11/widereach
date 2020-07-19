@@ -1,4 +1,5 @@
 #include <math.h>
+#include <float.h>
 
 #include "widereach.h"
 #include "helper.h"

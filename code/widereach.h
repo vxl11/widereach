@@ -258,6 +258,57 @@ typedef struct {
 env_t *delete_env(env_t *);
 
 
+/* --------------------------- Random number generation ------------------ */
+
+/** Return the square of the length of the 
+ * d-dimensional vector given as argument */
+double length_squared(
+    /** Vector dimention */
+    size_t d, 
+    /** Vector */
+    double *w);
+
+/** Generates two normal random variables and stores the result in the
+ * vector passed as an argument. */
+void normal_pair(double *w);
+
+/** Multiply a vector by a scalar. */
+double multiply_scalar(
+    /** Scalar factor */
+    double a, 
+    /** Size of the vector to be multiplied */
+    size_t d, 
+    /** Vector to be multiplied */
+    double *w);
+
+/** Generate a random point in the unit hypercube of the given dimension.
+ * It returns a newly allocated vector. */
+double *random_point(size_t dimension);
+
+/** Generates a random unit d-dimensional vector. */
+void random_unit_vector(
+    /** Vector size */
+    size_t d, 
+    /** Random unit d-dimensional vector, 
+     *  stores the result of the computation */
+    double *w);
+
+/** Copy a hyperplane of the given dimension into another one.
+ * A hyperplane is defined as dimension+1 vector in which the first
+ * dimension component contain a vector perpendicular to the hyperplane
+ * and the last component contains the intercept. */
+void copy_hyperplane(size_t dimension, double *dest, double *src);
+
+/** Generates a random hyperplane through a random point on the unit 
+ * hypersquare. The orthogonal vector part of the hyperplane as unit size.
+   Returns a newly allocated hyperplane.  */
+double *random_hyperplane(size_t dimension);
+
+/** Generates env->rnd_trials hyperplanes and returns 
+ * one that achieves the highest value of the objective function. 
+   The returned vector has been dynamically allocated. */
+double *best_random_hyperplane(env_t *env);
+
 /* ------------------------ Indexing ---------------------------------- */
 
 /*
