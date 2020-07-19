@@ -19,7 +19,7 @@ unsigned int hyper_seeds[HYPER_SEEDS] = {
     83898336, 41744843, 153111583, 318522606, 952537249, 298531860
 };
 
-#define CONTINUATION 100
+#define CONTINUATION 100000
 
 double single_run(int t, env_t *env) {
     if (t > 0) {
@@ -42,6 +42,7 @@ double single_run(int t, env_t *env) {
         double value = X - params->lambda * violation;
         if (value > best_value) {
             best_value = value;
+            glp_printf("%i\t%g\n", k, best_value);
         }
     }
     
@@ -58,19 +59,22 @@ int main() {
     int n = 1000;
     env.params->lambda = 100 * (n + 1);
     
-    for (int s = 0; s < SAMPLE_SEEDS; s++) {
-    // for (int s = 0; s < 1; s++) {
-        srand48(samples_seeds[s]);
+    for (size_t dimension = 2; dimension <= 256; dimension += dimension) {
+        // for (int s = 0; s < SAMPLE_SEEDS; s++) {
+        for (int s = 0; s < 1; s++) {
+            srand48(samples_seeds[s]);
     
-        samples_t *samples = random_samples(n, n / 2, 2);
-        // print_samples(env.samples);
-        env.samples = samples;
+            samples_t *samples = random_samples(n, n / 2, dimension);
+            // print_samples(env.samples);
+            env.samples = samples;
     
-        // for (int t = 0; t <= HYPER_SEEDS; t++) {    
-        for (int t = 0; t < 1; t++) {
-            double value = single_run(t, &env);
-            glp_printf("%g\n", value);
+            // for (int t = 0; t <= HYPER_SEEDS; t++) {    
+            for (int t = 0; t < 1; t++) {
+                // double value = 
+                single_run(t, &env);
+                // glp_printf("%g\n", value);
+            }
+            // glp_printf("---\n");
         }
-        glp_printf("---\n");
     }
 }

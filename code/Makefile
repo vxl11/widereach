@@ -38,4 +38,4 @@ dependencies:
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
 
 clean:
-	rm *.o utest itest experiment-* hyperrnd
+	rm *.o utest itest experiment experiment-* hyperrnd hyperrnd-*
