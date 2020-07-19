@@ -408,6 +408,16 @@ sparse_vector_t *precision_row(
 /** Finds and return the class of the given GLPK decision variable */
 int index_to_class(int idx, samples_t *);
 
+/** Convert a hyperplane into an integer solution vector 
+ * 
+ * @return the objective value achieved by the integer solution */
+double hyperplane_to_solution(
+    /** The hyperplane around which the integer solution is to be computed */
+    double *hyperplane, 
+    /** The solution vector, or NULL if the solution is not needed */
+    double *solution,
+    env_t *);
+
 
 /* ----------------------------- Paths ---------------------------------- */
 /** Check whether the arrays are consistent along the given indexes */

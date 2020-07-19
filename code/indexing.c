@@ -125,3 +125,51 @@ int index_label(int i, samples_t *samples) {
 	glp_assert(class >= 0);
 	return samples->label[class];
 }
+
+void update_hyperplane(size_t dimension, double *solution, double *hyperplane) {
+    if (solution != NULL) {
+        copy_hyperplane(dimension, solution + 1, hyperplane);
+    }
+}
+
+void update_solution(double *solution, int index, double value) {
+    if (solution != NULL) {
+        solution[index] = value;
+    }
+}
+
+double hinged_value(double v, int class) {
+    return class ? v : 0.;
+}
+
+
+double hyperplane_to_solution(
+        double *hyperplane, 
+        double *solution,
+        env_t *env) {
+    samples_t *samples = env->samples;
+    update_hyperplane(samples->dimension, solution, hyperplane);
+    
+    params_t *params = env->params;
+    double theta = params->theta;
+    double violation = theta * params->epsilon_precision;
+    double precision[] = { params->epsilon_negative, params->epsilon_positive };
+    double violation_coefficient[] = { theta, theta - 1. };
+    int idx_min = idx_extreme(0, 1, 0, samples);
+    int idx_max = violation_idx(0, samples);
+    double value = 0.;
+    for (int i = idx_min; i < idx_max; i++) {
+        sample_locator_t *loc = locator(i, samples);
+        int class = loc->class;        
+        double v = side(loc, samples, hyperplane, precision[class]);
+        free(loc);
+        update_solution(solution, i, v);
+        violation += v * violation_coefficient[class];
+        value += hinged_value(v, class);
+    }
+    violation = hinged_value(violation, violation >= 0.);
+    update_solution(solution, idx_max, violation);
+    value -= params->lambda * violation;
+    
+    return value;
+}
