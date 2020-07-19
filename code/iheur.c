@@ -131,6 +131,16 @@ double *hyperplane(glp_prob *p, samples_t *samples) {
 	return hyperplane;
 }
 
+
+double *fractional_solution(glp_prob *p, samples_t *samples) {
+    int idx_max = violation_idx(0, samples);
+    double *solution = CALLOC(idx_max + 1, double);
+    for (int i = 1; i <= idx_max; i++) {
+        solution[i] = glp_get_col_prim(p, i);
+    }
+    return solution;
+}
+
 void iheur(glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
     #ifdef EXPERIMENTAL
@@ -140,40 +150,34 @@ void iheur(glp_tree *t, env_t *env) {
     if (data->iheur) {
         return;
     }
-	// glp_printf("------------- iheur ------\n");
 
 	glp_prob *p = glp_ios_get_prob(t);
-
 	samples_t *samples = env->samples;
-	double *plane = hyperplane(p, samples);
-
-	// Samples
-	int idx_max = violation_idx(0, samples);
-	double *solution = CALLOC(idx_max + 1, double);
-	double X = 0.;
-	double Y = 0.;
-	for (int i = 1; i < idx_max; i++) {
-		solution[i] = 
-			iheur_round(i, glp_get_col_prim(p, i), plane, 
-					&X, &Y, env);
-	}
-	free(plane);
-
-	// Violation
-	params_t *params = env->params;
-	solution[idx_max] = iheur_violation(X, Y, params);
+	double *solution = fractional_solution(p, samples);
+    double value = hyperplane_to_solution(solution + 1, solution, env);
+    
+    // Attempt to find an initial solution based on a random hyperplane
+    solution_data_t *solution_data = env->solution_data;
+    if (NULL == solution_data->integer_solution) {
+        double *random_solution = blank_solution(samples);
+        double random_objective_value = 
+                hyperplane_to_solution(best_random_hyperplane(env), 
+                                       random_solution, 
+                                       env);
+        if (random_objective_value > value) {
+            free(solution);
+            solution = random_solution;
+            value = random_objective_value;
+        } else {
+            free(random_solution);
+        }
+    }
 
 	int status = glp_ios_heur_sol(t, solution);
 	if (!status) {
-		print_solution(idx_max, solution, p);
+		print_solution(violation_idx(0, samples), solution, p);
 		traverse(solution, t, env);
-        solution_data_t *solution_data = env->solution_data;
-        double **integer_solution = &(solution_data->integer_solution);
-        if (*integer_solution != NULL) {
-            free(*integer_solution);
-        }
-        *integer_solution = solution;
-        solution_data->intopt = X - env->params->lambda * solution[idx_max];
+        update_solution(solution_data, solution, value);
 	} else {
         free(solution);
     }

@@ -141,13 +141,14 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(loc->index, 0);
 	free(loc);
     
-    // Regression test for hyperplane to solution
     double hyperplane[3] = { 1., 1., -1. };
     env_t env;
     env.samples = samples;
     env.params = params_default();
+    double *solution = blank_solution(samples);
     double value = hyperplane_to_solution(hyperplane, NULL, &env);
     CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
+    free(solution);
 
 	sparse_vector_t *v = precision_row(samples, .7);
 	CU_ASSERT_EQUAL(v->len, 6);
@@ -254,6 +255,11 @@ void test_solution_data() {
 	append_data(data, 4);
 	CU_ASSERT_EQUAL(data->rank_significant, 1);
 	CU_ASSERT_EQUAL(data->rank[0], 4);
+    update_solution(data, NULL, 0.);
+    CU_ASSERT_EQUAL(data->intopt, 0.);
+    CU_ASSERT_PTR_NULL(data->integer_solution);
+    update_solution(data, NULL, 1.);
+    CU_ASSERT_EQUAL(data->intopt, 1.);
 	free(delete_solution_data(data));
 }
 

@@ -20,3 +20,15 @@ solution_data_t *append_data(solution_data_t *data, int index) {
 	data->rank[(data->rank_significant)++] = index;
 	return data;
 }
+
+void update_solution(
+        solution_data_t *solution_data, 
+        double *solution, 
+        double value) {
+    double **integer_solution = &(solution_data->integer_solution);
+    if (*integer_solution != NULL) {
+        free(*integer_solution);
+    }
+    *integer_solution = solution;
+    solution_data->intopt = value;
+}

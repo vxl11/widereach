@@ -1,3 +1,6 @@
+#include <math.h>
+#include <float.h>
+
 #include "widereach.h"
 #include "helper.h"
 
@@ -126,8 +129,17 @@ int index_label(int i, samples_t *samples) {
 	return samples->label[class];
 }
 
-void update_solution(double *solution, int index, double value) {
-    if (solution != NULL) {
+double *blank_solution(samples_t *samples) {
+    int idx_max = violation_idx(0, samples);
+    double *solution = CALLOC(idx_max + 1, double);
+    for (int i = 1; i <= idx_max; i++) {
+        solution[i] = .5;
+    }
+    return solution;
+}
+
+void update_solution_element(double *solution, int index, double value) {
+    if (solution != NULL && solution[index] == ceil(solution[index])) {
         solution[index] = value;
     }
 }
@@ -140,6 +152,10 @@ double hyperplane_to_solution(
         double *hyperplane, 
         double *solution,
         env_t *env) {
+    if (NULL == hyperplane) {
+        return -DBL_MAX;
+    }
+    
     params_t *params = env->params;
     double theta = params->theta;
     double violation = theta * params->epsilon_precision;
@@ -154,7 +170,7 @@ double hyperplane_to_solution(
         int class = loc->class;        
         double v = side(loc, samples, hyperplane, precision[class]);
         free(loc);
-        update_solution(solution, i, v);
+        update_solution_element(solution, i, v);
         violation += v * violation_coefficient[class];
         value += hinge(class, v);
     }

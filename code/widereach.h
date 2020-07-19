@@ -240,6 +240,15 @@ solution_data_t *delete_solution_data(solution_data_t *);
  * data */
 solution_data_t *append_data(solution_data_t *, int index);
 
+/** Update the integer solution and its objective value with the provided
+ * arguments */
+void update_solution(
+        solution_data_t *,
+        /** New solution vector */
+        double *solution, 
+        /** Objective value of the new solution vector */
+        double value);
+
 /* ---------------------------- Environment ----------------------------- */
 
 /** Environment */
@@ -408,13 +417,20 @@ sparse_vector_t *precision_row(
 /** Finds and return the class of the given GLPK decision variable */
 int index_to_class(int idx, samples_t *);
 
+/** Create a new solution in which all elements are 1/2 */
+double *blank_solution(samples_t *);
+
 /** Convert a hyperplane into an integer solution vector 
  * 
- * @return the objective value achieved by the integer solution */
+ * @return the objective value achieved by the integer solution, or 
+            -DBL_MAX if the hyperplane is NULL. */
 double hyperplane_to_solution(
     /** The hyperplane around which the integer solution is to be computed */
     double *hyperplane, 
-    /** The solution vector, or NULL if the solution is not needed */
+    /** The solution vector, or NULL if the solution is not needed.
+     Note that if solution is not null and solution[i] is integer,
+     its value is not replaced by the hyperplane side. 
+     If the hyperplane is NULL, the solution is left unchanged. */
     double *solution,
     env_t *);
 

@@ -25,12 +25,16 @@ double *random_hyperplane(size_t dimension) {
 
 
 double *best_random_hyperplane(env_t *env) {
+    int rnd_trials = env->params->rnd_trials;
+    if (!rnd_trials) {
+        return NULL;
+    }
+    
     samples_t *samples = env->samples;
     size_t dimension = samples->dimension;
     double best_value = -DBL_MAX;
     double *best_hyperplane = CALLOC(dimension + 1, double);
-    params_t *params = env->params;
-    for (int k = 0; k < params->rnd_trials; k++) {
+    for (int k = 0; k < rnd_trials; k++) {
         double *hyperplane = random_hyperplane(dimension);
         double value = hyperplane_to_solution(hyperplane, NULL, env);
         if (value > best_value) {
