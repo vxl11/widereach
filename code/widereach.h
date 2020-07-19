@@ -202,6 +202,8 @@ typedef struct {
 	int branch_target;
 	/** Method to use to round to an integer solution */
 	iheur_method_t iheur_method;
+    /** Number of initial random trials to find an integer solution */
+    int rnd_trials;
 } params_t;
 
 

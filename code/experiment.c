@@ -62,6 +62,7 @@ int main() {
     env.params->iheur_method = deep;
     int n = 1000;
     env.params->lambda = 100 * (n + 1);
+    env.rnd_trials = 0;
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {
     for (int s = 0; s < 1; s++) {

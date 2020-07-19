@@ -27,10 +27,10 @@ double single_run(int t, env_t *env) {
     }
     
     samples_t *samples = env->samples;
+    params_t *params = env->params;
     double best_value = -DBL_MAX;
-    for (int k = 0; k < CONTINUATION; k++) {
+    for (int k = 0; k < params->rnd_trials; k++) {
         double *hyperplane = random_hyperplane(samples->dimension);
-        params_t *params = env->params;
         int X = side_cnt(1, samples, hyperplane, params->epsilon_positive);
         int Y = side_cnt(0, samples, hyperplane, params->epsilon_positive);
         double theta = params->theta;
@@ -56,12 +56,13 @@ int main() {
     // env.params->theta = 0.7;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
-    int n = 1000;
+    int n = 100000;
     env.params->lambda = 100 * (n + 1);
+    env.params->rnd_trials = CONTINUATION;
     
-    for (size_t dimension = 2; dimension <= 256; dimension += dimension) {
-        // for (int s = 0; s < SAMPLE_SEEDS; s++) {
-        for (int s = 0; s < 1; s++) {
+    for (size_t dimension = 2; dimension <= 2; dimension += dimension) {
+        for (int s = 0; s < SAMPLE_SEEDS; s++) {
+        // for (int s = 0; s < 1; s++) {
             srand48(samples_seeds[s]);
     
             samples_t *samples = random_samples(n, n / 2, dimension);
