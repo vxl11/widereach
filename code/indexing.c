@@ -139,7 +139,7 @@ double *blank_solution(samples_t *samples) {
 }
 
 void update_solution_element(double *solution, int index, double value) {
-    if (solution != NULL && solution[index] == ceil(solution[index])) {
+    if (solution != NULL && solution[index] != ceil(solution[index])) {
         solution[index] = value;
     }
 }
