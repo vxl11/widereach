@@ -256,6 +256,33 @@ int highest_score_index(glp_tree *t, env_t *env) {
 	return candidate_idx;
 }
 
+/* Returns the eligible decision variable that is closest to the current
+ * hyperplane (minus branch target). 
+ * TODO: should break ties by directional count */
+void branch_closest(glp_tree *t, env_t *env) {
+	glp_prob *p = glp_ios_get_prob(t);
+    double branch_target = env->params->branch_target;
+	double candidate_frac = DBL_MAX;
+	int candidate_idx = 0;
+    samples_t *samples = env->samples;
+	int idx_max = violation_idx(0, samples);
+	for (int i = 1; i < idx_max; i++) {
+		if (!glp_ios_can_branch(t, i)) {
+            continue;
+        }
+        double value = glp_get_col_prim(p, i);
+        if (index_label(i, samples) > 0) {
+            value = 1. - value;
+        }
+        value = fabs(value - branch_target);
+        if (value <= candidate_frac) {
+            candidate_frac = value;
+            candidate_idx = i;
+		}
+	}
+	branch_on(candidate_idx, t, env);
+}
+
 int is_first_deficient(int a, int b, int threshold) {
     return a < threshold && threshold <= b;
 }
@@ -301,7 +328,8 @@ void ibranch(glp_tree *t, env_t *env) {
 	ibranch_LFV(t, env); 
 	*/
 	// random_flat(t, env); 
-	branch_even(t, env); 
+	// branch_even(t, env); 
+	branch_closest(t, env);
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
