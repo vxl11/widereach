@@ -110,6 +110,23 @@ void print_samples(samples_t *samples) {
 }
 
 
+double distance(
+        sample_locator_t *loc, 
+        samples_t *samples, 
+        double *hyperplane, 
+		double precision) {
+	size_t class = loc->class;
+	double *sample = samples->samples[class][loc->index];
+    size_t dimension = samples->dimension;
+	double product = - hyperplane[dimension] 
+                     - samples->label[class] * precision;
+	for (size_t i = 0; i < dimension; i++) {
+		product += sample[i] * hyperplane[i];
+	}
+    return product;
+}
+
+
 int side(
 		sample_locator_t *loc, 
 		samples_t *samples, 

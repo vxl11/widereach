@@ -101,6 +101,19 @@ int side(
 		/** Precision around the hyperplane */
 		double precision);
 
+/** Returns the signed distance of the given sample from the given hyperplane.*/
+double distance(
+		/** Locator of the sample of interest */
+		sample_locator_t *, 
+		/** Sample collection */
+		samples_t *, 
+		/** Array of size dimension + 1 containing first the 
+		 * hyperplane coefficients w1, ... , wd, and then the 
+		 * bias c */
+		double *hyperplane,
+		/** Precision around the hyperplane */
+		double precision);
+
 /** Return the number of samples in the given class that 
  * are on the positive side of the given hyperplane. */
 int side_cnt(
