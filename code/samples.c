@@ -132,18 +132,8 @@ int side(
 		samples_t *samples, 
 		double *hyperplane, 
 		double precision) {
-	size_t dimension = samples->dimension;
-	size_t class = loc->class;
-	double *sample = samples->samples[class][loc->index];
-	double product = 0.;
-	for (size_t i = 0; i < dimension; i++) {
-		product += sample[i] * hyperplane[i];
-	}
-	product -= hyperplane[dimension];
-    // glp_printf("%i,%i -> %.18g\n", loc->class, loc->index, product);
-	product *= (double) samples->label[class];
-
-	return product >= precision ? class : !class;
+    double dist = distance(loc, samples, hyperplane, precision);
+    return 0. == dist ? loc->class : dist > 0.;
 }
 
 int side_cnt(
