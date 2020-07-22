@@ -261,10 +261,10 @@ void test_solution_data() {
 	append_data(data, 4);
 	CU_ASSERT_EQUAL(data->rank_significant, 1);
 	CU_ASSERT_EQUAL(data->rank[0], 4);
-    update_solution(data, NULL, 0.);
+    update_solution(data, NULL, 0., NULL);
     CU_ASSERT_EQUAL(data->intopt, 0.);
     CU_ASSERT_PTR_NULL(data->integer_solution);
-    update_solution(data, NULL, 1.);
+    update_solution(data, NULL, 1., NULL);
     CU_ASSERT_EQUAL(data->intopt, 1.);
 	free(delete_solution_data(data));
 }

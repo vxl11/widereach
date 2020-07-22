@@ -7,6 +7,7 @@ solution_data_t *solution_data_init(size_t size) {
 	data->rank = CALLOC(size, int);
     data->branching_node = 0;
     data->integer_solution = NULL;
+    data->distance = NULL;
 	return data;
 }
 
@@ -24,11 +25,20 @@ solution_data_t *append_data(solution_data_t *data, int index) {
 void update_solution(
         solution_data_t *solution_data, 
         double *solution, 
-        double value) {
+        double value,
+        double *distance) {
     double **integer_solution = &(solution_data->integer_solution);
     if (*integer_solution != NULL) {
         free(*integer_solution);
     }
     *integer_solution = solution;
+    
     solution_data->intopt = value;
+    
+    double **dist = &(solution_data->distance);
+    if (*dist != NULL) {
+        free(*dist);
+    }
+    *dist = distance;
 }
+    
