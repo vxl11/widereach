@@ -283,6 +283,26 @@ void branch_closest(glp_tree *t, env_t *env) {
 	branch_on(candidate_idx, t, env);
 }
 
+void branch_by_violation(glp_tree *t, env_t *env) {
+    int *violation_index = env->solution_data->violation_index;
+    if (NULL == violation_index) {
+        return;
+    }
+    
+    int samples_cnt = samples_total(env->samples);
+    int candidate_idx = 0;
+    for (int i = 0; i < samples_cnt; i++) {
+        int idx = violation_index[i];
+        glp_printf("%i ", idx);
+        if (glp_ios_can_branch(t, idx)) {
+            candidate_idx = idx;
+            break;
+        }
+    }
+    glp_printf("-> %i\n", candidate_idx);
+    branch_on(candidate_idx, t, env);
+}
+
 int is_first_deficient(int a, int b, int threshold) {
     return a < threshold && threshold <= b;
 }
