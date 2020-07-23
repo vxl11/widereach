@@ -252,8 +252,8 @@ typedef struct {
 	int *rank;
     /** Last node that branched */
     int branching_node;
-    /** Distances of samples from the hyperplane, indexed as per GLPK */
-    double *distance;
+    /** GLPK indexes sorted by hyperplane violation */
+    int *violation_index;
     /** Best integer solution found by iheur */
     double *integer_solution;
     /** Objective value achieved by the best integer solution */
@@ -281,8 +281,8 @@ void update_solution(
         double *solution, 
         /** Objective value of the new solution vector */
         double value,
-        /** Distance of samples from the solution's hyperplane */
-        double *distance);
+        /** Indexes sorted by violation */
+        int *violation_index);
 
 /* ---------------------------- Environment ----------------------------- */
 
