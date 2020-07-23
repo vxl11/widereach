@@ -28,17 +28,13 @@ void update_solution(
         double value,
         double *distance) {
     double **integer_solution = &(solution_data->integer_solution);
-    if (*integer_solution != NULL) {
-        free(*integer_solution);
-    }
+    free(*integer_solution);
     *integer_solution = solution;
     
     solution_data->intopt = value;
     
     double **dist = &(solution_data->distance);
-    if (*dist != NULL) {
-        free(*dist);
-    }
+    free(*dist);
     *dist = distance;
 }
     
