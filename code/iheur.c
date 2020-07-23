@@ -177,7 +177,8 @@ void iheur(glp_tree *t, env_t *env) {
 	if (!status) {
 		print_solution(violation_idx(0, samples), solution, p);
 		traverse(solution, t, env);
-        update_solution(solution_data, solution, value, NULL);
+        int *violation_indexes = sorted_by_violation(solution + 1, env);
+        update_solution(solution_data, solution, value, violation_indexes);
 	} else {
         free(solution);
     }
