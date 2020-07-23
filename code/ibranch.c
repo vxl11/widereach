@@ -298,8 +298,9 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         int idx = violation_index[i];
         if (!idx) {
             #ifdef EXPERIMENTAL
-                glp_printf(" -> X\n");
+                glp_printf(" -> rnd\n");
             #endif
+            random_flat(t, env);
             return;
         }
         #ifdef EXPERIMENTAL
@@ -361,9 +362,9 @@ void ibranch(glp_tree *t, env_t *env) {
 	ibranch_LFV(t, env); 
 	*/
 	// random_flat(t, env); 
-	// branch_even(t, env); 
+	branch_even(t, env); 
 	// branch_closest(t, env);
-	branch_by_violation(t, env);
+	// branch_by_violation(t, env);
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
