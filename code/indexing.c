@@ -252,6 +252,8 @@ int *sorted_by_violation(double *hyperplane, env_t *env) {
     int *sorted_index = CALLOC(ary_size, int);
     for (int i = 0; i < ary_size; i++) {
         int idx = idx_min + i;
+        /* glp_printf("violation(%i)=%g\n", 
+                   dist[idx].index, dist[idx].directional_distance); */
         sorted_index[i] = dist[idx].directional_distance < DBL_MAX ? 
                             dist[idx].index : 0;
     }

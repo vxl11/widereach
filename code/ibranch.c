@@ -283,6 +283,7 @@ void branch_closest(glp_tree *t, env_t *env) {
 	branch_on(candidate_idx, t, env);
 }
 
+void branch_even(glp_tree *t, env_t *env);
 void branch_by_violation(glp_tree *t, env_t *env) {
     int *violation_index = env->solution_data->violation_index;
     if (NULL == violation_index) {
@@ -300,7 +301,9 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             #ifdef EXPERIMENTAL
                 glp_printf(" -> rnd\n");
             #endif
-            random_flat(t, env);
+            // random_flat(t, env);
+            // branch_even(t, env);
+            branch_closest(t, env);
             return;
         }
         #ifdef EXPERIMENTAL
@@ -347,6 +350,7 @@ void branch_even(glp_tree *t, env_t *env) {
     } else {
         // glp_printf("attempting a random flat\n");
         random_flat(t, env);
+        // branch_by_violation(t, env);
     }
     return;
 }
@@ -362,9 +366,9 @@ void ibranch(glp_tree *t, env_t *env) {
 	ibranch_LFV(t, env); 
 	*/
 	// random_flat(t, env); 
-	branch_even(t, env); 
+	// branch_even(t, env); 
 	// branch_closest(t, env);
-	// branch_by_violation(t, env);
+	branch_by_violation(t, env);
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
