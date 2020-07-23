@@ -251,7 +251,9 @@ int *sorted_by_violation(double *hyperplane, env_t *env) {
     qsort(dist + idx_min, ary_size, sizeof(struct distance_record), dist_cmp);
     int *sorted_index = CALLOC(ary_size, int);
     for (int i = 0; i < ary_size; i++) {
-        sorted_index[i] = dist[idx_min + i].index;
+        int idx = idx_min + i;
+        sorted_index[i] = dist[idx].directional_distance < DBL_MAX ? 
+                            dist[idx].index : 0;
     }
     free(dist);
     return sorted_index;

@@ -289,17 +289,30 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         return;
     }
     
+    #ifdef EXPERIMENTAL
+        glp_printf("branching variable: ");
+    #endif
     int samples_cnt = samples_total(env->samples);
     int candidate_idx = 0;
     for (int i = 0; i < samples_cnt; i++) {
         int idx = violation_index[i];
-        glp_printf("%i ", idx);
+        if (!idx) {
+            #ifdef EXPERIMENTAL
+                glp_printf(" -> X\n");
+            #endif
+            return;
+        }
+        #ifdef EXPERIMENTAL
+            glp_printf("%i ", idx);
+        #endif
         if (glp_ios_can_branch(t, idx)) {
             candidate_idx = idx;
             break;
         }
     }
-    glp_printf("-> %i\n", candidate_idx);
+    #ifdef EXPERIMENTAL
+        glp_printf("-> %i\n", candidate_idx);
+    #endif
     branch_on(candidate_idx, t, env);
 }
 
