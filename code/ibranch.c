@@ -349,7 +349,8 @@ void ibranch(glp_tree *t, env_t *env) {
 	*/
 	// random_flat(t, env); 
 	// branch_even(t, env); 
-	branch_closest(t, env);
+	// branch_closest(t, env);
+	branch_by_violation(t, env);
 	return;
 
 	/* Choice of branching index: try high rank first, and if that
