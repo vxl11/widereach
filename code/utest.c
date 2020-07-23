@@ -151,10 +151,13 @@ void test_indexing() {
     env_t env;
     env.samples = samples;
     env.params = params_default();
-    double *solution = blank_solution(samples);
     double value = hyperplane_to_solution(hyperplane, NULL, &env);
     CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
-    free(solution);
+    double *distance = blank_solution(samples);
+    hyperplane_to_distance(hyperplane, distance, &env);
+    // TODO CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
+    free(distance);
+    
 
 	sparse_vector_t *v = precision_row(samples, .7);
 	CU_ASSERT_EQUAL(v->len, 6);

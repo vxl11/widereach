@@ -437,6 +437,15 @@ int index_to_class(int idx, samples_t *);
 /** Create a new solution in which all elements are 1/2 */
 double *blank_solution(samples_t *);
 
+/** Convert a hyperplane into an vector of sample distances from the 
+ * hyperplane. */
+void hyperplane_to_distance(
+    /** The hyperplane around which the integer solution is to be computed */
+    double *hyperplane, 
+    /** The distance vector. If the hyperplane is NULL, it is left unchanged. */
+    double *distance,
+    env_t *);
+
 /** Convert a hyperplane into an integer solution vector 
  * 
  * @return the objective value achieved by the integer solution, or 

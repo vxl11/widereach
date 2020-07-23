@@ -148,6 +148,27 @@ double hinge(int cond, double v) {
     return cond ? v : 0.;
 }
 
+void hyperplane_to_distance(
+        double *hyperplane, 
+        double *dist, 
+        env_t *env) {
+    if (NULL == hyperplane) {
+        return;
+    }
+    
+    params_t *params = env->params;
+    double precision[] = { params->epsilon_negative, params->epsilon_positive };
+    samples_t *samples = env->samples;
+    int idx_min = idx_extreme(0, 1, 0, samples);
+    int idx_max = violation_idx(0, samples);
+    for (int i = idx_min; i < idx_max; i++) {
+        sample_locator_t *loc = locator(i, samples);
+        dist[i] = distance(loc, samples, hyperplane, precision[loc->class]);
+        free(loc);
+    }
+}
+
+
 double hyperplane_to_solution(
         double *hyperplane, 
         double *solution,
