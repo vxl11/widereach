@@ -204,3 +204,55 @@ double hyperplane_to_solution(
     
     return value;
 }
+
+
+struct distance_record {
+    int index;
+    double directional_distance;
+};
+
+int dist_cmp(const void *a, const void *b) {
+    struct distance_record *r1 = (struct distance_record *) a;
+    struct distance_record *r2 = (struct distance_record *) b;
+    double d1 = r1->directional_distance;
+    double d2 = r2->directional_distance;
+    if (d1 > d2) {
+        return 1;
+    } else if (d1 < d2) {
+        return -1;
+    } else {
+        return 0;
+    }
+}
+
+int *sorted_by_violation(double *hyperplane, env_t *env) {
+    if (NULL == hyperplane) {
+        return NULL;
+    }
+    
+    params_t *params = env->params;
+    double precision[] = { params->epsilon_negative, params->epsilon_positive };
+    samples_t *samples = env->samples;
+    size_t dimension = violation_idx(0, samples);
+    struct distance_record *dist = CALLOC(dimension, struct distance_record);
+    int idx_min = idx_extreme(0, 1, 0, samples);
+    for (int i = idx_min; i < dimension; i++) {
+        dist[i].index = i;
+        sample_locator_t *loc = locator(i, samples);
+        int class = loc->class;
+        double dist_dir = 
+            sample_violation(loc, samples, hyperplane, precision[class]);
+        if (dist_dir < 0.) {
+            dist_dir = DBL_MAX;
+        }
+        dist[i].directional_distance = dist_dir;
+    }
+    size_t ary_size = dimension - idx_min;
+    qsort(dist + idx_min, ary_size, sizeof(struct distance_record), dist_cmp);
+    int *sorted_index = CALLOC(ary_size, int);
+    for (int i = 0; i < ary_size; i++) {
+        sorted_index[i] = dist[idx_min + i].index;
+    }
+    free(dist);
+    return sorted_index;
+}

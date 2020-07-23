@@ -114,6 +114,24 @@ double distance(
 		/** Precision around the hyperplane */
 		double precision);
 
+
+/** Returns the violation of the given sample from the given hyperplane. 
+
+    The violation is equal to the distance, except that for 
+    positive samples it has been multiplied by -1. */
+double sample_violation(
+		/** Locator of the sample of interest */
+		sample_locator_t *, 
+		/** Sample collection */
+		samples_t *, 
+		/** Array of size dimension + 1 containing first the 
+		 * hyperplane coefficients w1, ... , wd, and then the 
+		 * bias c */
+		double *hyperplane,
+		/** Precision around the hyperplane */
+		double precision);
+
+
 /** Return the number of samples in the given class that 
  * are on the positive side of the given hyperplane. */
 int side_cnt(
@@ -438,7 +456,8 @@ int index_to_class(int idx, samples_t *);
 double *blank_solution(samples_t *);
 
 /** Convert a hyperplane into an vector of sample distances from the 
- * hyperplane. */
+ * hyperplane. 
+    WARNING: currently unsupported and utested */
 void hyperplane_to_distance(
     /** The hyperplane around which the integer solution is to be computed */
     double *hyperplane, 
@@ -459,6 +478,10 @@ double hyperplane_to_solution(
      If the hyperplane is NULL, the solution is left unchanged. */
     double *solution,
     env_t *);
+
+/** Returns an array of GLPK indexes in increasing order of violation
+ * from the given hyperplane */
+int *sorted_by_violation(double *hyperplane, env_t *);
 
 
 /* ----------------------------- Paths ---------------------------------- */

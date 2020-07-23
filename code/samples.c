@@ -126,6 +126,18 @@ double distance(
     return product;
 }
 
+double sample_violation(
+        sample_locator_t *loc, 
+        samples_t *samples, 
+        double *hyperplane, 
+		double precision) {
+    double dist = distance(loc, samples, hyperplane, precision);
+    if (loc->class > 0) {
+        dist = -dist;
+    }
+    return dist;
+}
+
 
 int side(
 		sample_locator_t *loc, 

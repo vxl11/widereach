@@ -36,6 +36,8 @@ void test_samples() {
 	samples->samples[1][0][1] = -.5;
     CU_ASSERT_DOUBLE_EQUAL(distance(&loc, samples, hyperplane, 1e-3), 
                            1e-3, 1e-6);
+    CU_ASSERT_DOUBLE_EQUAL(sample_violation(&loc, samples, hyperplane, 1e-3), 
+                           -1e-3, 1e-6);
 	CU_ASSERT(side(&loc, samples, hyperplane, 1e-3));
     loc.index = 1;
 	samples->samples[1][1][0] = 1.;
@@ -105,6 +107,12 @@ void test_env() {
 }
 
 
+struct distance_record {
+    int index;
+    double directional_distance;
+};
+extern int dist_cmp(const void *, const void *);
+
 void test_indexing() {
 	samples_t *samples = random_samples(5, 3, 2);
 	CU_ASSERT_EQUAL(idx(0, 1, 1, samples), 5);
@@ -153,12 +161,35 @@ void test_indexing() {
     env.params = params_default();
     double value = hyperplane_to_solution(hyperplane, NULL, &env);
     CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
-    double *distance = blank_solution(samples);
-    hyperplane_to_distance(hyperplane, distance, &env);
-    // TODO CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
-    free(distance);
+    // double *distance = blank_solution(samples);
+    // hyperplane_to_distance(hyperplane, distance, &env);
+    // CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
+    // free(distance);
     
-
+    struct distance_record r[2];
+    r[0].index = 0;
+    r[1].index = 1;
+    r[0].directional_distance = 1.;
+    r[1].directional_distance = 2.;
+    CU_ASSERT(dist_cmp(r, r + 1) < 0);
+    r[1].directional_distance = 1.;
+    CU_ASSERT(dist_cmp(r, r + 1) == 0);
+    r[1].directional_distance = 0.;
+    CU_ASSERT(dist_cmp(r, r + 1) > 0);
+    int *ary = sorted_by_violation(hyperplane, &env);
+    params_t *params = env.params;
+    double precision[] = { params->epsilon_negative, params->epsilon_positive };
+    loc = locator(ary[0], samples);
+    double violation0 = 
+        sample_violation(loc, samples, hyperplane, precision[loc->class]);
+    free(loc);
+    loc = locator(ary[1], samples);
+    free(ary);
+    double violation1 = 
+        sample_violation(loc, samples, hyperplane, precision[loc->class]);
+    free(loc);
+    CU_ASSERT(violation0 <= violation1);
+    
 	sparse_vector_t *v = precision_row(samples, .7);
 	CU_ASSERT_EQUAL(v->len, 6);
 	// Negatives

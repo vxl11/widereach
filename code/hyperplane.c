@@ -46,4 +46,3 @@ double *best_random_hyperplane(env_t *env) {
     }
     return best_hyperplane;
 }
-
