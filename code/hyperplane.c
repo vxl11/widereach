@@ -24,8 +24,9 @@ double *random_hyperplane(size_t dimension) {
 }
 
 
-double *best_random_hyperplane(env_t *env) {
-    int rnd_trials = env->params->rnd_trials;
+double *best_random_hyperplane(int initial, env_t *env) {
+    params_t *params = env->params;
+    int rnd_trials = initial ? params->rnd_trials : params->rnd_trials_cont;
     if (!rnd_trials) {
         return NULL;
     }

@@ -181,12 +181,12 @@ void test_indexing() {
     double precision[] = { params->epsilon_negative, params->epsilon_positive };
     loc = locator(ary[0], samples);
     double violation0 = 
-        sample_violation(loc, samples, hyperplane, precision[loc->class]);
+        fabs(distance(loc, samples, hyperplane, precision[loc->class]));
     free(loc);
     loc = locator(ary[1], samples);
     free(ary);
     double violation1 = 
-        sample_violation(loc, samples, hyperplane, precision[loc->class]);
+        fabs(distance(loc, samples, hyperplane, precision[loc->class]));
     free(loc);
     CU_ASSERT(violation0 <= violation1);
     
@@ -399,7 +399,7 @@ void test_hyperplane() {
     env.params->rnd_trials = 1;
 	env.samples = random_samples(5, 3, 2);
 	env.solution_data = solution_data_init(5);
-    free(best_random_hyperplane(&env));
+    free(best_random_hyperplane(0, &env));
 }
 
 

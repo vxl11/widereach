@@ -353,7 +353,11 @@ double *random_hyperplane(size_t dimension);
 /** Generates env->rnd_trials hyperplanes and returns 
  * one that achieves the highest value of the objective function. 
    The returned vector has been dynamically allocated. */
-double *best_random_hyperplane(env_t *env);
+double *best_random_hyperplane(
+    /** A Boolean variable denoting whether this is the initial (1) or
+     * continuing (0) random hyperplane */
+    int initial,
+    env_t *);
 
 /* ------------------------ Indexing ---------------------------------- */
 

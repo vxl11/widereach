@@ -158,19 +158,19 @@ void iheur(glp_tree *t, env_t *env) {
     
     // Attempt to find an initial solution based on a random hyperplane
     solution_data_t *solution_data = env->solution_data;
-    if (NULL == solution_data->integer_solution) {
-        double *random_solution = blank_solution(samples);
-        double random_objective_value = 
-                hyperplane_to_solution(best_random_hyperplane(env), 
-                                       random_solution, 
-                                       env);
-        if (random_objective_value > value) {
-            free(solution);
-            solution = random_solution;
-            value = random_objective_value;
-        } else {
-            free(random_solution);
-        }
+    double *random_solution = blank_solution(samples);
+    double random_objective_value = 
+            hyperplane_to_solution(
+                best_random_hyperplane(NULL == solution_data->integer_solution, 
+                                       env), 
+                random_solution, 
+                env);
+    if (random_objective_value > value) {
+        free(solution);
+        solution = random_solution;
+        value = random_objective_value;
+    } else {
+        free(random_solution);
     }
 
 	int status = glp_ios_heur_sol(t, solution);
