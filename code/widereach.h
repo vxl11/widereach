@@ -235,6 +235,8 @@ typedef struct {
 	iheur_method_t iheur_method;
     /** Number of initial random trials to find an integer solution */
     int rnd_trials;
+    /** Number of random trials at each invocation of iheur */
+    int rnd_trials_cont;
 } params_t;
 
 

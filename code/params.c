@@ -14,5 +14,6 @@ params_t *params_default() {
 	params->branch_target = .0;
 	params->iheur_method = simple;
     params->rnd_trials = 0;
+    params->rnd_trials_cont = 0;
 	return params;
 }
