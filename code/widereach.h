@@ -540,6 +540,9 @@ typedef struct {
     /** A boolean denoting whether the node was consistent with the integer
      * solution */
     int is_consistent;
+    /** A count of valid inequalities introduced at this node or at one of 
+     * its ancestors */
+    int inequality_cnt;
 } branch_data_t;
 
 /** Return the branch data of the given node, or NULL if the node has no data */
