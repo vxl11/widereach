@@ -694,11 +694,11 @@ int is_obstructed(
     /** Number of sources */
     size_t source_cnt,
     /** Source samples */
-    sample_locator_t *source,
+    sample_locator_t **source,
     /** Number of obstructing samples */
     size_t obstruction_cnt,
     /** Obstructing samples */
-    sample_locator_t *obstruction, 
+    sample_locator_t **obstruction, 
     samples_t *);
 
 /* -------------------------- Callback ---------------------------------- */

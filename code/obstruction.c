@@ -21,15 +21,15 @@ int *ind_all(size_t var_cnt) {
 double index_to_coordinate(
         size_t i, 
         size_t j,
-        sample_locator_t *source,
+        sample_locator_t **source,
         size_t obstruction_cnt,
-        sample_locator_t *obstruction, 
+        sample_locator_t **obstruction, 
         samples_t *samples) {
     sample_locator_t *loc;
     if (i <= obstruction_cnt) { 
-        loc = obstruction + i - 1;
+        loc = obstruction[i - 1];
     } else {
-        loc = source + i - obstruction_cnt - 1;
+        loc = source[i - obstruction_cnt - 1];
     }
     return samples->samples[loc->class][loc->index][j];
 }
@@ -38,9 +38,9 @@ void add_target_constraints(
         glp_prob *p,
         sample_locator_t *target, 
         size_t var_cnt,
-        sample_locator_t *source,
+        sample_locator_t **source,
         size_t obstruction_cnt,
-        sample_locator_t *obstruction, 
+        sample_locator_t **obstruction, 
         samples_t *samples) {
     int *ind = ind_all(var_cnt);
     double *val = CALLOC(var_cnt, double);
@@ -84,9 +84,9 @@ void add_convexity_constraint(
 glp_prob *obstruction_lp(
         sample_locator_t *target, 
         size_t source_cnt,
-        sample_locator_t *source,
+        sample_locator_t **source,
         size_t obstruction_cnt,
-        sample_locator_t *obstruction, 
+        sample_locator_t **obstruction, 
         samples_t *samples) {
     glp_prob *p = glp_create_prob();
     glp_set_obj_dir(p, GLP_MAX);
@@ -109,9 +109,9 @@ glp_prob *obstruction_lp(
 int is_obstructed(
         sample_locator_t *target, 
         size_t source_cnt,
-        sample_locator_t *source,
+        sample_locator_t **source,
         size_t obstruction_cnt,
-        sample_locator_t *obstruction, 
+        sample_locator_t **obstruction, 
         samples_t *samples) {
     glp_prob *p = obstruction_lp(target, 
                                  source_cnt, source, 

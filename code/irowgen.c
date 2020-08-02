@@ -81,7 +81,15 @@ void add_inequality(glp_tree *t, env_t *env) {
         obstruction_locators(pth, dimension, 0, samples);
     
     print_obstruction(source, dimension, obstructions, t, env);
-    
+    /*
+    sample_locator_t target;
+    target.class = 1;
+    for (size_t i; i < samples->sample_cnt[1]; i++) {
+        target.index = i;
+        if (is_obstructed(&target, 1, source, dimension, obstructions, samples)) {
+        }
+    } */
+        
     free(free_obstructions(obstructions, dimension));
     free(free_obstructions(source, 1));
     free(pth);

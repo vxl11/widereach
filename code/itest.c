@@ -47,7 +47,13 @@ int main() {
     obstruction[0].class = obstruction[1].class = 1;
     obstruction[0].index = 0;
     obstruction[1].index = 1;
-    int status = is_obstructed(&target, 2, source, 2, obstruction, env.samples);
+    sample_locator_t *source_ptr[2], *obstruction_ptr[2];
+    for (int i = 0; i < 2; i++) { 
+        source_ptr[i] = source + i;
+        obstruction_ptr[i] = obstruction + i;
+    }
+    int status = 
+        is_obstructed(&target, 2, source_ptr, 2, obstruction_ptr, env.samples);
     printf("obstructed? (should be 0): %i\n", status);
     
     delete_env(&env);
