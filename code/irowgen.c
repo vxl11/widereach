@@ -47,6 +47,24 @@ sample_locator_t **free_obstructions(
     }
     return obstruction;
 }
+
+void print_obstruction(
+            sample_locator_t **source, 
+            size_t obstruction_cnt, 
+            sample_locator_t **obstructions,
+            glp_tree *t, env_t *env) {    
+    glp_prob *p = glp_ios_get_prob(t);
+    int curr_node = glp_ios_curr_node(t);
+    double *solution = solution_values(curr_node, p);
+    traverse(solution, t, env);
+    free(solution);
+    
+    glp_printf("source %i(%i)\n", source[0]->class, source[0]->index);
+    for (size_t i = 0; i < obstruction_cnt; i++) {
+        glp_printf("obstruction %i(%i)\n", 
+                   obstructions[i]->class, obstructions[i]->index);
+    }
+}
     
 
 void add_inequality(glp_tree *t, env_t *env) {
@@ -62,16 +80,7 @@ void add_inequality(glp_tree *t, env_t *env) {
     sample_locator_t **obstructions = 
         obstruction_locators(pth, dimension, 0, samples);
     
-    glp_prob *p = glp_ios_get_prob(t);
-    double *solution = solution_values(curr_node, p);
-    traverse(solution, t, env);
-    free(solution);
-    
-    glp_printf("source %i(%i)\n", source[0]->class, source[0]->index);
-    for (size_t i = 0; i < dimension; i++) {
-        glp_printf("obstruction %i(%i)\n", 
-                   obstructions[i]->class, obstructions[i]->index);
-    }
+    print_obstruction(source, dimension, obstructions, t, env);
     
     free(free_obstructions(obstructions, dimension));
     free(free_obstructions(source, 1));
