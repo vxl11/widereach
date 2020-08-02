@@ -681,6 +681,23 @@ int compare_signature(const node_signature_t *, const node_signature_t *);
  * the solution of the given problem. */
 double *solution_values(int node, glp_prob *);
 
+
+/* -------------------------- Obstruction ------------------------------- */
+/** Returns whether the given target is obstructed from the sources by the
+ * obstruction */
+int is_obstructed(
+    /** Sample to check for reachability from the sources */
+    sample_locator_t *target, 
+    /** Number of sources */
+    size_t source_cnt,
+    /** Source samples */
+    sample_locator_t *source,
+    /** Number of obstructing samples */
+    size_t obstruction_cnt,
+    /** Obstructing samples */
+    sample_locator_t *obstruction, 
+    samples_t *);
+
 /* -------------------------- Callback ---------------------------------- */
 
 /** Callback entry point */

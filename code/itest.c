@@ -11,7 +11,7 @@ int main() {
 	int n = 5;
 	env.params->lambda = 10 * (n + 1);
 	srand48(20200621154912);
-        env.samples = random_samples(n, n / 2, 2);
+    env.samples = random_samples(n, n / 2, 2);
 	env.solution_data = solution_data_init(n);
 
 	glp_prob *p = milp(&env);
@@ -37,5 +37,18 @@ int main() {
 	free(parm);
 
 	glp_delete_prob(p);
+    
+    printf("Integration test: obstruction");
+    sample_locator_t target = { 0, 0 };
+    sample_locator_t source[2], obstruction[2];
+    source[0].class = source[1].class = 0;
+    source[0].index = 1;
+    source[1].index = 2;
+    obstruction[0].class = obstruction[1].class = 1;
+    obstruction[0].index = 0;
+    obstruction[1].index = 1;
+    int status = is_obstructed(&target, 2, source, 2, obstruction, env.samples);
+    printf("obstructed? (should be 0): %i\n", status);
+    
     delete_env(&env);
 }
