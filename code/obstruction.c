@@ -11,7 +11,7 @@ void add_variables(glp_prob *p, size_t var_cnt, size_t obstruction_cnt) {
 }
 
 int *ind_all(size_t var_cnt) {
-    int *ind = CALLOC(var_cnt, int);
+    int *ind = CALLOC(var_cnt + 1, int);
     for (size_t i = 1; i <= var_cnt; i++) {
             ind[i] = i;
     }
@@ -43,7 +43,7 @@ void add_target_constraints(
         sample_locator_t **obstruction, 
         samples_t *samples) {
     int *ind = ind_all(var_cnt);
-    double *val = CALLOC(var_cnt, double);
+    double *val = CALLOC(var_cnt + 1, double);
     size_t dimension = samples->dimension;
     for (size_t j = 0; j < dimension; j++) {
         for (size_t i = 1; i <= var_cnt; i++) {
@@ -68,8 +68,9 @@ void add_convexity_constraint(
         size_t row_cnt, 
         size_t source_cnt, 
         size_t obstruction_cnt) {
-    int *ind = CALLOC(source_cnt, int);
-    double *val = CALLOC(source_cnt, double);
+    size_t len = source_cnt + 1;
+    int *ind = CALLOC(len, int);
+    double *val = CALLOC(len, double);
     for (size_t i = 1; i <= source_cnt; i++) {
         ind[i] = i + obstruction_cnt;
         val[i] = 1.;
