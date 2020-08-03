@@ -100,21 +100,21 @@ void add_inequality(glp_tree *t, env_t *env) {
                 dimension, 
                 obstructions, 
                 samples)) {
-            append(constraint, idx(0, target.class, target.index, samples), 1.);
+            append_locator(constraint, target, 1., samples);
             glp_printf("obstructed x%i\n", i + 1);
         }
     }
     double bound = (double) constraint->len;
-    append(constraint, 
-           idx(0, source->class, source->index, samples), // TODO
-           -bound);
+    append_locator(constraint, source, bound, samples);
     for (size_t i = 0; i < dimension; i++) {
-        append(constraint,
-               idx(0, obstructions[i]->class, obstructions[i]->index, samples),
-               -bound);
+        append_locator(constraint, obstructions[i], -bound, samples);
     }
-    
-       
+    /*
+    glp_ios_add_row(t, NULL, 0, 0, 
+                    constraint->len, constraint->ind, constraint->val, 
+                    GLP_UP, bound);
+      */
+      
     free(delete_sparse_vector(constraint));
     free(free_obstructions(obstructions, dimension));
     free(free_obstructions(sources, 1));
