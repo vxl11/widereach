@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <glpk.h>
 
-// #define EXPERIMENTAL
+#define EXPERIMENTAL
 
 /** Widereach Classification */
 
@@ -552,9 +552,6 @@ typedef struct {
     /** A boolean denoting whether the node was consistent with the integer
      * solution */
     int is_consistent;
-    /** A count of valid inequalities introduced at this node or at one of 
-     * its ancestors */
-    int inequality_cnt;
 } branch_data_t;
 
 /** Return the branch data of the given node, or NULL if the node has no data */
@@ -580,6 +577,13 @@ int add_child(child_data_t *, int node);
  * child, or less than two children are on record for this node) */
 int child_direction(child_data_t *, int node);
 
+/** Data regarding lazy constraints and cutting planes. */
+typedef struct {
+    /** A count of valid inequalities introduced at this node or at one of 
+     * its ancestors */
+    int inequality_cnt;
+} cuts_data_t;
+
 /** Additional data to be stored in each tree node */
 typedef struct {
 	/** Flag denoting whether the top level node data has been initialized
@@ -589,6 +593,8 @@ typedef struct {
     branch_data_t branch_data;
     /** Node indexes of the two children on the down- and up-branch */
     child_data_t child_data;
+    /** Data regarding lazy constraints and cutting planes */
+    cuts_data_t cuts_data;
     /** A Boolean denoting 
      * whether iheur has already been invoked on this node */
     int iheur;

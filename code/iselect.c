@@ -165,6 +165,7 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
 
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
+//     glp_printf("ISELECT\n");
     solution_data_t *solution_data = env->solution_data;
     int last_branching = solution_data->branching_node;
     int active_children;
@@ -179,10 +180,17 @@ void iselect(glp_tree *t, env_t *env) {
     } 
     
     int node = consistent_node(t, solution_data);
-    if (node) {
+    if (node && node != last_branching) {
+        #ifdef EXPERIMENTAL
+            glp_printf("Branching (consistent) %i (from %i)\n", 
+                       node, last_branching);
+        #endif
         glp_ios_select_node(t, node);
         return;
     }
+    #ifdef EXPERIMENTAL
+        glp_printf("Branching default\n");
+    #endif
     return;
     
     int best_node = glp_ios_best_node(t);

@@ -1,21 +1,25 @@
 #include "widereach.h"
 #include "helper.h"
 
-int is_branch_addable(branch_data_t *branch_data, samples_t *samples) {
+int is_branch_addable(
+        int inequality_cnt, 
+        branch_data_t *branch_data, 
+        samples_t *samples) {
     int *directional_cnt = branch_data->directional_cnt;
-    return !branch_data->inequality_cnt && 
+    return !inequality_cnt && 
            samples->dimension == directional_cnt[0] && 
            1 == directional_cnt[1];
 }
 
-int is_addable(glp_tree *t, env_t *env) {
-    node_data_t *data = parent_data(glp_ios_curr_node(t), t);
-    if (NULL == data) {
+int is_addable(int inequality_cnt, glp_tree *t, env_t *env) {
+    int curr_node = glp_ios_curr_node(t);
+    node_data_t *data_parent = parent_data(curr_node, t);
+    if (NULL == data_parent) {
         return 0;
     }
-    branch_data_t branch_data = data->branch_data;
-    samples_t *samples = env->samples;
-    return is_branch_addable(&branch_data, samples);
+    return is_branch_addable(inequality_cnt, 
+                             &(data_parent->branch_data), 
+                             env->samples);
 }
 
 int is_primary(size_t target, size_t class, double value) {
@@ -78,13 +82,13 @@ void add_obstructed(
     size_t dimension = samples->dimension;
     sample_locator_t target;
     target.class = 1;
-    glp_printf("--- Obstructions ---\n");
+    // glp_printf("--- Obstructions ---\n");
     for (size_t i = 0; i < samples->count[1]; i++) {
         target.index = i;
-        print_sample(target, samples);
+        // print_sample(target, samples);
         if (is_obstructed(&target, source, dimension, obstructions, samples)) {
             append_locator(constraint, &target, 1., samples);
-            glp_printf("obstructed x%i\n", i + 1);
+            // glp_printf("obstructed x%i\n", i + 1);
         }
     }
 }
@@ -94,19 +98,33 @@ void add_obstructions(
         size_t len, 
         sample_locator_t **obstructions, 
         samples_t *samples) {
-    double bound = - (double) constraint->len;
+    double bound = 1. - (double) constraint->len;
     for (size_t i = 0; i < len; i++) {
         append_locator(constraint, obstructions[i], bound, samples);
     }
 }
+
+
+void initialize_cuts_data(int curr_node, cuts_data_t *cuts_data, glp_tree *t) {
+    if (cuts_data->inequality_cnt > 0) {
+        return;
+    }
+    node_data_t *data_parent = parent_data(curr_node, t);
+    cuts_data->inequality_cnt = 
+        data_parent != NULL ? data_parent->cuts_data.inequality_cnt : 0;
+}
     
 
 void add_inequality(glp_tree *t, env_t *env) {
-    if (!is_addable(t, env)) {
+    int curr_node = glp_ios_curr_node(t);
+    node_data_t *data = glp_ios_node_data(t, curr_node);
+    cuts_data_t *cuts_data = &(data->cuts_data);
+    initialize_cuts_data(curr_node, cuts_data, t);
+    
+    if (!is_addable(cuts_data->inequality_cnt, t, env)) {
         return;
     }
     
-    int curr_node = glp_ios_curr_node(t);
     sparse_vector_t *pth = path(glp_ios_up_node(t, curr_node), t);
     samples_t *samples = env->samples;
     sample_locator_t **sources = obstruction_locators(pth, 1, 1, samples);
@@ -114,25 +132,39 @@ void add_inequality(glp_tree *t, env_t *env) {
     size_t dimension = samples->dimension;
     sample_locator_t **obstructions = 
         obstruction_locators(pth, dimension, 0, samples);
+    free(pth);
     
-    print_obstruction(sources, dimension, obstructions, t, env);
+    // print_obstruction(sources, dimension, obstructions, t, env);
     
     sparse_vector_t *constraint = 
-        sparse_vector_blank(samples_total(samples) + dimension + 1);
+        sparse_vector_blank(positives(samples) + dimension + 1);
     add_obstructed(constraint, source, obstructions, samples);
     double bound = (double) constraint->len;
     append_locator(constraint, source, bound, samples);
     add_obstructions(constraint, dimension, obstructions, samples);
-    /*
-    glp_ios_add_row(t, NULL, 0, 0, 
-                    constraint->len, constraint->ind, constraint->val, 
-                    GLP_UP, bound);
-      */
-      
-    free(delete_sparse_vector(constraint));
     free(free_obstructions(obstructions, dimension));
     free(free_obstructions(sources, 1));
-    free(pth);
+    
+    glp_prob *p = glp_ios_get_prob(t);
+    /*
+    for (int i = 1; i <= constraint->len; i++) {
+        glp_printf("%g %s\n", 
+                   constraint->val[i], 
+                   glp_get_col_name(p, constraint->ind[i]));
+    } */
+    int row_idx = glp_add_rows(p, 1);
+    glp_set_mat_row(p, 
+                    row_idx, 
+                    constraint->len, 
+                    constraint->ind, 
+                    constraint->val);
+    glp_set_row_bnds(p, row_idx, GLP_UP, 0, bound);
+    free(delete_sparse_vector(constraint));
+    cuts_data->inequality_cnt++;
+    #ifdef EXPERIMENTAL
+        glp_printf("Added lazy constraint %i at node %i.%i\n", 
+                   row_idx, curr_node, cuts_data->inequality_cnt);
+    #endif
 }
 
 void irowgen(glp_tree *t, env_t *env) {

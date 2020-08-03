@@ -78,6 +78,10 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     samples_t *samples = env->samples;
 	node_data_t *data = initialize_data(curr_node, t, samples);
     branch_data_t *branch_data = &(data->branch_data);
+    #ifdef EXPERIMENTAL
+        glp_printf("branch data previously initialized %i\n", 
+                   branch_data->initialized);
+    #endif
     
     // Update branch data that depend on the parent's
     int primary = is_direction_primary(curr_node, 1, t, samples);
@@ -115,14 +119,12 @@ void branch_on(int index, glp_tree *t, env_t *env) {
     // Update last branching node
     int curr_node = glp_ios_curr_node(t);
     env->solution_data->branching_node = curr_node;
-    #ifdef EXPERIMENTAL
-        glp_printf("branch from %i\n", curr_node);
-    #endif
  
-    /* Note that if this node has been branched from already, 
-     * the index is ignored in favor of the previous branching variable */
     int branching_variable = branch_data->branching_variable;
     if (glp_ios_can_branch(t, branching_variable)) {
+        #ifdef EXPERIMENTAL
+            glp_printf("branch from %i on %i\n", curr_node, branching_variable);
+        #endif
         glp_ios_branch_upon(t, branching_variable, branch_data->direction); 
     }
 }
@@ -315,7 +317,9 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         }
     }
     #ifdef EXPERIMENTAL
-        glp_printf("-> %i\n", candidate_idx);
+        int a_cnt;
+        glp_ios_tree_size(t, &a_cnt, NULL, NULL);
+        glp_printf("-> %i (actives %i)\n", candidate_idx, a_cnt);
     #endif
     branch_on(candidate_idx, t, env);
 }

@@ -38,7 +38,7 @@ int main() {
 
 	glp_delete_prob(p);
     
-    printf("Integration test: obstruction");
+    printf("Integration test: obstruction\n");
     sample_locator_t target = { 1, 0 };
     sample_locator_t source, obstruction[2];
     source.class = 1;

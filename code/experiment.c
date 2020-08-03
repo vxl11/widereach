@@ -32,7 +32,7 @@ void single_run(int t, env_t *env) {
 
     glp_iocp *parm = iocp(env);
     parm->tm_lim = 120000;
-    // parm->tm_lim = 10000;
+    // parm->tm_lim = 600000;
     // parm->bt_tech = GLP_BT_DFS;
     // parm->bt_tech = GLP_BT_BLB;
     /* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
@@ -63,7 +63,8 @@ int main() {
     int n = 1000;
     env.params->lambda = 100 * (n + 1);
     env.params->rnd_trials = 10000;
-    env.params->rnd_trials_cont = 10;
+    // env.params->rnd_trials_cont = 10;
+    env.params->rnd_trials_cont = 0;
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {
     for (int s = 0; s < 1; s++) {
