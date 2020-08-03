@@ -97,7 +97,10 @@ int is_obstructed(
                                  obstruction_cnt, obstruction, 
                                  samples);
     // glp_write_lp(p, NULL, "tmp.lp");
-    int status = glp_simplex(p, NULL);
+    glp_smcp parm;
+    glp_init_smcp(&parm);
+    parm.msg_lev = GLP_MSG_OFF;
+    int status = glp_simplex(p, &parm);
     int solvable = 
         !status && 
         glp_get_status(p) == GLP_OPT && 

@@ -68,6 +68,37 @@ void print_obstruction(
         print_sample(*obstructions[i], samples);
     }
 }
+
+
+void add_obstructed(
+        sparse_vector_t *constraint,
+        sample_locator_t *source, 
+        sample_locator_t **obstructions, 
+        samples_t *samples) {
+    size_t dimension = samples->dimension;
+    sample_locator_t target;
+    target.class = 1;
+    glp_printf("--- Obstructions ---\n");
+    for (size_t i = 0; i < samples->count[1]; i++) {
+        target.index = i;
+        print_sample(target, samples);
+        if (is_obstructed(&target, source, dimension, obstructions, samples)) {
+            append_locator(constraint, &target, 1., samples);
+            glp_printf("obstructed x%i\n", i + 1);
+        }
+    }
+}
+
+void add_obstructions(
+        sparse_vector_t *constraint, 
+        size_t len, 
+        sample_locator_t **obstructions, 
+        samples_t *samples) {
+    double bound = - (double) constraint->len;
+    for (size_t i = 0; i < len; i++) {
+        append_locator(constraint, obstructions[i], bound, samples);
+    }
+}
     
 
 void add_inequality(glp_tree *t, env_t *env) {
@@ -86,29 +117,12 @@ void add_inequality(glp_tree *t, env_t *env) {
     
     print_obstruction(sources, dimension, obstructions, t, env);
     
-    sample_locator_t target;
-    target.class = 1;
     sparse_vector_t *constraint = 
         sparse_vector_blank(samples_total(samples) + dimension + 1);
-    glp_printf("--- Obstructions ---\n");
-    for (size_t i = 0; i < samples->count[1]; i++) {
-        target.index = i;
-        print_sample(target, samples);
-        if (is_obstructed(
-                &target, 
-                source, 
-                dimension, 
-                obstructions, 
-                samples)) {
-            append_locator(constraint, &target, 1., samples);
-            glp_printf("obstructed x%i\n", i + 1);
-        }
-    }
+    add_obstructed(constraint, source, obstructions, samples);
     double bound = (double) constraint->len;
     append_locator(constraint, source, bound, samples);
-    for (size_t i = 0; i < dimension; i++) {
-        append_locator(constraint, obstructions[i], -bound, samples);
-    }
+    add_obstructions(constraint, dimension, obstructions, samples);
     /*
     glp_ios_add_row(t, NULL, 0, 0, 
                     constraint->len, constraint->ind, constraint->val, 
