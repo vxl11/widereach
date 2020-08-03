@@ -691,10 +691,8 @@ double *solution_values(int node, glp_prob *);
 int is_obstructed(
     /** Sample to check for reachability from the sources */
     sample_locator_t *target, 
-    /** Number of sources */
-    size_t source_cnt,
     /** Source samples */
-    sample_locator_t **source,
+    sample_locator_t *source,
     /** Number of obstructing samples */
     size_t obstruction_cnt,
     /** Obstructing samples */

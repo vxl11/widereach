@@ -1,61 +1,61 @@
 #include "widereach.h"
 #include "helper.h"
 
-void add_variables(glp_prob *p, size_t var_cnt, size_t obstruction_cnt) {
-    glp_add_cols(p, var_cnt);
-    for (size_t i = 1; i <= var_cnt; i++) {
-        glp_set_col_kind(p, (int) i, GLP_CV);
-		glp_set_col_bnds(p, (int) i, GLP_LO, 0., 0.);
-        glp_set_obj_coef(p, (int) i, i <= obstruction_cnt);
+void add_variables(glp_prob *p, size_t obstruction_cnt) {
+    glp_add_cols(p, obstruction_cnt);
+    for (size_t i = 1; i <= obstruction_cnt; i++) {
+        int idx = (int) i;
+        glp_set_col_kind(p, idx, GLP_CV);
+		glp_set_col_bnds(p, idx, GLP_LO, 0., 0.);
+        glp_set_obj_coef(p, idx, i <= obstruction_cnt);
     }
 }
 
-int *ind_all(size_t var_cnt) {
-    int *ind = CALLOC(var_cnt + 1, int);
-    for (size_t i = 1; i <= var_cnt; i++) {
+int *ind_all(size_t obstruction_cnt) {
+    int *ind = CALLOC(obstruction_cnt + 1, int);
+    for (size_t i = 1; i <= obstruction_cnt; i++) {
             ind[i] = i;
     }
     return ind;
 }
 
 double index_to_coordinate(
-        size_t i, 
-        size_t j,
-        sample_locator_t **source,
-        size_t obstruction_cnt,
-        sample_locator_t **obstruction, 
+        size_t coordinate_idx, 
+        sample_locator_t *loc, 
         samples_t *samples) {
-    sample_locator_t *loc;
-    if (i <= obstruction_cnt) { 
-        loc = obstruction[i - 1];
-    } else {
-        loc = source[i - obstruction_cnt - 1];
-    }
-    return samples->samples[loc->class][loc->index][j];
+    return samples->samples[loc->class][loc->index][coordinate_idx];
 }
 
 void add_target_constraints(
         glp_prob *p,
         sample_locator_t *target, 
-        size_t var_cnt,
-        sample_locator_t **source,
+        sample_locator_t *source,
         size_t obstruction_cnt,
         sample_locator_t **obstruction, 
         samples_t *samples) {
-    int *ind = ind_all(var_cnt);
-    double *val = CALLOC(var_cnt + 1, double);
+    int *ind = ind_all(obstruction_cnt);
+    double *val = CALLOC(obstruction_cnt + 1, double);
     size_t dimension = samples->dimension;
-    for (size_t j = 0; j < dimension; j++) {
-        for (size_t i = 1; i <= var_cnt; i++) {
-            val[i] = index_to_coordinate(i, j, 
-                                         source, 
-                                         obstruction_cnt, obstruction, 
-                                         samples);
+    for (size_t coordinate_idx = 0; 
+         coordinate_idx < dimension; 
+         coordinate_idx++) {
+        double source_offset = index_to_coordinate(coordinate_idx, 
+                                                   source,
+                                                   samples);
+        for (size_t obstruction_idx = 1; 
+             obstruction_idx <= obstruction_cnt; 
+             obstruction_idx++) {
+            val[obstruction_idx] = 
+                index_to_coordinate(coordinate_idx, 
+                                    obstruction[obstruction_idx - 1], 
+                                    samples) -
+                source_offset;
         }
-        int constraint_idx = 1 + (int) j;
-        glp_set_mat_row(p, constraint_idx, (int) var_cnt, ind, val);
+        int constraint_idx = 1 + (int) coordinate_idx;
+        glp_set_mat_row(p, constraint_idx, (int) obstruction_cnt, ind, val);
         double target_coordinate = 
-            samples->samples[target->class][target->index][j];
+            index_to_coordinate(coordinate_idx, target, samples) - 
+            source_offset;
         glp_set_row_bnds(p, constraint_idx, GLP_FX,
                          target_coordinate, target_coordinate);
     }
@@ -63,45 +63,24 @@ void add_target_constraints(
     free(ind);
 }
 
-void add_convexity_constraint(
-        glp_prob *p, 
-        size_t row_cnt, 
-        size_t source_cnt, 
-        size_t obstruction_cnt) {
-    size_t len = source_cnt + 1;
-    int *ind = CALLOC(len, int);
-    double *val = CALLOC(len, double);
-    for (size_t i = 1; i <= source_cnt; i++) {
-        ind[i] = i + obstruction_cnt;
-        val[i] = 1.;
-    }
-    glp_set_mat_row(p, (int) row_cnt, (int) obstruction_cnt, ind, val);
-    glp_set_row_bnds(p, (int) row_cnt, GLP_FX, 1., 1.);
-    free(val);
-    free(ind);
-}
-
-
 glp_prob *obstruction_lp(
         sample_locator_t *target, 
-        size_t source_cnt,
-        sample_locator_t **source,
+        sample_locator_t *source,
         size_t obstruction_cnt,
         sample_locator_t **obstruction, 
         samples_t *samples) {
     glp_prob *p = glp_create_prob();
     glp_set_obj_dir(p, GLP_MAX);
             
-    size_t var_cnt = source_cnt + obstruction_cnt;
-    add_variables(p, var_cnt, obstruction_cnt);
+    add_variables(p, obstruction_cnt);
             
-    size_t row_cnt = samples->dimension + 1;
-    glp_add_rows(p, row_cnt);
+    glp_add_rows(p, (int) samples->dimension + 1);
     add_target_constraints(p,
                            target, 
-                           var_cnt, source, obstruction_cnt, obstruction, 
+                           source, 
+                           obstruction_cnt, 
+                           obstruction, 
                            samples);
-    add_convexity_constraint(p, row_cnt, source_cnt, obstruction_cnt);
     
     return p;
 }
@@ -109,18 +88,20 @@ glp_prob *obstruction_lp(
 
 int is_obstructed(
         sample_locator_t *target, 
-        size_t source_cnt,
-        sample_locator_t **source,
+        sample_locator_t *source,
         size_t obstruction_cnt,
         sample_locator_t **obstruction, 
         samples_t *samples) {
     glp_prob *p = obstruction_lp(target, 
-                                 source_cnt, source, 
+                                 source, 
                                  obstruction_cnt, obstruction, 
                                  samples);
     // glp_write_lp(p, NULL, "tmp.lp");
     int status = glp_simplex(p, NULL);
-    int solvable = !status && glp_get_obj_val(p) >= 1.;
+    int solvable = 
+        !status && 
+        glp_get_status(p) == GLP_OPT && 
+        glp_get_obj_val(p) >= 1.;
     glp_delete_prob(p);
     return solvable; 
 }

@@ -59,10 +59,13 @@ void print_obstruction(
     traverse(solution, t, env);
     free(solution);
     
-    glp_printf("source %i(%i)\n", source[0]->class, source[0]->index);
+    samples_t *samples = env->samples;
+    glp_printf("source %i(%i): ", source[0]->class, source[0]->index);
+    print_sample(*source[0], samples);
     for (size_t i = 0; i < obstruction_cnt; i++) {
-        glp_printf("obstruction %i(%i)\n", 
+        glp_printf("obstruction %i(%i): ", 
                    obstructions[i]->class, obstructions[i]->index);
+        print_sample(*obstructions[i], samples);
     }
 }
     
@@ -84,12 +87,15 @@ void add_inequality(glp_tree *t, env_t *env) {
     
     sample_locator_t target;
     target.class = 1;
-    for (size_t i; i < samples->count[1]; i++) {
+    glp_printf("--- Obstructions ---\n");
+    for (size_t i = 0; i < samples->count[1]; i++) {
         target.index = i;
+        print_sample(target, samples);
         if (is_obstructed(
                 &target, 
-                1, source, 
-                dimension, obstructions, 
+                source[0], 
+                dimension, 
+                obstructions, 
                 samples)) {
             glp_printf("obstructed x%i\n", i + 1);
         }

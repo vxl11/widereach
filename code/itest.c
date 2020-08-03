@@ -39,21 +39,18 @@ int main() {
 	glp_delete_prob(p);
     
     printf("Integration test: obstruction");
-    sample_locator_t target = { 0, 0 };
-    sample_locator_t source[2], obstruction[2];
-    source[0].class = source[1].class = 0;
-    source[0].index = 1;
-    source[1].index = 2;
-    obstruction[0].class = obstruction[1].class = 1;
-    obstruction[0].index = 0;
-    obstruction[1].index = 1;
-    sample_locator_t *source_ptr[2], *obstruction_ptr[2];
-    for (int i = 0; i < 2; i++) { 
-        source_ptr[i] = source + i;
+    sample_locator_t target = { 1, 0 };
+    sample_locator_t source, obstruction[2];
+    source.class = 1;
+    source.index = 1;
+    sample_locator_t *obstruction_ptr[2];
+    for (int i = 0; i < 2; i++) {
+        obstruction[i].class = 0;
+        obstruction[i].index = i;
         obstruction_ptr[i] = obstruction + i;
     }
     int status = 
-        is_obstructed(&target, 2, source_ptr, 2, obstruction_ptr, env.samples);
+        is_obstructed(&target, &source, 2, obstruction_ptr, env.samples);
     printf("obstructed? (should be 0): %i\n", status);
     
     delete_env(&env);
