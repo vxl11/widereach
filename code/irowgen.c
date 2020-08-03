@@ -100,7 +100,7 @@ void add_inequality(glp_tree *t, env_t *env) {
                 dimension, 
                 obstructions, 
                 samples)) {
-            append_locator(constraint, target, 1., samples);
+            append_locator(constraint, &target, 1., samples);
             glp_printf("obstructed x%i\n", i + 1);
         }
     }
