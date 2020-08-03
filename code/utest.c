@@ -135,10 +135,12 @@ void test_indexing() {
     CU_ASSERT_EQUAL(index_to_class(8, samples), 0);
     CU_ASSERT_EQUAL(index_label(8, samples), -1);
 
+    sparse_vector_t *sparse = sparse_vector_blank(3);
 	sample_locator_t *loc;
 	loc = locator(5, samples);
 	CU_ASSERT_EQUAL(loc->class, 1);
 	CU_ASSERT_EQUAL(loc->index, 1);
+    append_locator(sparse, loc, 1., samples);
 	free(loc);
 	loc = locator(8, samples);
 	CU_ASSERT_EQUAL(loc->class, 0);
@@ -153,7 +155,14 @@ void test_indexing() {
 	loc = locator(7, samples);
 	CU_ASSERT_EQUAL(loc->class, 0);
 	CU_ASSERT_EQUAL(loc->index, 0);
+    append_locator(sparse, loc, 2., samples);
 	free(loc);
+    CU_ASSERT_EQUAL(sparse->len, 2);
+    CU_ASSERT_EQUAL(sparse->ind[1], 5);
+    CU_ASSERT_DOUBLE_EQUAL(sparse->val[1], 1., 1e-12);
+    CU_ASSERT_EQUAL(sparse->ind[2], 7);
+    CU_ASSERT_DOUBLE_EQUAL(sparse->val[2], 2., 1e-12);
+    free(sparse);
     
     double hyperplane[3] = { 1., 1., -1. };
     env_t env;

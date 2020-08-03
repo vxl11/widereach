@@ -400,6 +400,18 @@ sample_locator_t *locator(
 		/** Sample set */
 		samples_t *);
 
+/** Appends an element at the end of the sparse vector. 
+ *
+ * @return -1 if no extra space is available 
+ * (and thus the item was not added) or 
+ * the amount of extra space after the insertion. */
+int append_locator(sparse_vector_t *, 
+	/** Locator of the new element.
+        It is assumed that this index has not been previously defined. */
+	sample_locator_t *, 
+	/** Value to be inserted */
+	double val,
+    samples_t*);
 
 /** Prints the sample referenced by the locator */
 void print_sample(sample_locator_t, samples_t *);

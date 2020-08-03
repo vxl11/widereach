@@ -73,6 +73,14 @@ sample_locator_t *locator(int index, samples_t *samples) {
 	return locator;
 }
 
+int append_locator(
+        sparse_vector_t *v, 
+        sample_locator_t *loc, 
+        double val, 
+        samples_t *samples) {
+    return append(v, idx(0, loc->class, loc->index, samples), val);
+}
+
 int idx_extreme(int direction, int class, int extreme, samples_t *samples) {
 	int label = samples->label[class];
 	int idx;

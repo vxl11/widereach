@@ -78,31 +78,46 @@ void add_inequality(glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
     sparse_vector_t *pth = path(glp_ios_up_node(t, curr_node), t);
     samples_t *samples = env->samples;
-    sample_locator_t **source = obstruction_locators(pth, 1, 1, samples);
+    sample_locator_t **sources = obstruction_locators(pth, 1, 1, samples);
+    sample_locator_t *source = sources[0];
     size_t dimension = samples->dimension;
     sample_locator_t **obstructions = 
         obstruction_locators(pth, dimension, 0, samples);
     
-    print_obstruction(source, dimension, obstructions, t, env);
+    print_obstruction(sources, dimension, obstructions, t, env);
     
     sample_locator_t target;
     target.class = 1;
+    sparse_vector_t *constraint = 
+        sparse_vector_blank(samples_total(samples) + dimension + 1);
     glp_printf("--- Obstructions ---\n");
     for (size_t i = 0; i < samples->count[1]; i++) {
         target.index = i;
         print_sample(target, samples);
         if (is_obstructed(
                 &target, 
-                source[0], 
+                source, 
                 dimension, 
                 obstructions, 
                 samples)) {
+            append(constraint, idx(0, target.class, target.index, samples), 1.);
             glp_printf("obstructed x%i\n", i + 1);
         }
-    } 
-        
+    }
+    double bound = (double) constraint->len;
+    append(constraint, 
+           idx(0, source->class, source->index, samples), // TODO
+           -bound);
+    for (size_t i = 0; i < dimension; i++) {
+        append(constraint,
+               idx(0, obstructions[i]->class, obstructions[i]->index, samples),
+               -bound);
+    }
+    
+       
+    free(delete_sparse_vector(constraint));
     free(free_obstructions(obstructions, dimension));
-    free(free_obstructions(source, 1));
+    free(free_obstructions(sources, 1));
     free(pth);
 }
 
