@@ -295,9 +295,13 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     #ifdef EXPERIMENTAL
         glp_printf("branching variable: ");
     #endif
+    int curr_node = glp_ios_curr_node(t);
+    node_data_t *data = glp_ios_node_data(t, curr_node);
+    branch_data_t *branch_data = &(data->branch_data);
     int samples_cnt = samples_total(env->samples);
     int candidate_idx = 0;
-    for (int i = 0; i < samples_cnt; i++) {
+    int candidate_rank = 0;
+    for (int i = branch_data->violation_rank; i < samples_cnt; i++) {
         int idx = violation_index[i];
         if (!idx) {
             #ifdef EXPERIMENTAL
@@ -312,6 +316,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             glp_printf("%i ", idx);
         #endif
         if (glp_ios_can_branch(t, idx)) {
+            candidate_rank = i;
             candidate_idx = idx;
             break;
         }
@@ -321,6 +326,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         glp_ios_tree_size(t, &a_cnt, NULL, NULL);
         glp_printf("-> %i (actives %i)\n", candidate_idx, a_cnt);
     #endif
+    branch_data->violation_rank = candidate_rank;
     branch_on(candidate_idx, t, env);
 }
 

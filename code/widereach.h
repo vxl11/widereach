@@ -552,6 +552,9 @@ typedef struct {
     /** A boolean denoting whether the node was consistent with the integer
      * solution */
     int is_consistent;
+    /** The index in the violation array where the search terminated
+     * last time branching was invoked */
+    int violation_rank;
 } branch_data_t;
 
 /** Return the branch data of the given node, or NULL if the node has no data */
