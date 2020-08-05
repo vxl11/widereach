@@ -28,22 +28,22 @@ int main() {
 
 	printf("Integration testing: samples\n");
 	print_samples(env.samples);
-	printf("Integration testing: CPLEX LP compare\n");
+	printf("\nIntegration testing: CPLEX LP compare\n");
 	glp_write_lp(p, NULL, "tmp.lp");
 	printf("Comparison result:\t");
     compare_files("itest.lp");
 
-	printf("Integration testing: solve relaxation\n");
+	printf("\nIntegration testing: solve relaxation\n");
 	glp_simplex(p, NULL);
 
-	printf("Integration testing: solve integer problem\n");
+	printf("\nIntegration testing: solve integer problem\n");
 	glp_iocp *parm = iocp(&env);
 	glp_intopt(p, parm);
 	free(parm);
 
 	glp_delete_prob(p);
     
-    printf("Integration test: consistency\n");
+    printf("\nIntegration test: consistency\n");
     p = init_consistency_problem(2);
     sample_locator_t loc;
     for (size_t i = 0; i < 2; i++) {
@@ -62,7 +62,7 @@ int main() {
     printf("Comparison result:\t");
     compare_files("consistency.lp");
     
-    printf("Integration test: obstruction\n");
+    printf("\nIntegration test: obstruction\n");
     sample_locator_t target = { 1, 0 };
     sample_locator_t source, obstruction[2];
     source.class = 1;

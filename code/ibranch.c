@@ -281,6 +281,10 @@ void branch_closest(glp_tree *t, env_t *env) {
 	branch_on(candidate_idx, t, env);
 }
 
+int can_obstruct(int *directional_cnt) {
+    return directional_cnt[0] > 0 && directional_cnt[1] > 0;
+}
+
 void branch_even(glp_tree *t, env_t *env);
 void branch_by_violation(glp_tree *t, env_t *env) {
     int *violation_index = env->solution_data->violation_index;
@@ -294,6 +298,8 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     int samples_cnt = samples_total(env->samples);
     int candidate_idx = 0;
     int candidate_rank = 0;
+    int default_idx = 0;
+    int obstructable = can_obstruct(branch_data->directional_cnt);
     /* Repeated invocations of ibranch are possible as per glpios03.c:1458-1468:
      * if one (and only one) of the two branches is hopeless (e.g., x1=0) 
      * but not the other one (x1=1), then x1=1 can be added as a constraint,
@@ -324,13 +330,17 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             #endif
             // random_flat(t, env);
             // branch_even(t, env);
-            branch_closest(t, env);
+            // branch_closest(t, env);
+            branch_on(default_idx, t, env);
             return;
         }
         #ifdef EXPERIMENTAL
             glp_printf("%i ", idx);
         #endif
         if (glp_ios_can_branch(t, idx)) {
+            default_idx = idx;
+            if (obstructable) {
+            }
             candidate_rank = i;
             candidate_idx = idx;
             break;
