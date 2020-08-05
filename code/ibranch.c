@@ -78,10 +78,6 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     samples_t *samples = env->samples;
 	node_data_t *data = initialize_data(curr_node, t, samples);
     branch_data_t *branch_data = &(data->branch_data);
-    #ifdef EXPERIMENTAL
-        glp_printf("branch data previously initialized %i\n", 
-                   branch_data->initialized);
-    #endif
     
     // Update branch data that depend on the parent's
     int primary = is_direction_primary(curr_node, 1, t, samples);
@@ -292,16 +288,35 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         return;
     }
     
-    #ifdef EXPERIMENTAL
-        glp_printf("branching variable: ");
-    #endif
     int curr_node = glp_ios_curr_node(t);
     node_data_t *data = glp_ios_node_data(t, curr_node);
     branch_data_t *branch_data = &(data->branch_data);
     int samples_cnt = samples_total(env->samples);
     int candidate_idx = 0;
     int candidate_rank = 0;
-    for (int i = branch_data->violation_rank; i < samples_cnt; i++) {
+    /* Repeated invocations of ibranch are possible as per glpios03.c:1458-1468:
+     * if one (and only one) of the two branches is hopeless (e.g., x1=0) 
+     * but not the other one (x1=1), then x1=1 can be added as a constraint,
+     * the problem reoptimized, and the branching decision start anew. */
+    /* The following starting point seems to work, but I do not have a proof 
+     * that it should 
+    int violation_start = branch_data->violation_rank; */
+    int violation_start = 0;
+    #ifdef EXPERIMENTAL
+        int implication = branch_data->violation_rank;
+        glp_prob *p = glp_ios_get_prob(t);
+        if (implication) {
+            glp_assert(branch_data->initialized);
+            int idx = violation_index[implication];
+            glp_printf("%s implied to %g [%i, %i]\n", 
+                       glp_get_col_name(p, idx), 
+                       glp_get_col_prim(p, idx),
+                       branch_data->directional_cnt[0],
+                       branch_data->directional_cnt[1]);
+        }
+        glp_printf("branching variable: ");
+    #endif
+    for (int i = violation_start; i < samples_cnt; i++) {
         int idx = violation_index[i];
         if (!idx) {
             #ifdef EXPERIMENTAL
@@ -322,9 +337,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         }
     }
     #ifdef EXPERIMENTAL
-        int a_cnt;
-        glp_ios_tree_size(t, &a_cnt, NULL, NULL);
-        glp_printf("-> %i (actives %i)\n", candidate_idx, a_cnt);
+        glp_printf("\n");
     #endif
     branch_data->violation_rank = candidate_rank;
     branch_on(candidate_idx, t, env);
