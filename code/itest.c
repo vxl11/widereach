@@ -4,6 +4,16 @@
 
 #define LINE_MAX 255
 
+void compare_files(char *filename) {
+    char line[LINE_MAX];
+    snprintf(line, LINE_MAX, "cmp %s tmp.lp", filename);
+	FILE *cmp = popen(line, "r");
+	printf("%s\n", fgets(line, sizeof(line), cmp) == NULL ? 
+			"success" : "FAILURE");
+	pclose(cmp);
+	system("rm tmp.lp");
+}
+
 int main() {
 	env_t env;
         env.params = params_default();
@@ -21,12 +31,7 @@ int main() {
 	printf("Integration testing: CPLEX LP compare\n");
 	glp_write_lp(p, NULL, "tmp.lp");
 	printf("Comparison result:\t");
-	char line[LINE_MAX];
-	FILE *cmp = popen("cmp itest.lp tmp.lp", "r");
-	printf("%s\n", fgets(line, sizeof(line), cmp) == NULL ? 
-			"success" : "FAILURE");
-	pclose(cmp);
-	system("rm tmp.lp");
+    compare_files("itest.lp");
 
 	printf("Integration testing: solve relaxation\n");
 	glp_simplex(p, NULL);
@@ -50,8 +55,12 @@ int main() {
     }
     loc.class = 0;
     loc.index = 2;
-    is_consistent_with(p, &loc, &env);
+    int consistency = is_consistent_with(p, &loc, &env);
+    glp_write_lp(p, NULL, "tmp.lp");
+    printf("%s\n", !consistency ? "FAILURE": "success");
     glp_delete_prob(p);
+    printf("Comparison result:\t");
+    compare_files("consistency.lp");
     
     printf("Integration test: obstruction\n");
     sample_locator_t target = { 1, 0 };
@@ -66,7 +75,7 @@ int main() {
     }
     int status = 
         is_obstructed(&target, &source, 2, obstruction_ptr, env.samples);
-    printf("obstructed? (should be 0): %i\n", status);
+    printf("%s (%i)\n", status ? "FAILURE": "success", status);
     
     delete_env(&env);
 }

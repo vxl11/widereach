@@ -37,7 +37,6 @@ glp_prob *append_sample(glp_prob *p, sample_locator_t *loc, env_t *env) {
         glp_set_row_bnds(p, row_idx, GLP_UP, 0, -params->epsilon_negative);
     }
     
-    glp_write_lp(p, NULL, "tmp.lp");
     return p;
 }
 
