@@ -38,6 +38,21 @@ int main() {
 
 	glp_delete_prob(p);
     
+    printf("Integration test: consistency\n");
+    p = init_consistency_problem(2);
+    sample_locator_t loc;
+    for (size_t i = 0; i < 2; i++) {
+        loc.class = i;
+        for (int j = 0; j < 2; j++) {
+            loc.index = j;
+            append_sample(p, &loc, &env);
+        }
+    }
+    loc.class = 0;
+    loc.index = 2;
+    is_consistent_with(p, &loc, &env);
+    glp_delete_prob(p);
+    
     printf("Integration test: obstruction\n");
     sample_locator_t target = { 1, 0 };
     sample_locator_t source, obstruction[2];

@@ -42,8 +42,8 @@ glp_prob *append_sample(glp_prob *p, sample_locator_t *loc, env_t *env) {
 }
 
 glp_prob *remove_last_sample(glp_prob *p) {
-    int num[1];
-    num[0] = glp_get_num_rows(p);
+    int num[2];
+    num[1] = glp_get_num_rows(p);
     glp_del_rows(p, 1, num);
     return p;
 }

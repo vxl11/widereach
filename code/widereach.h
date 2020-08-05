@@ -724,6 +724,31 @@ int is_obstructed(
     sample_locator_t **obstruction, 
     samples_t *);
 
+
+/* -------------------------- Consistency ------------------------------- */
+/** Initialize a consistency problem of the given dimension */
+glp_prob *init_consistency_problem(size_t dimension);
+
+/** Append a sample to the given consistency problem.
+ * 
+ * @return The consistency problem. */
+glp_prob *append_sample(
+    /** Consistency problem */
+    glp_prob *p, 
+    /** Locator of the sample to append */
+    sample_locator_t *loc, 
+    env_t *);
+
+/** Returns whether the given sample is consistent with the rest of the 
+ * consistency problem. The consistency problem is not modified by this call. */
+int is_consistent_with(
+    /** Consistency problem */
+    glp_prob *p, 
+    /** Locator of the sample to test */
+    sample_locator_t *loc, 
+    env_t *);
+
+
 /* -------------------------- Callback ---------------------------------- */
 
 /** Callback entry point */
