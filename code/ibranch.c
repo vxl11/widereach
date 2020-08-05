@@ -281,8 +281,32 @@ void branch_closest(glp_tree *t, env_t *env) {
 	branch_on(candidate_idx, t, env);
 }
 
-int can_obstruct(int *directional_cnt) {
-    return directional_cnt[0] > 0 && directional_cnt[1] > 0;
+int can_obstruct(int *directional_cnt, size_t dimension) {
+    return  directional_cnt[0] > 0 && 
+            directional_cnt[1] > 0 &&
+            directional_cnt[0] + directional_cnt[1] > 1 + (int) dimension;
+}
+
+glp_prob *path_consistency_program(sparse_vector_t *pth, env_t *env) {
+    samples_t *samples = env->samples;
+    glp_prob *p = init_consistency_problem(samples->dimension);
+    int path_len = pth->len;
+    for (int i = 0; i < path_len; i++) {
+        int idx = pth->ind[i];
+        sample_locator_t *loc = locator(idx, samples);
+        if (pth->val[i] == (double) loc->class) {
+            append_sample(p, loc, env);
+        }
+        free(loc);
+    }
+    return p;
+}
+
+
+void settle_violation_branch(glp_prob *p, int idx, glp_tree *t, env_t *env) {
+    // glp_delete_prob(p);
+        // TODO store cutting plane
+    branch_on(idx, t, env);
 }
 
 void branch_even(glp_tree *t, env_t *env);
@@ -295,11 +319,14 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
     node_data_t *data = glp_ios_node_data(t, curr_node);
     branch_data_t *branch_data = &(data->branch_data);
-    int samples_cnt = samples_total(env->samples);
+    samples_t *samples = env->samples;
+    int samples_cnt = samples_total(samples);
     int candidate_idx = 0;
     int candidate_rank = 0;
     int default_idx = 0;
-    int obstructable = can_obstruct(branch_data->directional_cnt);
+    int obstructable = 
+        can_obstruct(branch_data->directional_cnt, samples->dimension);
+    glp_prob *consistency_lp = NULL; //= path_consistency_program(
     /* Repeated invocations of ibranch are possible as per glpios03.c:1458-1468:
      * if one (and only one) of the two branches is hopeless (e.g., x1=0) 
      * but not the other one (x1=1), then x1=1 can be added as a constraint,
@@ -328,10 +355,10 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             #ifdef EXPERIMENTAL
                 glp_printf(" -> rnd\n");
             #endif
+            settle_violation_branch(consistency_lp, default_idx, t, env);
             // random_flat(t, env);
             // branch_even(t, env);
             // branch_closest(t, env);
-            branch_on(default_idx, t, env);
             return;
         }
         #ifdef EXPERIMENTAL
@@ -339,8 +366,10 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         #endif
         if (glp_ios_can_branch(t, idx)) {
             default_idx = idx;
-            if (obstructable) {
+            sample_locator_t *loc = locator(idx, samples);
+            if (obstructable && !is_consistent_with(consistency_lp, loc, env)) {
             }
+            free(loc);
             candidate_rank = i;
             candidate_idx = idx;
             break;
@@ -350,7 +379,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         glp_printf("\n");
     #endif
     branch_data->violation_rank = candidate_rank;
-    branch_on(candidate_idx, t, env);
+    settle_violation_branch(consistency_lp, candidate_idx, t, env);
 }
 
 int is_first_deficient(int a, int b, int threshold) {
