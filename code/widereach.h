@@ -522,6 +522,10 @@ glp_iocp *iocp(const env_t *);
 /** Return an GLPK problem intialized from the given environment */
 glp_prob *milp(const env_t *);
 
+/** Define the characteristics of the hyperplane variables in 
+ *  the given GLPK problem. */
+glp_prob *add_hyperplane(glp_prob *, size_t dimension);
+
 
 /** Data recording the branching decision */
 typedef struct {

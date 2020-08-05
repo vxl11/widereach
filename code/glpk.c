@@ -50,9 +50,9 @@ glp_prob *init_prob(const env_t *env) {
 }
 
 
-glp_prob *add_hyperplane(glp_prob *p, const env_t *env) {
+glp_prob *add_hyperplane(glp_prob *p, size_t dimension) {
 	char name[NAME_LEN_MAX];
-	int hyperplane_cnt = env->samples->dimension + 1;
+	int hyperplane_cnt = 1 + (int) dimension;
 	for (int i = 1; i <= hyperplane_cnt; i++) {
 		glp_set_col_kind(p, i, GLP_CV);
 		glp_set_col_bnds(p, i, GLP_FR, 0., 0.);
@@ -184,11 +184,12 @@ glp_prob *add_valid_constraints(glp_prob *p, const env_t *env) {
 
 
 glp_prob *milp(const env_t *env) {
-	if (!is_binary(env->samples)) {
+    samples_t *samples = env->samples;
+	if (!is_binary(samples)) {
 		return NULL;
 	}
 	glp_prob *p = init_prob(env);
-	p = add_hyperplane(p, env);
+	p = add_hyperplane(p, samples->dimension);
 	p = add_samples(p, env);
 	p = add_precision(p, env);
  	// p = add_valid_constraints(p, env);
