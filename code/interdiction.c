@@ -49,6 +49,7 @@ glp_prob *remove_last_sample(glp_prob *p) {
 
 int is_interdicted(glp_prob *p, sample_locator_t *loc, env_t *env) {
     if (NULL == p) {
+        glp_printf("null problem\n");
         return 0;
     }
     
@@ -59,6 +60,9 @@ int is_interdicted(glp_prob *p, sample_locator_t *loc, env_t *env) {
     int status = glp_simplex(append_sample(p, loc, env), &parm);
     int solvable = !status && glp_get_status(p) == GLP_OPT;
     remove_last_sample(p);
+    
+    glp_write_lp(p, NULL, "tmp.lp");
+    exit(0);
     
     return solvable;
 }

@@ -43,7 +43,7 @@ int main() {
 
 	glp_delete_prob(p);
     
-    printf("\nIntegration test: consistency\n");
+    printf("\nIntegration test: interdiction\n");
     p = init_consistency_problem(2);
     sample_locator_t loc;
     for (size_t i = 0; i < 2; i++) {

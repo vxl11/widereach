@@ -90,27 +90,31 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
         branch_data->directional_cnt[branching_class] += primary;
     }
     
-    // Update core branch data
-    // int class = integer_class(index, &(branch_data->intobj), t, env);
-    int class = index_to_class(index, samples);
-    int direction = class_direction(class, samples);
-    // int direction = class_reverse_direction(class, samples);
-    // int direction = GLP_NO_BRNCH;
-    branch_data->branching_variable = index;
-    branch_data->class_cnt[index_to_class(index, samples)]++;
-    branch_data->direction = direction;
+    // Update branch data that is independent of branching decision
     branch_data->ii_sum = integer_infeasibility(t, samples);
     branch_data->primary_direction = primary;
     branch_data->intobj = -DBL_MAX;
     branch_data->is_consistent = 0;
     
-    branch_data->initialized = 1;
     return branch_data;
 }
     
 
 void branch_on(int index, glp_tree *t, env_t *env) {
     branch_data_t *branch_data = initialize_branch_data(index, t, env);
+    
+    // Update core branch data
+    samples_t *samples = env->samples;
+    // int class = integer_class(index, &(branch_data->intobj), t, env);
+    int class = index_to_class(index, samples);
+    int direction = class_direction(class, samples);
+    // int direction = class_reverse_direction(class, samples);
+    // int direction = GLP_NO_BRNCH;
+    branch_data->branching_variable = index;
+    branch_data->class_cnt[class]++;
+    branch_data->direction = direction;
+    
+    branch_data->initialized = 1;
  
     // Update last branching node
     int curr_node = glp_ios_curr_node(t);
@@ -296,12 +300,16 @@ glp_prob *path_interdiction_program(sparse_vector_t *pth, env_t *env) {
     samples_t *samples = env->samples;
     glp_prob *p = init_consistency_problem(samples->dimension);
     int path_len = pth->len;
+    glp_printf("interdiction program: ");
     for (int i = 0; i < path_len; i++) {
         int idx = pth->ind[i];
+        glp_printf("%i", idx);
         sample_locator_t *loc = locator(idx, samples);
         if (pth->val[i] == (double) loc->class) {
+            glp_printf("+");
             append_sample(p, loc, env);
         }
+        glp_printf("\n");
         free(loc);
     }
     return p;
@@ -330,6 +338,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     
     size_t dimension = samples->dimension;
     glp_prob *interdiction_lp = NULL; 
+    glp_printf("directional %i %i (%i)\n", branch_data->directional_cnt[0], branch_data->directional_cnt[1], dimension); // may not be init
     if (can_interdict(branch_data->directional_cnt, dimension)) {
         sparse_vector_t *path_complete = path(curr_node, t);
         sparse_vector_t *path = 
@@ -386,6 +395,9 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             sample_locator_t *loc = locator(idx, samples);
             int interdiction = is_interdicted(interdiction_lp, loc, env);
             free(loc);
+            #ifdef EXPERIMENTAL
+                glp_printf("(%i) ", interdiction);
+            #endif
             if (interdiction) {
             } else { 
                 candidate_rank = i;

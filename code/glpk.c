@@ -216,7 +216,7 @@ int is_direction_primary(int node, int relaxation,
     // Otherwise, consult the solution to the relaxation
     if (relaxation) {
         return glp_get_col_prim(glp_ios_get_prob(t), branching_variable) == 
-                primary;
+               primary;
     }
     
     return -1;
