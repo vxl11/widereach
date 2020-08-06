@@ -52,3 +52,18 @@ sparse_vector_t *multiply(sparse_vector_t *v, double x) {
 	}
 	return v;
 }
+
+
+sparse_vector_t *filter(
+        sparse_vector_t *v, 
+        int (*predicate)(sparse_vector_t *, int, void*),
+        void *info) {
+    int len = v->len;
+    sparse_vector_t *u = sparse_vector_blank(len + v->extra);
+    for (int i = 1; i <= len; i++) {
+        if (predicate(v, i, info)) {
+            append(u, v->ind[i], v->val[i]);
+        }
+    }
+    return u;
+}    

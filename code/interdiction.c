@@ -48,6 +48,10 @@ glp_prob *remove_last_sample(glp_prob *p) {
 }
 
 int is_interdicted(glp_prob *p, sample_locator_t *loc, env_t *env) {
+    if (NULL == p) {
+        return 0;
+    }
+    
     glp_smcp parm;
     glp_init_smcp(&parm);
     parm.msg_lev = GLP_MSG_OFF;

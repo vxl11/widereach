@@ -198,6 +198,18 @@ int append(sparse_vector_t *,
 	double val);
 
 
+/** Creates and returns */
+sparse_vector_t *filter(
+    /** Sparse vector to filter */
+    sparse_vector_t *v, 
+    /** Predicate that denotes which elements of the sparse vector will be
+     * retained. Its argument must be a sparse vector, an index into the 
+     * sparse vector, and a pointer to optional information that can be used
+     * by the predicate. */
+    int (*predicate)(sparse_vector_t *, int, void *),
+    /** Additional optional information for potential use by the predicate */
+    void * info);
+
 /* --------------------- Parameters                 ---------------------- */
 
 /** Heuristic method */

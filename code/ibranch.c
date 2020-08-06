@@ -281,13 +281,18 @@ void branch_closest(glp_tree *t, env_t *env) {
 	branch_on(candidate_idx, t, env);
 }
 
-int can_obstruct(int *directional_cnt, size_t dimension) {
+int can_interdict(int *directional_cnt, size_t dimension) {
     return  directional_cnt[0] > 0 && 
             directional_cnt[1] > 0 &&
             directional_cnt[0] + directional_cnt[1] > 1 + (int) dimension;
 }
 
-glp_prob *path_consistency_program(sparse_vector_t *pth, env_t *env) {
+int is_primary(sparse_vector_t *v, int i, void *samples) {
+    return (double) index_to_class(v->ind[i], (samples_t *) samples) == 
+            v->val[i];
+}
+
+glp_prob *path_interdiction_program(sparse_vector_t *pth, env_t *env) {
     samples_t *samples = env->samples;
     glp_prob *p = init_consistency_problem(samples->dimension);
     int path_len = pth->len;
@@ -304,8 +309,10 @@ glp_prob *path_consistency_program(sparse_vector_t *pth, env_t *env) {
 
 
 void settle_violation_branch(glp_prob *p, int idx, glp_tree *t, env_t *env) {
-    // glp_delete_prob(p);
-        // TODO store cutting plane
+    if (p != NULL) {
+        glp_delete_prob(p);
+    }
+    // TODO store cutting plane
     branch_on(idx, t, env);
 }
 
@@ -320,13 +327,23 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     node_data_t *data = glp_ios_node_data(t, curr_node);
     branch_data_t *branch_data = &(data->branch_data);
     samples_t *samples = env->samples;
+    
+    size_t dimension = samples->dimension;
+    glp_prob *interdiction_lp = NULL; 
+    if (can_interdict(branch_data->directional_cnt, dimension)) {
+        sparse_vector_t *path_complete = path(curr_node, t);
+        sparse_vector_t *path = 
+            filter(path_complete, is_primary, (void *) samples);
+        free(delete_sparse_vector(path_complete));
+        interdiction_lp = path_interdiction_program(path, env);
+        free(delete_sparse_vector(path));
+    }
+    
     int samples_cnt = samples_total(samples);
     int candidate_idx = 0;
     int candidate_rank = 0;
     int default_idx = 0;
-    int obstructable = 
-        can_obstruct(branch_data->directional_cnt, samples->dimension);
-    glp_prob *interdiction_lp = NULL; //= path_consistency_program(
+    
     /* Repeated invocations of ibranch are possible as per glpios03.c:1458-1468:
      * if one (and only one) of the two branches is hopeless (e.g., x1=0) 
      * but not the other one (x1=1), then x1=1 can be added as a constraint,
@@ -367,12 +384,14 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         if (glp_ios_can_branch(t, idx)) {
             default_idx = idx;
             sample_locator_t *loc = locator(idx, samples);
-            if (obstructable && !is_interdicted(interdiction_lp, loc, env)) {
-            }
+            int interdiction = is_interdicted(interdiction_lp, loc, env);
             free(loc);
-            candidate_rank = i;
-            candidate_idx = idx;
-            break;
+            if (interdiction) {
+            } else { 
+                candidate_rank = i;
+                candidate_idx = idx;
+                break;
+            }
         }
     }
     #ifdef EXPERIMENTAL

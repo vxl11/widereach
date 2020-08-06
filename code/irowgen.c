@@ -22,7 +22,7 @@ int is_addable(int inequality_cnt, glp_tree *t, env_t *env) {
                              env->samples);
 }
 
-int is_primary(size_t target, size_t class, double value) {
+int is_primary_rowgen(size_t target, size_t class, double value) {
     return class == target && value == (double) target;
 }
 
@@ -37,7 +37,7 @@ sample_locator_t **obstruction_locators(
     for (int i = 0; i < path_len && obstruction_cnt < count; i++) {
         int idx = p->ind[i];
         int class = index_to_class(idx, samples);
-        if (is_primary(target, class, p->val[i])) {
+        if (is_primary_rowgen(target, class, p->val[i])) {
             obstruction[obstruction_cnt++] = locator(idx, samples);
         }
     }
