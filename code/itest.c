@@ -55,7 +55,7 @@ int main() {
     }
     loc.class = 0;
     loc.index = 2;
-    int consistency = is_consistent_with(p, &loc, &env);
+    int consistency = is_interdicted(p, &loc, &env);
     glp_write_lp(p, NULL, "tmp.lp");
     printf("%s\n", !consistency ? "FAILURE": "success");
     glp_delete_prob(p);

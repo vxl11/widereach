@@ -326,7 +326,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     int default_idx = 0;
     int obstructable = 
         can_obstruct(branch_data->directional_cnt, samples->dimension);
-    glp_prob *consistency_lp = NULL; //= path_consistency_program(
+    glp_prob *interdiction_lp = NULL; //= path_consistency_program(
     /* Repeated invocations of ibranch are possible as per glpios03.c:1458-1468:
      * if one (and only one) of the two branches is hopeless (e.g., x1=0) 
      * but not the other one (x1=1), then x1=1 can be added as a constraint,
@@ -355,7 +355,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             #ifdef EXPERIMENTAL
                 glp_printf(" -> rnd\n");
             #endif
-            settle_violation_branch(consistency_lp, default_idx, t, env);
+            settle_violation_branch(interdiction_lp, default_idx, t, env);
             // random_flat(t, env);
             // branch_even(t, env);
             // branch_closest(t, env);
@@ -367,7 +367,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         if (glp_ios_can_branch(t, idx)) {
             default_idx = idx;
             sample_locator_t *loc = locator(idx, samples);
-            if (obstructable && !is_consistent_with(consistency_lp, loc, env)) {
+            if (obstructable && !is_interdicted(interdiction_lp, loc, env)) {
             }
             free(loc);
             candidate_rank = i;
@@ -379,7 +379,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         glp_printf("\n");
     #endif
     branch_data->violation_rank = candidate_rank;
-    settle_violation_branch(consistency_lp, candidate_idx, t, env);
+    settle_violation_branch(interdiction_lp, candidate_idx, t, env);
 }
 
 int is_first_deficient(int a, int b, int threshold) {

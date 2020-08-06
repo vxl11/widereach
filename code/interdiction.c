@@ -47,7 +47,7 @@ glp_prob *remove_last_sample(glp_prob *p) {
     return p;
 }
 
-int is_consistent_with(glp_prob *p, sample_locator_t *loc, env_t *env) {
+int is_interdicted(glp_prob *p, sample_locator_t *loc, env_t *env) {
     glp_smcp parm;
     glp_init_smcp(&parm);
     parm.msg_lev = GLP_MSG_OFF;

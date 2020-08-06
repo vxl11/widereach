@@ -741,7 +741,7 @@ glp_prob *append_sample(
 
 /** Returns whether the given sample is consistent with the rest of the 
  * consistency problem. The consistency problem is not modified by this call. */
-int is_consistent_with(
+int is_interdicted(
     /** Consistency problem */
     glp_prob *p, 
     /** Locator of the sample to test */
