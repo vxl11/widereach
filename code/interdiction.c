@@ -66,5 +66,5 @@ int is_interdicted(glp_prob *p, sample_locator_t *loc, env_t *env) {
         
     remove_last_sample(p);
     
-    return solvable;
+    return !solvable;
 }

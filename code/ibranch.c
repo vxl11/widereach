@@ -341,7 +341,13 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     
     size_t dimension = samples->dimension;
     glp_prob *interdiction_lp = NULL; 
-    glp_printf("directional %i %i (%i)\n", branch_data->directional_cnt[0], branch_data->directional_cnt[1], dimension); // may not be init
+    #ifdef EXPERIMENTAL
+        int *directional_cnt = branch_data->directional_cnt;
+        glp_printf("directional %i %i (%i)\n", 
+                   directional_cnt[0], 
+                   directional_cnt[1], 
+                   dimension);
+    #endif
     if (can_interdict(branch_data->directional_cnt, dimension)) {
         sparse_vector_t *path_complete = path(curr_node, t);
         sparse_vector_t *path = 
