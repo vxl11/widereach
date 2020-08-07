@@ -412,7 +412,11 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     #ifdef EXPERIMENTAL
         glp_printf("\n");
     #endif
-    branch_data->violation_rank = candidate_rank;
+    if (candidate_idx) {
+        branch_data->violation_rank = candidate_rank;
+    } else {
+        candidate_idx = default_idx;
+    }
     settle_violation_branch(interdiction_lp, candidate_idx, t, env);
 }
 

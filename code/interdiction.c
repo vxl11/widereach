@@ -57,10 +57,12 @@ int is_interdicted(glp_prob *p, sample_locator_t *loc, env_t *env) {
     glp_init_smcp(&parm);
     parm.msg_lev = GLP_MSG_OFF;
     
+    glp_std_basis(p);
     int simplex_status = glp_simplex(append_sample(p, loc, env), &parm);
+    glp_assert(!simplex_status);
     int status = glp_get_status(p);
-    int solvable = !simplex_status && 
-        (GLP_OPT == status || GLP_FEAS == status || GLP_UNBND == status);
+    int solvable = 
+        GLP_OPT == status || GLP_FEAS == status || GLP_UNBND == status;
         
     remove_last_sample(p);
     

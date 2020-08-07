@@ -263,8 +263,8 @@ int *sorted_by_violation(double *hyperplane, env_t *env) {
         int idx = idx_min + i;
         /* glp_printf("violation(%i)=%g\n", 
                    dist[idx].index, dist[idx].directional_distance); */
-        sorted_index[i] = dist[idx].directional_distance < DBL_MAX ? 
-                            dist[idx].index : 0;
+        sorted_index[i] = 
+            dist[idx].directional_distance < DBL_MAX ? dist[idx].index : 0;
     }
     free(dist);
     return sorted_index;
