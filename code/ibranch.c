@@ -327,19 +327,37 @@ glp_prob *path_interdiction_program(sparse_vector_t *pth, env_t *env) {
 }
 
 
+void settle_cut(
+        sparse_vector_t *pth, 
+        sparse_vector_t *interdicted, 
+        glp_tree *t) {
+    if (interdicted->len > 0) {
+        sparse_vector_t *rhs;
+        double lhs;
+        interdiction_cut(pth, interdicted, &rhs, &lhs);
+        glp_ios_add_row(t, NULL, 0, 0, 
+                        rhs->len, rhs->ind, rhs->val, GLP_UP, lhs);
+        delete_sparse_vector(rhs);
+    }
+}
+
 void settle_violation_branch(
         glp_prob *p, 
         sparse_vector_t *pth,
+        sparse_vector_t *interdicted,
         int idx, 
         glp_tree *t, 
         env_t *env) {
     if (p != NULL) {
         glp_delete_prob(p);
     }
+    
     if (pth != NULL) {
+        settle_cut(pth, interdicted, t);
         free(delete_sparse_vector(pth));
     }
-    // TODO store cutting plane
+    free(delete_sparse_vector(interdicted));
+    
     branch_on(idx, t, env);
 }
 
@@ -406,7 +424,8 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             #ifdef EXPERIMENTAL
                 glp_printf(" -> rnd\n");
             #endif
-            settle_violation_branch(interdiction_lp, pth, default_idx, t, env);
+            settle_violation_branch(interdiction_lp, pth, interdicted, 
+                                    default_idx, t, env);
             // random_flat(t, env);
             // branch_even(t, env);
             // branch_closest(t, env);
@@ -440,10 +459,8 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     } else {
         candidate_idx = default_idx;
     }
-    settle_violation_branch(interdiction_lp, pth, candidate_idx, t, env);
-    
-    // TODO
-    free(delete_sparse_vector(interdicted));
+    settle_violation_branch(interdiction_lp, pth, interdicted, 
+                            candidate_idx, t, env);
 }
 
 int is_first_deficient(int a, int b, int threshold) {
