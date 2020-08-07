@@ -303,16 +303,24 @@ glp_prob *path_interdiction_program(sparse_vector_t *pth, env_t *env) {
     samples_t *samples = env->samples;
     glp_prob *p = init_consistency_problem(samples->dimension);
     int path_len = pth->len;
-    glp_printf("interdiction program: ");
+    #ifdef EXPERIMENTAL
+        glp_printf("interdiction program: ");
+    #endif
     for (int i = 1; i <= path_len; i++) {
         int idx = pth->ind[i];
-        glp_printf("%i", idx);
+        #ifdef EXPERIMENTAL
+            glp_printf("%i", idx);
+        #endif
         sample_locator_t *loc = locator(idx, samples);
         if (pth->val[i] == (double) loc->class) {
-            glp_printf("+");
+            #ifdef EXPERIMENTAL
+                glp_printf("+");
+            #endif
             append_sample(p, loc, env);
         }
-        glp_printf("\n");
+        #ifdef EXPERIMENTAL
+            glp_printf("\n");
+        #endif
         free(loc);
     }
     return p;
