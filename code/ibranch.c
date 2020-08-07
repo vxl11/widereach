@@ -319,9 +319,17 @@ glp_prob *path_interdiction_program(sparse_vector_t *pth, env_t *env) {
 }
 
 
-void settle_violation_branch(glp_prob *p, int idx, glp_tree *t, env_t *env) {
+void settle_violation_branch(
+        glp_prob *p, 
+        sparse_vector_t *pth,
+        int idx, 
+        glp_tree *t, 
+        env_t *env) {
     if (p != NULL) {
         glp_delete_prob(p);
+    }
+    if (pth != NULL) {
+        free(delete_sparse_vector(pth));
     }
     // TODO store cutting plane
     branch_on(idx, t, env);
@@ -348,13 +356,12 @@ void branch_by_violation(glp_tree *t, env_t *env) {
                    directional_cnt[1], 
                    dimension);
     #endif
+    sparse_vector_t *pth = NULL;
     if (can_interdict(branch_data->directional_cnt, dimension)) {
         sparse_vector_t *path_complete = path(curr_node, t);
-        sparse_vector_t *path = 
-            filter(path_complete, is_primary, (void *) samples);
+        pth = filter(path_complete, is_primary, (void *) samples);
         free(delete_sparse_vector(path_complete));
-        interdiction_lp = path_interdiction_program(path, env);
-        free(delete_sparse_vector(path));
+        interdiction_lp = path_interdiction_program(pth, env);
     }
     
     int samples_cnt = samples_total(samples);
@@ -390,7 +397,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             #ifdef EXPERIMENTAL
                 glp_printf(" -> rnd\n");
             #endif
-            settle_violation_branch(interdiction_lp, default_idx, t, env);
+            settle_violation_branch(interdiction_lp, pth, default_idx, t, env);
             // random_flat(t, env);
             // branch_even(t, env);
             // branch_closest(t, env);
@@ -423,7 +430,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     } else {
         candidate_idx = default_idx;
     }
-    settle_violation_branch(interdiction_lp, candidate_idx, t, env);
+    settle_violation_branch(interdiction_lp, pth, candidate_idx, t, env);
 }
 
 int is_first_deficient(int a, int b, int threshold) {
