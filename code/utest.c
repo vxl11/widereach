@@ -440,6 +440,7 @@ void test_cuts() {
     CU_ASSERT_EQUAL(rhs->ind[3], 3);
     CU_ASSERT_DOUBLE_EQUAL(rhs->val[3], 2., 1e-12);
     CU_ASSERT_EQUAL(lhs, 3);
+    free(delete_sparse_vector(rhs));
 }
 
 
