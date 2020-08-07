@@ -333,14 +333,8 @@ void settle_cut(
         cuts_data_t *data,
         glp_tree *t) {
     if (interdicted->len > 0) {
-        glp_assert(NULL == cuts_data->rhs);
-        interdiction_cut(pth, interdicted, 
-                         &(cuts_data->rhs), &(cuts_data->lhs));
-        /*
-        glp_ios_add_row(t, NULL, 0, 0, 
-                        rhs->len, rhs->ind, rhs->val, GLP_UP, lhs);
-                        */
-        delete_sparse_vector(rhs);
+        glp_assert(NULL == data->rhs);
+        interdiction_cut(pth, interdicted, &(data->rhs), &(data->lhs));
     }
 }
 
@@ -348,6 +342,7 @@ void settle_violation_branch(
         glp_prob *p, 
         sparse_vector_t *pth,
         sparse_vector_t *interdicted,
+        cuts_data_t *data,
         int idx, 
         glp_tree *t, 
         env_t *env) {
@@ -356,7 +351,7 @@ void settle_violation_branch(
     }
     
     if (pth != NULL) {
-        settle_cut(pth, interdicted, t);
+        settle_cut(pth, interdicted, data, t);
         free(delete_sparse_vector(pth));
     }
     free(delete_sparse_vector(interdicted));
@@ -374,6 +369,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
     node_data_t *data = glp_ios_node_data(t, curr_node);
     branch_data_t *branch_data = &(data->branch_data);
+    cuts_data_t *cuts_data = &(data->cuts_data);
     samples_t *samples = env->samples;
     
     size_t dimension = samples->dimension;
@@ -427,7 +423,8 @@ void branch_by_violation(glp_tree *t, env_t *env) {
             #ifdef EXPERIMENTAL
                 glp_printf(" -> rnd\n");
             #endif
-            settle_violation_branch(interdiction_lp, pth, interdicted, 
+            settle_violation_branch(interdiction_lp, 
+                                    pth, interdicted, cuts_data,
                                     default_idx, t, env);
             // random_flat(t, env);
             // branch_even(t, env);
@@ -462,7 +459,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
     } else {
         candidate_idx = default_idx;
     }
-    settle_violation_branch(interdiction_lp, pth, interdicted, 
+    settle_violation_branch(interdiction_lp, pth, interdicted, cuts_data,
                             candidate_idx, t, env);
 }
 

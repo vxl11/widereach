@@ -610,6 +610,7 @@ typedef struct {
     /** Right hand side of the next cutting plane */
     sparse_vector_t *rhs;
     /** Left hand side of the next cutting plane */
+    double lhs;
 } cuts_data_t;
 
 /** Additional data to be stored in each tree node */
