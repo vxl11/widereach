@@ -385,6 +385,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
      * that it should 
     int violation_start = branch_data->violation_rank; */
     int violation_start = 0;
+    sparse_vector_t *interdicted = sparse_vector_blank(samples_cnt);
     #ifdef EXPERIMENTAL
         int implication = branch_data->violation_rank;
         glp_prob *p = glp_ios_get_prob(t);
@@ -423,6 +424,7 @@ void branch_by_violation(glp_tree *t, env_t *env) {
                 glp_printf("(%i) ", interdiction);
             #endif
             if (interdiction) {
+                append(interdicted, idx, (double) index_label(idx, samples));
             } else { 
                 candidate_rank = i;
                 candidate_idx = idx;
@@ -439,6 +441,9 @@ void branch_by_violation(glp_tree *t, env_t *env) {
         candidate_idx = default_idx;
     }
     settle_violation_branch(interdiction_lp, pth, candidate_idx, t, env);
+    
+    // TODO
+    free(delete_sparse_vector(interdicted));
 }
 
 int is_first_deficient(int a, int b, int threshold) {
