@@ -198,7 +198,9 @@ int append(sparse_vector_t *,
 	double val);
 
 
-/** Creates and returns */
+/** Creates and returns a sparse vector obtained by retaining only the 
+    elements that satisfy the given filter. It assumes that the vector
+    is not null. */
 sparse_vector_t *filter(
     /** Sparse vector to filter */
     sparse_vector_t *v, 
@@ -208,7 +210,7 @@ sparse_vector_t *filter(
      * by the predicate. */
     int (*predicate)(sparse_vector_t *, int, void *),
     /** Additional optional information for potential use by the predicate */
-    void * info);
+    void *info);
 
 /* --------------------- Parameters                 ---------------------- */
 
@@ -541,8 +543,12 @@ glp_prob *add_hyperplane(glp_prob *, size_t dimension);
 
 /** Data recording the branching decision */
 typedef struct {
-    /** Flag denoting whether the branch data has been initialized */
+    /** Flag denoting whether the branch data has been initialized 
+        (exit of ibranch) */
     int initialized;
+    /** Flag denoting whether the branch data has been pre-initialized
+     *  (entry of ibranch) */
+    int preinitialized;
     /** Branching variable chosen at this node */
 	int branching_variable;
 	/** Recommended direction for the branching variable, as a GLP enum */
@@ -657,7 +663,7 @@ int *branching_variables(int node, glp_tree *, samples_t *);
 /** Returns the path from the given node to the root as a sparse vector
  * containing the branching variables along the paths and their values.
     It returns NULL if the node is invalid or if its branch data have
-    not been initialized. */
+    not been preinitialized. */
 sparse_vector_t *path(int node, glp_tree *);
 
 

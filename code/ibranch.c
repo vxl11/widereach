@@ -73,7 +73,7 @@ int class_reverse_direction(int class, samples_t *samples) {
 	return samples->label[class] < 0 ? GLP_UP_BRNCH : GLP_DN_BRNCH;
 }
 
-branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
+branch_data_t *initialize_branch_data(glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
     samples_t *samples = env->samples;
 	node_data_t *data = initialize_data(curr_node, t, samples);
@@ -96,12 +96,16 @@ branch_data_t *initialize_branch_data(int index, glp_tree *t, env_t *env) {
     branch_data->intobj = -DBL_MAX;
     branch_data->is_consistent = 0;
     
+    branch_data->preinitialized = 1;
+    
     return branch_data;
 }
     
 
 void branch_on(int index, glp_tree *t, env_t *env) {
-    branch_data_t *branch_data = initialize_branch_data(index, t, env);
+    int curr_node = glp_ios_curr_node(t);
+    node_data_t *data = (node_data_t *) glp_ios_node_data(t, curr_node);
+    branch_data_t *branch_data = &(data->branch_data);
     
     // Update core branch data
     samples_t *samples = env->samples;
@@ -117,7 +121,6 @@ void branch_on(int index, glp_tree *t, env_t *env) {
     branch_data->initialized = 1;
  
     // Update last branching node
-    int curr_node = glp_ios_curr_node(t);
     env->solution_data->branching_node = curr_node;
  
     int branching_variable = branch_data->branching_variable;
@@ -301,7 +304,7 @@ glp_prob *path_interdiction_program(sparse_vector_t *pth, env_t *env) {
     glp_prob *p = init_consistency_problem(samples->dimension);
     int path_len = pth->len;
     glp_printf("interdiction program: ");
-    for (int i = 0; i < path_len; i++) {
+    for (int i = 1; i <= path_len; i++) {
         int idx = pth->ind[i];
         glp_printf("%i", idx);
         sample_locator_t *loc = locator(idx, samples);
@@ -449,6 +452,7 @@ void branch_even(glp_tree *t, env_t *env) {
 }
 
 void ibranch(glp_tree *t, env_t *env) {
+    initialize_branch_data(t, env);
 	// glp_printf("Chosen node (at ibranch)  %i\n", glp_ios_curr_node(t));
     /*
     node_data_t *data = glp_ios_node_data(t, glp_ios_curr_node(t));

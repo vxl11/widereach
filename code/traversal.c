@@ -63,7 +63,7 @@ sparse_vector_t *initialized_path(int node, glp_tree *t) {
     }
     
     branch_data_t *data = branch_data(node, t);
-    if (!data->initialized) {
+    if (!data->preinitialized) {
         return NULL;
     }
     
@@ -88,7 +88,7 @@ sparse_vector_t *path(int node, glp_tree *t) {
         
         // Find the cursor's branch data and its parent's
         branch_data_t *data = branch_data(curr_node, t);
-        glp_assert(data->initialized);
+        glp_assert(data->preinitialized);
         branch_data_t *parent_data = branch_data(parent, t);
         glp_assert(parent_data->initialized);
         
