@@ -15,6 +15,9 @@ void callback(glp_tree *t, void *info) {
 		case GLP_IROWGEN:
 			irowgen(t, env);
 			break;
+        case GLP_ICUTGEN:
+            icutgen(t, env);
+            break;
 		case GLP_IBINGO:
 			ibingo(t, env);
 			break;

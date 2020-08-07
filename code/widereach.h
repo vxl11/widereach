@@ -607,6 +607,9 @@ typedef struct {
     /** A count of valid inequalities introduced at this node or at one of 
      * its ancestors */
     int inequality_cnt;
+    /** Right hand side of the next cutting plane */
+    sparse_vector_t *rhs;
+    /** Left hand side of the next cutting plane */
 } cuts_data_t;
 
 /** Additional data to be stored in each tree node */
@@ -795,8 +798,11 @@ void ibranch(glp_tree *, env_t *);
 /** Select the next problem to expand. */
 void iselect(glp_tree *, env_t *);
 
-/** Calculate and set the node data for the current node */
+/** Add lazy constraints */
 void irowgen(glp_tree *, env_t *);
+
+/** Add cutting planes */
+void icutgen(glp_tree *, env_t *);
 
 /** Collect information when a better integer solution is found */
 void ibingo(glp_tree *, env_t *);

@@ -330,13 +330,16 @@ glp_prob *path_interdiction_program(sparse_vector_t *pth, env_t *env) {
 void settle_cut(
         sparse_vector_t *pth, 
         sparse_vector_t *interdicted, 
+        cuts_data_t *data,
         glp_tree *t) {
     if (interdicted->len > 0) {
-        sparse_vector_t *rhs;
-        double lhs;
-        interdiction_cut(pth, interdicted, &rhs, &lhs);
+        glp_assert(NULL == cuts_data->rhs);
+        interdiction_cut(pth, interdicted, 
+                         &(cuts_data->rhs), &(cuts_data->lhs));
+        /*
         glp_ios_add_row(t, NULL, 0, 0, 
                         rhs->len, rhs->ind, rhs->val, GLP_UP, lhs);
+                        */
         delete_sparse_vector(rhs);
     }
 }
