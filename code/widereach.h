@@ -767,6 +767,19 @@ int is_interdicted(
     env_t *);
 
 
+/* -------------------------- Cutting planes ---------------------------- */
+/** Creates a cutting plane from a path of constraining samples and 
+ * a vector of interdicted samples */
+void interdiction_cut(
+    /** Samples that were branched in the primary direction */
+    sparse_vector_t *pth, 
+    /** Samples that are interdicted by the path */
+    sparse_vector_t *interdicted,
+    /** Right hand side of the resulting cutting plane */
+    sparse_vector_t **rhs,
+    /** Left hand side of the resulting cutting plane */
+    double *lhs);
+
 /* -------------------------- Callback ---------------------------------- */
 
 /** Callback entry point */

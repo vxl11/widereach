@@ -421,6 +421,27 @@ void test_hyperplane() {
     free(best_random_hyperplane(0, &env));
 }
 
+void test_cuts() {
+    sparse_vector_t *pth = sparse_vector_blank(3);
+    append(pth, 3, 1.);
+    append(pth, 1, 0.);
+    append(pth, 4, 1.);
+    sparse_vector_t *interdicted = sparse_vector_blank(2);
+    append(interdicted, 2, 1.);
+    append(interdicted, 5, -1.);
+    sparse_vector_t *rhs;
+    double lhs;
+    interdiction_cut(pth, interdicted, &rhs, &lhs);
+    CU_ASSERT_EQUAL(rhs->len, 5);
+    CU_ASSERT_EQUAL(rhs->ind[1], 2);
+    CU_ASSERT_DOUBLE_EQUAL(rhs->val[1], 1., 1e-12);
+    CU_ASSERT_EQUAL(rhs->ind[2], 5);
+    CU_ASSERT_DOUBLE_EQUAL(rhs->val[2], -1., 1e-12);
+    CU_ASSERT_EQUAL(rhs->ind[3], 3);
+    CU_ASSERT_DOUBLE_EQUAL(rhs->val[3], 2., 1e-12);
+    CU_ASSERT_EQUAL(lhs, 3);
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -474,6 +495,10 @@ int main() {
     // Hyperplane
 	CU_pSuite hyperplane = CU_add_suite("hyperplane", init_samples, NULL);
 	CU_add_test(hyperplane, "hyperplane", test_hyperplane);
+    
+    // Cuts
+    CU_pSuite cuts = CU_add_suite("cuts", NULL, NULL);
+	CU_add_test(cuts, "cuts", test_cuts);
 
 	// Run tests
 	CU_basic_run_tests();
