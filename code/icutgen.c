@@ -14,6 +14,6 @@ void add_interdiction(glp_tree *t) {
 }
 
 void icutgen(glp_tree *t, env_t *env) {
-    glp_printf("ICUTGEN\n");
+    // glp_printf("ICUTGEN\n");
     add_interdiction(t);
 }
