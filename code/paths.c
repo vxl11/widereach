@@ -23,3 +23,11 @@ int is_path_consistent(sparse_vector_t *path, double *a) {
     }
     return 1;
 }
+
+int consistency_count(sparse_vector_t *path, double *a) {
+    int cnt = 0;
+    for (int j = 1; j <= path->len; j++) {
+        cnt += (a[path->ind[j]] == path->val[j]);
+    }
+    return cnt;
+}

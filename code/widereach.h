@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <glpk.h>
 
-// #define EXPERIMENTAL
+#define EXPERIMENTAL
 
 /** Widereach Classification */
 
@@ -527,6 +527,10 @@ int are_consistent(
 /** Similar to are_consistent, except that the first array and the index
  * vectors are replaced by a sparse vector */
 int is_path_consistent(sparse_vector_t *, double *);
+
+/** Similar to is_path_consistent, except that it returns the number of 
+ * entries that are consistent in the two arguments. */
+int consistency_count(sparse_vector_t *, double *);
 
 /* ----------------------------- GLPK ----------------------------------- */
 

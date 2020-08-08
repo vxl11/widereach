@@ -377,8 +377,10 @@ void test_paths() {
     CU_ASSERT(is_path_consistent(path, a));
     append(path, 4, .5);
     CU_ASSERT(is_path_consistent(path, a));
+    CU_ASSERT_EQUAL(consistency_count(path, a), 2);
     append(path, 1, .1);
     CU_ASSERT_FALSE(is_path_consistent(path, a));
+    CU_ASSERT_EQUAL(consistency_count(path, a), 2);
     free(path);
 }
 
