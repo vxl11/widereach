@@ -136,10 +136,11 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
 
     #ifdef EXPERIMENTAL
         double intopt = solution_data->intopt;
-        glp_printf("consistent(%g) ", intopt);
+        glp_printf("Consistent(%g) ", intopt);
     #endif
     int best_node = 0;
-    int best_level = 0;
+    int best_consistency = 0;
+    // int best_level = 0;
     for (int node = glp_ios_next_node(t, 0);
          node != 0;
          node = glp_ios_next_node(t, node)) {
@@ -149,18 +150,20 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
         }        
         branch_data_t *data = update_consistency(parent, solution_data, t);
 
+        int curr_consistency = data->is_consistent;
         int curr_level = glp_ios_node_level(t, node);
         #ifdef EXPERIMENTAL
             glp_printf("%i(%i,%i) ", node, data->is_consistent, curr_level);
         #endif
-        if (data->is_consistent && curr_level > best_level) {
+        if (curr_consistency > best_consistency) { // && curr_level > best_level) {
             best_node = node;
-            best_level = curr_level;
+            best_consistency = curr_consistency;
+            // best_level = curr_level;
         }
     }
     #ifdef EXPERIMENTAL
         if (best_node) glp_printf("-> %i", best_node);
-        glp_printf("\n");
+        glp_printf("\ncount %i\n", best_consistency);
     #endif
     return best_node;
 }
