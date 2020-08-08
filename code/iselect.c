@@ -117,9 +117,13 @@ branch_data_t *update_consistency(
     double intopt = solution_data->intopt;
     if (data->intobj < intopt) {
         sparse_vector_t *p = path(parent, t);
-        data->is_consistent = 
-            p != NULL && is_path_consistent(p, solution_data->integer_solution);
-        free(p);
+        data->is_consistent = 0;
+        if (p != NULL) {
+            data->is_consistent = 
+                consistency_count(p, solution_data->integer_solution);
+                free(p);
+            // p != NULL && is_path_consistent(p, solution_data->integer_solution);
+        }
         data->intobj = intopt;
     }
     return data;
