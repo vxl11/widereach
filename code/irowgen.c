@@ -168,6 +168,7 @@ void add_inequality(glp_tree *t, env_t *env) {
 }
 
 void irowgen(glp_tree *t, env_t *env) {
+    return;
     #ifdef EXPERIMENTAL
         glp_printf("IROWGEN\n");
     #endif
