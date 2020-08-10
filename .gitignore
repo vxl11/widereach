@@ -343,6 +343,9 @@ TSWLatexianTemp*
 # Uncomment the next line to have this generated file ignored.
 #*Notes.bib
 
+# LibreOffice locks
+.~lock.*#
+
 # Executables (project specific)
 utest
 widereach
