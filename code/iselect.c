@@ -151,7 +151,7 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
         branch_data_t *data = update_consistency(parent, solution_data, t);
 
         int curr_consistency = data->is_consistent;
-        int curr_level = glp_ios_node_level(t, node);
+        // int curr_level = glp_ios_node_level(t, node);
         // curr_consistency += curr_consistency - curr_level;
         #ifdef EXPERIMENTAL
             glp_printf("%i(%i,%i) ", node, data->is_consistent, curr_level);
@@ -173,7 +173,8 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
 
 // glpk breaks ties by smallest value of sum of integer infeasibilities
 void iselect(glp_tree *t, env_t *env) {
-//     glp_printf("ISELECT\n");
+    return;
+    // glp_printf("ISELECT\n");
     solution_data_t *solution_data = env->solution_data;
     int last_branching = solution_data->branching_node;
     int active_children;
