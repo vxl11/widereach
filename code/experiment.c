@@ -60,17 +60,17 @@ int main() {
     // env.params->theta = 0.7;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
-    int n = 1000;
+    int n = 10000;
     env.params->lambda = 100 * (n + 1);
     env.params->rnd_trials = 10000;
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    // for (int s = 0; s < SAMPLE_SEEDS; s++) {
-    for (int s = 0; s < 1; s++) {
+    for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    // for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
     
-        samples_t *samples = random_samples(n, n / 2, 2);
+        samples_t *samples = random_samples(n, n / 2, 32);
         // print_samples(env.samples);
         env.samples = samples;
     
