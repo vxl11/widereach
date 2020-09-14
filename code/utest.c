@@ -484,6 +484,19 @@ void test_read_samples() {
     s = samples->samples[1];
     CU_ASSERT_DOUBLE_EQUAL(s[0][1], 2., 1e-12);
     fclose(infile);
+    free(delete_samples(samples));
+    
+    inptr = snprintf(instring, INSIZE, "%u %u %u\n", 3, 0, 2);
+    inptr += snprintf(instring + inptr, INSIZE - inptr, 
+                      "%g %g %g\n", 1., 2., 3.);
+    inptr += snprintf(instring + inptr, INSIZE - inptr, 
+                      "%g %g %g\n", 4., 5., 6.);
+    infile = fmemopen(instring, INSIZE, "r");
+    samples = read_binary_samples(infile);
+    CU_ASSERT_EQUAL(samples->class_cnt, 2);
+    CU_ASSERT_DOUBLE_EQUAL(s[0][1], 2., 1e-12);
+    fclose(infile);
+    free(delete_samples(samples));
 }
 
 

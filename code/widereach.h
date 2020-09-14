@@ -149,7 +149,7 @@ int side_cnt(
 
 
 /* ---------------------- Read Samples ------------------------------ */
-/** Read a single vector. */
+/** Allocate and read a single vector. */
 double *read_vector(
     /** Input file */
     FILE *, 
@@ -178,6 +178,9 @@ void read_classes(
      * number of samples in the class.
      * The samples field will contain the samples from the file. */
     samples_t *samples);
+
+/** Allocate and read binary samples from the given file */
+samples_t *read_binary_samples(FILE *);
 
 
 /* ---------------------- Sparse Vectors ---------------------------- */

@@ -35,7 +35,7 @@ samples_t *read_binary_samples(FILE *infile) {
     
     size_t *count = samples->count = CALLOC(2, size_t);
     fscanf(infile, "%lu %lu %lu", 
-           &(samples->dimension), &(count[1]), &(count[0])); 
+           &(samples->dimension), &(count[0]), &(count[1])); 
     read_classes(infile, samples);
     
     return samples;
