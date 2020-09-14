@@ -450,19 +450,32 @@ void test_cuts() {
 void test_read_samples() {
     char instring[INSIZE];
     FILE *infile = fmemopen(instring, 0, "r");
-    double sample[3];
-    read_vector(infile, 0, sample);
+    read_vector(infile, 0);
     fclose(infile);
     
-    snprintf(instring, INSIZE, "%g %g %g\n", 1., 2., 3.);
+    int inptr = snprintf(instring, INSIZE, "%g %g %g\n", 1., 2., 3.);
     infile = fmemopen(instring, INSIZE, "r");
-    read_vector(infile, 3, sample);
+    double *sample = read_vector(infile, 3);
     CU_ASSERT_DOUBLE_EQUAL(sample[0], 1., 1e-12);
     CU_ASSERT_DOUBLE_EQUAL(sample[1], 2., 1e-12);
     CU_ASSERT_DOUBLE_EQUAL(sample[2], 3., 1e-12);
+    free(sample);
     fclose(infile);
     
-    
+    samples_t *samples = CALLOC(1, samples_t);
+    samples->dimension = 3;
+    size_t *count = samples->count = CALLOC(2, size_t);
+    count[1] = 2;
+    samples->samples = CALLOC(2, double **);
+    inptr += snprintf(instring + inptr, INSIZE - inptr, 
+                      "%g %g %g\n", 4., 5., 6.);
+    infile = fmemopen(instring, INSIZE, "r");
+    read_class(infile, samples, 1);
+    double **s = samples->samples[1];
+    CU_ASSERT_DOUBLE_EQUAL(s[0][0], 1., 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(s[1][1], 5., 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(s[1][2], 6., 1e-12);
+    fclose(infile);
 }
 
 

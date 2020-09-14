@@ -1,17 +1,19 @@
 #include "widereach.h"
 #include "helper.h"
 
-void read_vector(FILE *infile, size_t dimension, double *sample) {
+double *read_vector(FILE *infile, size_t dimension) {
+    double *sample = CALLOC(dimension, double);
     for (size_t i = 0; i < dimension; i++) {
         fscanf(infile, "%lg", sample+i);
     }
+    return sample;
 }
 
 void read_class(FILE *infile, samples_t *samples, int class) {
     size_t count = samples->count[class];
     double **s = samples->samples[class] = CALLOC(count, double *);
     for (int i = 0; i < count; i++) {
-        read_vector(infile, samples->dimension, s[i]); 
+        s[i] = read_vector(infile, samples->dimension); 
     }
 }
 

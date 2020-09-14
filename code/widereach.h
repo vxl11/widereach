@@ -150,13 +150,11 @@ int side_cnt(
 
 /* ---------------------- Read Samples ------------------------------ */
 /** Read a single vector. */
-void read_vector(
+double *read_vector(
     /** Input file */
     FILE *, 
     /** Vector dimension */
-    size_t dimension, 
-    /** Vector read from file */
-    double *sample);
+    size_t dimension);
 
 /** Read all samples from the given class. */
 void read_class(
