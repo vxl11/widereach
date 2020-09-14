@@ -1,11 +1,9 @@
-#include <stdio.h>
-
 #include "widereach.h"
 #include "helper.h"
 
 void read_vector(FILE *infile, size_t dimension, double *sample) {
     for (size_t i = 0; i < dimension; i++) {
-        fscanf(infile, "%g", sample+i);
+        fscanf(infile, "%lg", sample+i);
     }
 }
 

@@ -1,4 +1,5 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <glpk.h>
 
 // #define EXPERIMENTAL
@@ -145,6 +146,30 @@ int side_cnt(
 		double *hyperplane,
 		/** Precision around the hyperplane */
 		double precision);
+
+
+/* ---------------------- Read Samples ------------------------------ */
+/** Read a single vector. */
+void read_vector(
+    /** Input file */
+    FILE *, 
+    /** Vector dimension */
+    size_t dimension, 
+    /** Vector read from file */
+    double *sample);
+
+/** Read all samples from the given class. */
+void read_class(
+    /** Input file */
+    FILE *infile,
+    /** Samples. 
+     * count[class] is assumed to have been initialized to the
+     * number of samples in the class.
+     * The samples[class] field will contain the samples from the
+     * file. */
+    samples_t *samples, 
+    /** Class to be read */
+    int class);
 
 
 /* ---------------------- Sparse Vectors ---------------------------- */

@@ -445,6 +445,26 @@ void test_cuts() {
     free(delete_sparse_vector(rhs));
 }
 
+#define INSIZE 1024
+
+void test_read_samples() {
+    char instring[INSIZE];
+    FILE *infile = fmemopen(instring, 0, "r");
+    double sample[3];
+    read_vector(infile, 0, sample);
+    fclose(infile);
+    
+    snprintf(instring, INSIZE, "%g %g %g\n", 1., 2., 3.);
+    infile = fmemopen(instring, INSIZE, "r");
+    read_vector(infile, 3, sample);
+    CU_ASSERT_DOUBLE_EQUAL(sample[0], 1., 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(sample[1], 2., 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(sample[2], 3., 1e-12);
+    fclose(infile);
+    
+    
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -502,6 +522,10 @@ int main() {
     // Cuts
     CU_pSuite cuts = CU_add_suite("cuts", NULL, NULL);
 	CU_add_test(cuts, "cuts", test_cuts);
+    
+    // Read samples
+    CU_pSuite read_samples = CU_add_suite("readsamples", NULL, NULL);
+	CU_add_test(read_samples, "readsamples", test_read_samples);
 
 	// Run tests
 	CU_basic_run_tests();
