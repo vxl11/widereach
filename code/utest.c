@@ -475,6 +475,14 @@ void test_read_samples() {
     CU_ASSERT_DOUBLE_EQUAL(s[0][0], 1., 1e-12);
     CU_ASSERT_DOUBLE_EQUAL(s[1][1], 5., 1e-12);
     CU_ASSERT_DOUBLE_EQUAL(s[1][2], 6., 1e-12);
+    free(s);
+    fclose(infile);
+    
+    count[0] = 0;
+    infile = fmemopen(instring, INSIZE, "r");
+    read_classes(infile, samples);
+    s = samples->samples[1];
+    CU_ASSERT_DOUBLE_EQUAL(s[0][1], 2., 1e-12);
     fclose(infile);
 }
 

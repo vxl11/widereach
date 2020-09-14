@@ -159,7 +159,7 @@ double *read_vector(
 /** Read all samples from the given class. */
 void read_class(
     /** Input file */
-    FILE *infile,
+    FILE *,
     /** Samples. 
      * count[class] is assumed to have been initialized to the
      * number of samples in the class.
@@ -168,6 +168,16 @@ void read_class(
     samples_t *samples, 
     /** Class to be read */
     int class);
+
+/** Read all samples */
+void read_classes(
+    /** Input file */
+    FILE *infile, 
+    /** Samples. 
+     * count[class] is assumed to have been initialized to the
+     * number of samples in the class.
+     * The samples field will contain the samples from the file. */
+    samples_t *samples);
 
 
 /* ---------------------- Sparse Vectors ---------------------------- */
