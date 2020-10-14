@@ -7,7 +7,7 @@
 \usepackage{algorithmic}
 
 \usepackage{graphicx}
-\graphicspath{ {figures/} }
+\graphicspath{ {figs/} }
 
 \usepackage{subcaption}
 
@@ -15,7 +15,7 @@
 \newtheorem{lemma}{Lemma}[section]
 \newtheorem{corollary}{Corollary}[section]
 \newtheorem{proposition}{Proposition}[section]
-\newtheorem*{claim}{Claim}
+\newtheorem{claim}{Claim}[section]
 
 \theoremstyle{definition}
 \newtheorem{definition}{Definition}[section]
@@ -25,6 +25,8 @@
 \newcommand{\Q}{\mathbb{Q}}
 \newcommand{\vect}[1]{\mathbf{#1}}
 \newcommand{\sv}[1]{_{\vect{#1}}}
+\newcommand{\sinp}{($\vect{s} \in P$)}
+\newcommand{\sinn}{($\vect{s} \in N$)}
 
 \title{Wide-Reach Classification}
 \author{Vincenzo Liberatore}
@@ -34,15 +36,26 @@
 \maketitle
 
 \section{Maximum Hyperplane Consistency}
+\label{sec:mhc}
 Let $P$ be a finite multiset of integer {\em positive samples\/} and 
 $N$ be a finite multiset of integer {\em negative samples\/} in $\R^n$.
 Given a multiset $X$, we denote as $\nu_X(\vect{s})$ the multiplicity of $\vect{s}$ in $X$. 
-Given a set $S$ of samples, a hyperplane $h = (\vect{w}, c)$ in $\R^n$ 
+Given a hyperplane $h = (\vect{w}, c)$ in $\R^n$ 
 specified by a normal vector $\vect{w} = (w_1 ~ w_2 \dots ~ w_n)^T \in \Q^n$ and a bias $c \in \Q$,
-define 
+and a set $S$ of samples, define
 $$C^+(S, h) = \{ \vect{s} \in S : \vect{s}^T \vect{w} > c \}$$
 and 
-$$C^-(N, h) = \{ \vect{s} \in P : \vect{s}^T \vect{w} < c \}\;.$$
+$$C^-(S, h) = \{ \vect{s} \in S : \vect{s}^T \vect{w} < c \}\;.$$
+For simplicity of notation, 
+we define $\tau_{h}(\vect{s}) = \vect{s}^T \vect{w} - c$
+for any point $\vect{s} \in \R^d$ (not necessarily a sample).
+The hyperplane $h$ will be omitted from $\tau(\vect{s})$
+when it is clear from the context.
+The geometric interpretation is as follows. 
+Given a hyperplane $h = (\vect{w}, c)$
+with $\vect{w} \neq \vect{0}$,
+define $d(\vect{s}, h)$ as the signed distance of $\vect{s}$ from $h$
+and notice that $\tau_h(\vect{s}) = |\vect{w}| d(\vect{s}, h)$.
 Define $C^+(P, h)$ ($C^-(N, h)$) be the set of positive 
 (negative) samples that are 
 {\em consistent with the hyperplane\/} $h$.
@@ -128,9 +141,12 @@ is defined as the mixed-integer linear program:
 \min\quad & 
 \pi_P \sum_{\vect{s} \in P} \delta\sv{s} + 
 \pi_N \sum_{\vect{s} \in N} \delta\sv{s} \\
+\label{eq:tgmP}
 \text{s.t.}\quad & 
 \delta\sv{s} \geq c - \vect{s}^T \vect{w} + \epsilon_P & & (\vect{s} \in P) \\
+\label{eq:tgmN}
 & \delta\sv{s} \geq \vect{s}^T \vect{w} - c + \epsilon_N & & (\vect{s} \in N) \\
+\label{eq:tgmbinary}
 & \delta\sv{s} \in \{ 0, 1 \} & & (\vect{s} \in P \cup N) 
 \end{align}
 \end{subequations}
@@ -166,14 +182,1004 @@ it misclassifies all points and thus never optimal.
 
 
 \section{Wide-Reach Classification}
-Given a hyperplane $h$, the quantity $|C(P, h)|$ is defined as the {\em reach\/},
-$|N - C(N,h)|$ as the number of {\em false positives\/},
-and $|C(P,h)| / (|C(P,h)| + |N - C(N,h)|)$ as the {\em precision\/}.
+\subsection{Definitions and Preliminaries}
+Given a hyperplane $h$, the quantity $|C^+(P, h)|$ is defined as its {\em reach\/}
+and $|C^+(P, h)| / (|C^+(P \cup N, h)|$ as the {\em precision\/}.
 The {\em Wide-Reach Classification\/} problem can be informally defined
-as the problem of maximizing recall subject to the constraint that the precision
+as the problem of maximizing reach subject to the constraint that the precision
 be larger than or equal to a precision threshold $\theta$.
-However, such a combinatorial formulation runs against numerical instability problem. 
+More precisely, Wide-Reach Classification is the mixed-integer linear program:
+\begin{subequations}
+\label{eq:widereach}
+\begin{align}
+r^* = \max\quad & 
+\sum_{\vect{s} \in P} x\sv{s} \\
+\label{eq:precisionconstraint}
+\text{s.t.}\quad & 
+\sum_{\vect{s} \in P} x\sv{s} \geq 
+\theta \left( 
+\sum_{\vect{s} \in P} x\sv{s} + \sum_{\vect{s} \in N} y\sv{s} + \epsilon_R \right) \\
+& x\sv{s} \leq 1 + \vect{s}^T \vect{w} - c - \epsilon_P & & (\vect{s} \in P) \\
+& y\sv{s} \geq \vect{s}^T \vect{w} - c + \epsilon_N & & (\vect{s} \in N) \\
+& x\sv{s}, y\sv{s} \in \{ 0, 1 \} & & (\vect{s} \in P \cup N) 
+\end{align}
+\end{subequations}
+The binary decision variables $x\sv{s}$ and $y\sv{s}$ represent whether a
+sample $\vect{s}$ has been classified as positive because without loss of generality
+$$x\sv{s} = \begin{cases}
+0 & \text{if } \vect{s}^T \vect{w} < c + \epsilon_P \\
+1 & \text{if } \vect{s}^T \vect{w} \geq c + \epsilon_P 
+\end{cases}$$
+and
+$$y\sv{s} = \begin{cases}
+0 & \text{if } \vect{s}^T \vect{w} \leq c - \epsilon_N \\
+1 & \text{if } \vect{s}^T \vect{w} > c - \epsilon_N 
+\end{cases}\;.$$
+If constraint \eqref{eq:precisionconstraint} is dropped, then
+\eqref{eq:widereach} is the same as \eqref{eq:twogroupmisclassification}
+with $x\sv{s} = 1 - \delta\sv{s}$ and $y\sv{s} = \delta\sv{s}$.
+The parameter $\theta$ is a lower bound on the desired precision,
+and we will assume that it is a rational number that can be expressed
+as the ratio $\theta = \theta_0 / \theta_1$ of two integers.
+The parameters $\epsilon_P$ and $\epsilon_N$ have the same meaning as 
+in \eqref{eq:twogroupmisclassification}, and 
+$\epsilon_R$ is the analogous for \eqref{eq:precisionconstraint}.
 
+Program \eqref{eq:widereach} has equivalent solution if $h = (\vect{w}, c)$
+is multiplied by a constant.
+The only constraint on the multiplicative constant is that
+it should satisfy both
+$\vect{s}^T w - c \geq - (1 - \epsilon_P)$ \sinp\, and
+$\vect{s}^T w - c \leq 1 - \epsilon_N$ \sinn.
+The geometric interpretation is that, if $\vect{w} \neq \vect{0}$,
+then the following upper bounds on $|\vect{w}|$ hold:
+$|w| \leq - (1 - \epsilon_P) / d(\vect{s}, h)$ 
+($\vect{s} \in P, d(\vect{s}, h) < 0)$, and
+$|w| \leq (1 - \epsilon_N) / d(\vect{s}, h)$ 
+($\vect{s} \in N, d(\vect{s}, h) > 0)$.
+
+A major difference between \eqref{eq:twogroupmisclassification}
+and \eqref{eq:widereach} is that, due to \eqref{eq:precisionconstraint},
+Wide-Reach Classification \eqref{eq:widereach}
+does not necessarily have a feasible solution.
+In terms of its numerical solution, it is not even clear how to initialize
+an integer feasible solution, without which the algorithm can be 
+considerably slowed down. 
+In fact, early simulations showed that a branch-and-cut algorithm can continue
+for a long time failing to find any integer feasible solution, even if
+sub-optimal.
+Hence, the crux of a wide-reach classification algorithm is a method
+to deal with the precision constraint \eqref{eq:precisionconstraint}.
+Another implication of the precision constraint \eqref{eq:precisionconstraint}
+is that, as long as $\epsilon_R > 0$, then there must be an $\vect{s} \in P$
+such that $x\sv{s} = 1$.
+Incidentally, we can also assume without loss of generality that
+there is an $\vect{s} \in N$ with $y\sv{s} = 0$ as the feasibility of 
+the solution $x\sv{s}, y\sv{s} = 1$ ($\vect{s} \in P \cup N$)
+can easily be verified in a pre-processing stage.
+
+
+\subsection{Lagrangian Relaxation}
+Since the precision constraint \eqref{eq:precisionconstraint} 
+makes the problem harder, we incorporate it in the objective
+function via a Lagrangian multiplier $\lambda \geq 0$ while dropping it 
+from the problem constraints.
+Specifically, define
+$$V = \max \left\{ 0, 
+(\theta  - 1) \sum_{\vect{s} \in P} x\sv{s} + 
+\theta \sum_{\vect{s} \in N} y\sv{s} + \theta \epsilon_R \right\}$$
+as the {\em violation\/} of constraint \eqref{eq:precisionconstraint},
+and consider the mixed-integer linear program
+\begin{subequations}
+\label{eq:lagrangianrelaxation}
+\begin{align}
+L(\lambda) = \max\quad & \sum_{\vect{s} \in P} x\sv{s} - \lambda V \\
+\text{s.t.}\quad & 
+V \geq (\theta  - 1) \sum_{\vect{s} \in P} x\sv{s} + 
+\theta \sum_{\vect{s} \in N} y\sv{s} + \theta \epsilon_R \\
+& x\sv{s} \leq 1 + \vect{s}^T \vect{w} - c - \epsilon_P & & (\vect{s} \in P) \\
+& y\sv{s} \geq \vect{s}^T \vect{w} - c + \epsilon_N & & (\vect{s} \in N) \\
+\label{eq:violationnoneg}
+& V \geq 0 \\
+& x\sv{s}, y\sv{s} \in \{ 0, 1 \} & & (\vect{s} \in P \cup N) 
+\end{align}
+\end{subequations}
+Program \eqref{eq:lagrangianrelaxation} always has an integer feasible solution
+such as $\vect{w} = \vect{0}$ and $c = - \epsilon_P$ or $c = \epsilon_N$.
+In other words, \eqref{eq:lagrangianrelaxation} avoids the main issue of
+\eqref{eq:widereach} by moving the precision constraints into the objective
+by means of a penalty.
+Furthermore, if \eqref{eq:widereach} has an optimal solution,
+it is feasible for \eqref{eq:lagrangianrelaxation}, and thus we have
+that $r^* \leq \inf_{\lambda \geq 0} L(\lambda)$
+In passing, it can also be remarked that if \eqref{eq:violationnoneg} is dropped,
+then the rest of \eqref{eq:lagrangianrelaxation} is a Two-Group Misclassification
+problem \eqref{eq:twogroupmisclassification} with 
+$\pi_P = 1 + \lambda (1 - \theta)$ and $\pi_N = \lambda \theta$.
+
+A critical driver to the solution of \eqref{eq:lagrangianrelaxation} is 
+the following theorem, which in a nutshell tells us the ``right'' value
+of the multiplier $\lambda$.
+\begin{theorem}
+Assume that $\theta$ can be expressed as the ratio $\theta = \theta_0 / \theta_1$
+of two integer numbers $\theta_0$ and $\theta_1$, and that 
+$\epsilon_R$ is an integer multiple of $1 / \theta_0$.
+Let $\lambda = (|P| + 1) \theta_1$.
+If program \eqref{eq:widereach} has an integer optimal solution of value $r^*$,
+so does \eqref{eq:lagrangianrelaxation}, and conversely 
+if program \eqref{eq:lagrangianrelaxation} has an integer optimal solution
+of non-negative value $L(\lambda) \geq 0$, then $r^* = L(\lambda)$.
+\end{theorem}
+
+\begin{proof}
+The first statement is trivial: if \eqref{eq:widereach} has a feasible solution, 
+then \eqref{eq:precisionconstraint} is not violated, and thus $V = 0$ in
+\eqref{eq:lagrangianrelaxation}.
+Conversely, assume that $L(\lambda) \geq 0$
+and denote by $x^*\sv{s}, y^*\sv{s}, V^*$ its optimal solution.
+Define $X = \sum_{\vect{s} \in P} x^*\sv{s} \leq |P|$ and 
+$Y = \sum_{\vect{s} \in N} y^*\sv{s}$.
+If $V^* = 0$, then the solution to \eqref{eq:lagrangianrelaxation} 
+is feasible for \eqref{eq:widereach}.
+Assume now by contradiction that $V^* > 0$.
+Without loss of generality, 
+$V^* = (\theta  - 1) X + \theta Y + \theta \epsilon_R$,
+and so $Y > \alpha X - \epsilon_R$, where
+$\alpha = (1 - \theta) / \theta$.
+Since $Y$ is integer, we then have that
+$Y \geq \lfloor \alpha X - \epsilon_R \rfloor + 1$,
+which implies
+\begin{equation*}
+    \begin{split}
+V^* &\geq (\theta  - 1) X + \theta \lfloor \alpha X - \epsilon_R \rfloor + 
+\theta + \theta \epsilon_R \\
+& = \theta \left( 1 - \{ \alpha X - \epsilon_R \} \right) \\
+& = \theta \left( 1 - 
+\left\{ \frac{\theta_1 - \theta_0}{\theta_0} X - \epsilon_R \right\} \right)\;,
+\end{split}
+\end{equation*}
+where $\{ x \}$ denotes the fractional part of $x$.
+Since $X$ is an integer and $\epsilon_R$ is an integer multiple of 
+$1 / \theta_0$,
+we have that
+$$V \geq \frac{\theta_0}{\theta_1} \left(1 - \frac{\theta_0 - 1}{\theta_0} \right)
+= \frac{1}{\theta_1}\;.$$
+Hence, 
+$L(\lambda) \leq X - (|P| + 1) < 0$,
+which results in a contradiction, proving the theorem.
+\end{proof}
+
+
+\subsection{Linear Relaxation}
+The algorithm depends on the solution to a linear relaxation of 
+\eqref{eq:lagrangianrelaxation} once some integer decision variables
+have been fixed to a binary value.
+Let $P', P^+$, and $P^-$ be the sets of positive samples whose integer value
+has not yet been fixed, has been fixed to 1, and has been fixed to 0.
+Similarly, let 
+$N', N^+$, and $N^-$ be the sets of negative samples whose integer value
+has not yet been fixed, has been fixed to 1, and has been fixed to 0.
+Initially, $P' = P$, $N' = N$, $P^+, P^-, N^+, N^- = \emptyset$, but their
+values changes as the branch-and-bound algorithm progresses.
+Then, program \eqref{eq:lagrangianrelaxation} becomes
+\begin{subequations}
+\label{eq:linearrelaxation}
+\begin{align}
+\label{eq:linearrelaxationobj}
+L'(\lambda) = \max\quad & \sum_{\vect{s} \in P'} x\sv{s} - \lambda V + |P^+| \\
+\text{s.t.}\quad  
+\label{eq:linearrelaxationprecision}
+\begin{split}
+V & \geq (\theta  - 1) \sum_{\vect{s} \in P'} x\sv{s} + 
+\theta \sum_{\vect{s} \in N'} y\sv{s} + \\
+& \quad (\theta - 1) |P^+| + \theta |N - N' - N^-| + \theta \epsilon_R
+\end{split} \\
+& x\sv{s} \leq 1 + \vect{s}^T \vect{w} - c - \epsilon_P & & (\vect{s} \in P) \\
+& \vect{s}^T \vect{w} - c - \epsilon_P \geq 0 & & (\vect{s} \in P^+) \\
+& y\sv{s} \geq \vect{s}^T \vect{w} - c + \epsilon_N & & (\vect{s} \in N) \\
+& \vect{s}^T \vect{w} - c + \epsilon_N \leq 0 & & (\vect{s} \in N^-) \\
+& V \geq 0 \\
+& 0 \leq x\sv{s}, y\sv{s} \leq 1 & & (\vect{s} \in P \cup N) 
+\end{align}
+\end{subequations}
+The relaxation makes it clear various points.
+First, as soon as $P^+, N^- \neq \emptyset$, 
+a solution with $\vect{w} = \vect{0}$ is no longer feasible,
+as it would require a value of $c$ in the interval
+$0 < \epsilon_N \leq c \leq - \epsilon_P < 0$.
+Second, the contribution of $P^-$ is irrelevant to the integer solution:
+it does not appear in \eqref{eq:lagrangianrelaxation}
+and only contributes to the bound on $|\vect{w}|$. 
+Effectively, it is as if $P^-$ had been removed from the sample set.
+Second, $N^+$ appears only as a contribution to the value of $V$
+and to the bound on $|\vect{w}|$.
+
+We now turn to establishing properties of optimal solutions of
+\eqref{eq:linearrelaxation}.
+We will denote as $\vect{w}^*, c^*, x\sv{s}^*$, and $y\sv{s}^*$ the 
+values of the decision variables in an optimal solution,
+and $h^* = (\vect{w}^*, c^*)$.
+By \eqref{eq:linearrelaxationobj} and \eqref{eq:linearrelaxationprecision},
+when $\vect{w} \neq \vect{0}$,
+we have that, without loss of generality, 
+$$x\sv{s}^* = \begin{cases}
+1 - \epsilon_P + \tau_{h^*}(\vect{s}) & 
+\text{if } \tau_{h^*}(\vect{s}) < \epsilon_P \\
+1 & \text{otherwise}
+\end{cases}\;,$$
+and
+$$y\sv{s}^* = \begin{cases}
+0 & \text{if } \tau_{h^*}(\vect{s}) \leq - \epsilon_N \\
+\tau_{h^*} (\vect{s}) + \epsilon_N & \text{otherwise}
+\end{cases}\;.$$
+The main weakness of \eqref{eq:lagrangianrelaxation} is that the 
+$x\sv{s}^*$ and $y\sv{s}^*$ slope gradually from 1 to 0 when 
+they are inconsistent with the hyperplane $h^*$.
+In other words, a positive sample close to $h^*$ would ``almost count''
+as a correctly classified sample in both the objective function and in
+the precision constraint. 
+Similarly, a negative sample would ``almost count'' as a correctly 
+classified sample in the precision constraint.
+
+\subsection{Branch-and-Cut}
+\label{sec:branchcut}
+In light of these considerations on the linear relaxation,
+we turn to describe the tuning of the branch-and-cut algorithm.
+
+\subsubsection{Initial Integer Solution}
+\label{sec:rndinit}
+In branch-and-bound methods, it is generally advantageous to have 
+an integer feasible solution. 
+The reason is two-fold.
+First, it is common to stop the branch-and-cut search upon reaching a time limit. 
+If the algorithm has failed to find a feasible integer solution
+within the time limit, it will be unable to return a meaningful value.
+Thus, an initial integer solution assures that the algorithm will be able to
+return a feasible solution even if terminated early.
+Second, during the search, the algorithm uses an integer feasible solution
+to prune unproductive sub-trees.
+The initial integer solution can be derived in a variety of ways, which
+will be discussed next. 
+However, it should also be noted that different methods are a better fit to
+different problems, and that the general branch-and-cut method is to a
+large extent agnostic to the specifics of how the initial solution has been found.
+One family of methods is to adapt an approximation algorithm for the 
+Maximum Hyperplane Consistency problem (Section \ref{sec:mhc})
+to Wide-Reach Classification.
+Another method is to solve a linear relaxation of the Wide-Reach Consistency
+problem and use the resulting hyperplane  
+as a discriminant (similar to the method, for example, in \cite{approximation}).
+In this case, additional constraints are needed to normalize $h$ 
+since a direct application of \eqref{eq:lagrangianrelaxation} would often
+lead to a null solution or to a trivial solution that classifies 
+all points as positive.
+The main advantage of this approach is that it returns a solution that 
+fits well the input in cases when the problem instance follows a natural pattern,
+such as when the samples are separable or almost separable.
+Another approach is to use a different classification method,
+such as SVM \cite{statisticallearning} or neural network, and 
+then optimize for reach.
+The intuition is that other classification algorithms have
+different objectives (such as maximizing the margin in the case of SVM),
+which could lead to a reasonable initial solution that is is sub-optimal
+in terms of reach.
+
+In this paper, we explore the use of a randomized approximation algorithm,
+as shown in Algorithm \ref{algorithm:initial}. 
+In short, the algorithm chooses many random hyperplanes and picks 
+the one that leads to the best value of \eqref{eq:linearrelaxationobj}.
+\begin{algorithm}
+\begin{algorithmic}
+\STATE $L \leftarrow - \infty$
+\FOR{chosen number of random trials}
+\STATE Choose a random unit vector $\vect{w}$
+\STATE Choose a random point $\vect{c}$ in the unit hypercube
+\STATE $c \leftarrow - \vect{c}^T \vect{w}$
+\STATE Let 
+\begin{align*}
+\tilde{x}\sv{s} & \leftarrow \begin{cases}
+0 & \text{if } \vect{s}^T \vect{w}^* - c^* < \epsilon_P \\
+1 & \text{otherwise}
+\end{cases}\;,\\
+\tilde{y}\sv{s} & \leftarrow \begin{cases}
+1 & \text{if } \vect{s}^T \vect{w}^* - c^* > - \epsilon_N \\
+0 & \text{otherwise}
+\end{cases}\;,\\
+\tilde{V} & \leftarrow \max \left\{ 0,
+(\theta  - 1) \sum_{\vect{s} \in P} \tilde{x}\sv{s} + 
+\theta \sum_{\vect{s} \in N} \tilde{y}\sv{s} + 
+\theta \epsilon_R \right\}\\
+\tilde{L} & \leftarrow 
+\sum_{\vect{s} \in P} \tilde{x}\sv{s} - \lambda \tilde{V}
+\end{align*}
+\IF{$\tilde{L} > L$}
+\STATE $L \leftarrow \tilde{L}$
+\STATE $h \leftarrow (\vect{w}, c)$
+\ENDIF
+\ENDFOR
+\RETURN $h$
+\end{algorithmic}
+\caption{Initial integer feasible solution.}
+\label{algorithm:initial}
+\end{algorithm}
+An advantage of any approximation algorithm is that
+it provides theoretical guarantees on the objective value of 
+the solution as compared to the optimum.
+An additional advantage of the randomized approximation algorithm is
+that it is fast.
+Additionally, randomized approximation algorithms can be run multiple times,
+making it possible to choose the best solution out of different runs.
+In particular, even after the randomized algorithm has generated an initial
+integer feasible solution, it can continue running in parallel with
+branch-and-cut, possibly providing improved integer solutions for pruning.  
+An additional motivation is that in initial testing a random choice of branching variable was better than various alternatives, such as 
+the Dreebeck and Tomlin heuristic \cite{Driebeek, Tomlin}. 
+The random approximation algorithm can thus be viewed as a faster way to 
+implement multiple branching decisions on a random set of decision variables.
+
+
+\subsubsection{Heuristic Integer Solution}
+\label{sec:iheur}
+At an intermediate node, the branch-and-bound algorithm attempts to 
+convert the fractional solution to \eqref{eq:linearrelaxation} into
+an integer one. The common rounding strategy to round fractional 
+variables to the closest integer does not work in this case since
+values of $x\sv{s}^* > 1/2$ would be rounded to 1 (and not to 0 as expected)
+and similarly 
+values of $y\sv{s}^* < 1/2$ would be rounded to 0 (and not to 1 as expected),
+where $x\sv{s}^*, y\sv{s}^*$ are the optimal solution to the nodal relaxation
+\eqref{eq:linearrelaxation}.
+A better yet still imperfect rounding strategy would be to 
+round to $\lfloor x\sv{s}^* \rfloor$ and $\lceil y\sv{s}^* \rceil$.
+However, this strategy fails when $\vect{s} \in P^-$ ($\vect{s} \in N^+$)
+but $\vect{s}^T \vect{w} \geq c + \epsilon_P$ 
+($\vect{s}^T \vect{w} \leq c - \epsilon_P$).
+The optimal solution of the relaxation \eqref{eq:linearrelaxation}
+is $x\sv{s}^* = 0$ ($y\sv{s}^* = 1$) due to the constraint on $P^-$ ($N^+$), 
+but $\tilde{x}\sv{s}^* = 0$ ($\tilde{y}\sv{s}^* = 1$) satisfy
+the constraints $\vect{s}^T \vect{w} \geq c + \epsilon_P$ 
+($\vect{s}^T \vect{w} \leq c - \epsilon_P$),
+and thus are a better rounding value.
+The correct rounding strategy is:
+$$\tilde{x}\sv{s} \leftarrow \begin{cases}
+1 & \text{if } x\sv{s}^* = 1 \\
+0 & \text{if } x\sv{s}^* \neq 1 \text{ and } \vect{s}^T \vect{w}^* - c^* < \epsilon_P \\
+1 & \text{otherwise}
+\end{cases}\;,$$
+$$\tilde{y}\sv{s} \leftarrow \begin{cases}
+0 & \text{if } y\sv{s}^* = 0 \\
+1 & 
+\text{if } y\sv{s}^* \neq 0 \text{ and } \vect{s}^T \vect{w}^* - c^* > - \epsilon_N \\
+0 & \text{otherwise}
+\end{cases}\;,$$
+where $\vect{w}^*, c^*$ are an optimal solution of \eqref{eq:linearrelaxation}.
+Note that the clauses $x\sv{s}^* = 1$ and $y\sv{s}^* = 0$ are needed
+to avoid rounding errors in the computation of 
+$\vect{s}^T \vect{w}^* - c^*$.
+Finally,
+$$\tilde{V} \leftarrow \max \left\{ 0,
+(\theta  - 1) \sum_{\vect{s} \in P} \tilde{x}\sv{s} + 
+\theta \sum_{\vect{s} \in N} \tilde{y}\sv{s} + 
+\theta \epsilon_R \right\}\;,$$
+
+
+\subsubsection{Local Search}
+\label{sec:localsearch}
+Once the algorithm has an integer feasible solution, 
+regardless of how it has been obtained,
+it will attempt to improve it locally by tweaking 
+the values of some of the integer variables.
+Local search is accomplished by the combination of three methods:
+first, we choose a branching variable among those that have fractional value
+and the smallest deviation from the hyperplane that defines the best known
+integer solution.
+Second, the algorithm favors the primary branching direction
+for each sample, that is, it first attempts to set 
+$x\sv{s}$ to 1 if $\vect{s} \in P$ and 
+$y\sv{s}$ to 0 if $\vect{s} \in N$.
+Third, if the algorithm needs to backtrack, it uses depth-first search (DFS).
+An intuition for the method can be gleaned from Figure \ref{fig:tweak}.
+In this figure, the current integer solution is determined by
+the hyperplane shown as a solid line in the direction
+denoted by the vector $\vect{w}$.
+This example assumes that $\epsilon_P$ and $\epsilon_N$ are negligible,
+and thus do not affect the classification of any sample.
+The fractional decision variables correspond to the samples
+that are misclassified in the fractional solution to the
+nodal relaxation: 
+$\vect{s}$ and $\vect{s}_4$ are positive samples on the negative
+side of the hyperplane, and 
+$\vect{s}_1, \vect{s}_2, \vect{s}_3$ are negative samples on the positive side.
+In this example, $\vect{s}_3$ is correctly classified in the integer solution
+and misclassified in the fractional solution 
+The other samples are correctly classified and thus 
+the corresponding decision variables take integer values.
+Among the fractional variables, 
+the algorithm chooses a branching variable corresponding
+to a sample that is the closest to the hyperplane that
+defines the current {\em integer\/} solution, 
+which in this case is $\vect{s}$.
+The intuition is that the branching choice attempts to guide the 
+search to a neighborhood of the current integer solution
+by setting the value of the classification near-misses.
+Second, the algorithm tries first to set $x\sv{s}$ to 1,
+which matches the primary value of a positive sample
+(for a negative sample, the algorithm would have given precedence
+to $y\sv{s} = 0$).
+If the search finds a better solution, such as the dashed line in
+the figure, the search will continue, otherwise DFS will backtrack
+into setting $x\sv{s} = 0$.
+Note that $x\sv{s} = 1$ constrains the search
+to select a hyperplane that correctly classifies $\vect{s}$,
+whereas $x\sv{s} = 0$ does not constrain the search to misclassify $\vect{s}$.
+In other words, the choice of the primary branching direction is
+motivated by the fact that the primary direction introduces
+stronger bounds during the search.
+\begin{figure}
+\centering
+\includegraphics[width=\textwidth]{tweak}
+\caption{Tweaking the current hyperplane by choosing
+the branching variable from the sample closest to 
+discriminant of the currently best integer solution.}
+\label{fig:tweak}
+\end{figure}
+In summary, the combination of branching and backtracking
+attempts to tweak the known integer solution by a small amount
+by progressively exploring alternative solutions derived by 
+changing the classification of samples close to the discriminant.
+Algorithm \ref{algorithm:ibranch} implements the branching decision.
+\begin{algorithm}
+\begin{algorithmic}
+\IF{there is no fractional decision variable}
+\RETURN
+\ENDIF
+\STATE $S \leftarrow$ samples corresponding to fractional decision variables
+\STATE Let $\vect{s} \in S$ be a sample that is closest to the 
+hyperplane defining the current integer solution
+\IF{$\vect{s} \in P$}
+\STATE Branch on $x\sv{s}$ and continue the search from the up-branch
+\ELSE
+\STATE Branch on $y\sv{s}$ and continue the search from the down-branch
+\ENDIF
+\end{algorithmic}
+\caption{Branching.}
+\label{algorithm:ibranch}
+\end{algorithm}
+
+\iffalse
+Old random method:
+At an intermediate node, the branch-and-bound algorithm selects a 
+{\em branching variable\/}, which is an integer variable $x\sv{s}$ or $y\sv{s}$
+whose optimal value in the relaxation \eqref{eq:linearrelaxation} is fractional.
+A variable is said to be {\em eligible\/} at a node if it is an integer variable
+and its optimal value in the relaxation is fractional.
+In choosing the branching variables, we adopt the following two main ideas.
+First, we wish to make sure that $P^+, N^- \neq \emptyset$, which would then
+imply that $\vect{w} \neq \vect{0}$. 
+Second, we select the branching variable uniformly at random 
+among eligible variables. The intuition is that 
+the 2-approximation algorithm chooses a random hyperplane,
+and selecting random branching variable is a way to emulate it.
+By combining, the two ideas, we obtain Algorithm \ref{algorithm:branching}.
+\begin{algorithm}
+\begin{algorithmic}
+\STATE $E_P (E_N) \leftarrow$ set of eligible variables in $P$ ($N$)
+\IF{$N^- = \emptyset$}
+\IF{$E_N \neq \emptyset$}
+\RETURN a random variable in $E_N$
+\ELSE
+\RETURN a random variable in $E_P$
+\ENDIF
+\ENDIF
+\IF{$P^+ = \emptyset$}
+\IF{$E_P \neq \emptyset$}
+\RETURN a random variable in $E_P$
+\ELSE
+\RETURN a random variable in $E_N$
+\ENDIF
+\ENDIF
+\RETURN a random eligible variable in $E_P \cup E_N$
+\end{algorithmic}
+\caption{Selection of branching variable.}
+\label{algorithm:selection}
+\end{algorithm}
+\fi
+
+\subsubsection{Cutting Planes}
+\label{sec:cuts}
+The final component of the algorithm is the use of cutting planes
+to quickly propagate integrality constraints on descendants.
+An example is shown in Figure \ref{fig:interdiction}.
+In this case, $\vect{s}_0, \vect{s}_1, \vect{s}_2 \in N^-$,
+which means that at this point of the search the values of 
+$y_{\vect{s}_0}, y_{\vect{s}_1}, y_{\vect{s}_2}$ has been fixed to zero.
+Similarly, $\vect{s}_3 \in P^+$, which means that at this point
+$x_{\vect{s}_3}$ has been fixed to 1. 
+Then, any hyperplane satisfying these bounds on 
+$y_{\vect{s}_0}, y_{\vect{s}_1}, y_{\vect{s}_2}$, and $x_{\vect{s}_3}$ 
+implies that $x\sv{s} = 0$ for the points $\vect{s}$ in the blue-shaded area
+and that $y\sv{s} = 1$ for the points $\vect{s}$ in the red-shaded area.
+In other words, previous branching decisions cascade into fixing
+the decision values of additional variables.
+A plain branch-and-bound algorithm will eventually enforce these
+additional constraints but at a serious computational cost.
+Specifically, when the branch-and-bound algorithm attempts to branch on the corresponding decision variables, 
+it will verify that only one of the two children is feasible.
+The algorithm behavior is slow because of the overhead of branching on a node and
+solving two linear programs on the children. 
+\begin{figure}
+\centering
+\includegraphics[scale=.5]{interdiction}
+\caption{Constraint propagation on integer variables to fix a cutting plane.
+For the given choice of $P^+$ and $N^-$, 
+the positive samples in the blue area must be classified negative
+and the negative samples in the red area must be classified positive.}
+\label{fig:interdiction}
+\end{figure}
+A faster method is based on the observation that the integrality constraint
+can be propagated by checking whether there is any feasible solution 
+that correctly classifies $\vect{s}$ which satisfying the constraints on 
+$P^+$ and $N^-$.
+Specifically, consider the system of equations:
+\begin{subequations}
+\label{eq:obstruction}
+\begin{align}
+\vect{s}^T \vect{w} - c & \geq \epsilon_P & & (\vect{s} \in P^+) \\
+\vect{s}^T \vect{w} - c & \leq - \epsilon_N & & (\vect{s} \in N^-) 
+\end{align}
+\end{subequations}
+plus for any other sample $\bar{\vect{s}}$ the single constraint 
+$\bar{\vect{s}}^T \vect{w} - c \geq \epsilon_P$ (if $\bar{\vect{s}} \in P$)
+or 
+$\bar{\vect{s}}^T \vect{w} - c \leq - \epsilon_N$ (if $\bar{\vect{s}} \in N$).
+The resulting system is feasible if and only if there is 
+a hyperplane that is consistent with all previous decisions
+and with sample $\bar{\vect{s}}$.
+In other words, if the system is infeasible,
+the algorithm can omit branching on the corresponding decision variable
+and set it to the only appropriate value.
+Note that the feasibility check \eqref{eq:obstruction}
+typically contains fewer equations 
+than \eqref{eq:linearrelaxation}, possibly as few as $d + 1$ constraints,
+and that only one system needs to be solved per sample instead of two.
+Once it has been determined that the classification of $\bar{\vect{s}}$ 
+is implied by $P^+$ and $N^-$, 
+the branch-and-bound algorithm must avoid branching on $\bar{\vect{s}}$.
+The implication can be communicated to the algorithm by means of 
+a cutting plane. 
+Suppose that $P_0$ is the set of positive samples that have to be implicitly 
+misclassified and similarly 
+$N_1$ the the set of negative samples that have to be implicitly misclassified.
+Then, a cutting plane should encode the logical statement:
+``if $\vect{s}_0, \vect{s}_1 , \dots \in P^+$ and
+$\vect{t}_0, \vect{t}_1 , \dots \in N^-$, then
+$x\sv{s} = 0$ (for all $\vect{s} \in P_0$) and
+$y\sv{s} = 1$ (for all $\vect{s} \in N_1$)''. 
+Such a logical statement can be encoded as the globally valid cutting plane:
+\begin{equation}
+\label{eq:cuttingplane}
+\sum_{\vect{s} \in P_0} x\sv{s} + \sum_{\vect{s} \in N_1} (1 - y\sv{s}) 
+\leq
+|P_0 \cup N_1| 
+\left( 
+\sum_{\vect{s} \in P^+} (1 - x\sv{s}) + \sum_{\vect{s} \in N^-} y\sv{s} 
+\right)
+\end{equation}
+Algorithm \ref{algorithm:cuts} summarizes the procedure above
+to add the cutting plane at the current node.
+\begin{algorithm}
+\begin{algorithmic}
+\REQUIRE $S$ is a set of samples corresponding to the fractional decision variables, 
+$P^+ (N^-)$ are the positive (negative) samples whose value has
+been fixed to 1 (0) at this node.
+\IF{$P^+$ or $N^- = \emptyset$ or $|P^+ \cup N^-| \leq d$}
+\RETURN 
+\ENDIF
+\STATE $P_0, N_1 \leftarrow \emptyset$
+\STATE Let $I$ be the system \eqref{eq:obstruction} 
+\FORALL{$\vect{s} \in S$}
+\IF{$\vect{s} \in P$}
+\STATE Add $\vect{s}^T \vect{w} - c \geq \epsilon_P$ to $I$
+\IF{$I$ is infeasible}
+\STATE $P_0 \leftarrow P_0 \cup \{ \vect{s} \}$
+\ENDIF
+\ELSE
+\STATE Add $\vect{s}^T \vect{w} - c \leq - \epsilon_N$ to $I$
+\IF{$I$ is infeasible}
+\STATE $N_1 \leftarrow N_1 \cup \{ \vect{s} \}$
+\ENDIF
+\ENDIF
+\STATE Remove the last constraint from $I$
+\ENDFOR
+\STATE Add constraint \eqref{eq:cuttingplane}
+\end{algorithmic}
+\caption{Generation of Cutting Planes.}
+\label{algorithm:cuts}
+\end{algorithm}
+
+
+\iffalse
+\subsubsection{Valid Inequalities}
+The main objective of valid inequalities is to compensate for the 
+slowly varying values of $x\sv{s}$ and $y\sv{s}$ when $\vect{s}$ is 
+on the wrong side but close to the hyperplane $h^*$.
+The following two claims establish properties of 
+\eqref{eq:lagrangianrelaxation} that lead to valid inequalities
+for its integer solutions.
+In the following claims, $h$ is any hyperplane.
+However, the claims will be especially useful when $h$ is any hyperplane that
+is consistent with the sets $P^+$ and $N^-$: we will say
+that $h = (\vect{w}, c)$ is 
+{\em consistent with the positive samples $P^+$ and the negative samples $N^-$\/}
+if $\tau_h(\vect{s}) \geq \epsilon_P$ ($\vect{s} \in P^+$) and
+$\tau_h(\vect{s}) \leq - \epsilon_N$ ($\vect{s} \in N^-$).
+\begin{claim}
+\label{claim:convexhull}
+Let $\vect{s}_0$ and $\vect{s}_1$ be two points (not necessarily samples)
+with $\tau(\vect{s}_0), \tau(\vect{s}_1) \geq \epsilon_P$.
+Then, $\tau(\vect{s}) \geq \epsilon_P$
+for any point $s$
+that is the convex combination of $\vect{s}_0$ and $\vect{s}_1$.
+Similarly, if $\tau(\vect{s}_0), \tau(\vect{s}_1) \leq -\epsilon_N$
+then $\tau(\vect{s}) \leq - \epsilon_N$.
+\end{claim}
+\begin{proof}
+Let $\alpha$ be a parameter between 0 and 1 such that
+$\vect{s} = \alpha \vect{s}_0 + (1 - \alpha) \vect{s}_1$.
+Since 
+$\vect{s}_i^T \vect{w} - c - \epsilon_P \geq 0$ ($i = 0, 1$),
+we have that
+$$\vect{s}^T \vect{w}^T - c - \epsilon_P =
+\alpha (\vect{s}_0^T \vect{w}^T - c - \epsilon_P) +
+(1 - \alpha) (\vect{s}_1^T \vect{w}^T - c - \epsilon_P) \geq 0\;,$$
+which completes the proof of the first claim.
+The proof of the second claim is symmetric.
+\end{proof}
+
+\begin{claim}
+\label{claim:obstruction}
+Let $\vect{s}_0$ and $\vect{s}_1$ be points with 
+$\tau(\vect{s}_0) \leq - \epsilon_N$ and
+$\tau(\vect{s}_1) \geq \epsilon_P$.
+Then, $\tau(\vect{s}) \leq - \epsilon_N$ where
+$\vect{s} = \vect{s}_1 + \alpha (\vect{s}_0 - \vect{s}_1)$
+and $\alpha \geq 1$.
+Similarly,
+$\tau(\vect{s}) \geq \epsilon_P$ where
+$\vect{s} = \vect{s}_0 + \alpha (\vect{s}_1 - \vect{s}_0)$.
+\end{claim}
+\begin{proof}
+We only prove the first part of the claim, since the second is symmetric.
+First,
+$\tau(\vect{s}_0) - \tau(\vect{s}_1) \leq - (\epsilon_P + \epsilon_N) < 0$.
+Then,
+$$\tau(\vect{s}) = 
+(\vect{s}_0 + (\alpha - 1) (\vect{s}_0 - \vect{s}_1))^T \vect{w} - c =
+\vect{s}_0^T \vect{w} - c + (\alpha - 1) (\vect{s}_0 - \vect{s}_1)^T \vect{w} \leq
+- \epsilon_N\;,$$
+which proves the claim.
+\end{proof}
+In order to combine the previous two claims to form valid inequalities,
+consider $\vect{s}_1, \vect{s}_2, \dots, \vect{s}_k \in N^-$ and 
+a point $\vect{t}'$ in the convex hull of $P^+$.
+Let $\vect{t}_1, \vect{t}_2, \dots, \vect{t}_h \in P'$ be 
+$h$ positive sample that can be expressed as
+$\vect{t}_i = \vect{t}' + \alpha (\vect{s}_i - \vect{t}')$,
+where $\alpha \geq 1$ and $\vect{s}_i$ is a point in the convex hull of
+$\vect{s}_1, \vect{s}_2, \dots, \vect{s}_k$ ($h = 1, 2, \dots, h$).
+Then, 
+$$x\sv{t_1} + x\sv{t_2} + \dots x\sv{t_h} \leq 
+h (y_{\vect{s}_1} + y_{\vect{s}_2} + \dots + y_{\vect{s}_k})$$
+is a valid inequality.
+Indeed, 
+$\tau(\vect{s}_1), \tau(\vect{s}_2), \dots, \tau(\vect{s}_k) \leq - \epsilon_N$,
+and so $\tau(\vect{s}) \leq - \epsilon_N$ by Claim \ref{claim:convexhull}.
+Similarly, $\tau(\vect{t}') \geq \epsilon_P$.
+Then, by Claim \ref{claim:obstruction}, $\tau(\vect{t}_i) \leq -\epsilon_N$.
+
+Another method to combine the previous claims is the following.
+\begin{claim}
+\label{claim:basisprojection}
+Let $\vect{s}_1$ be a point with $\tau(\vect{s}_1) \geq \epsilon_P$
+and $\vect{s}_{01}, \vect{s}_{02}, \dots , \vect{s}_{0d}$ be $k$ points with 
+$\tau(\vect{s}_{0i}) \leq - \epsilon_N$ ($i = 1, 2, \dots , k$).
+Let $\vect{s}$ be any point that can be expressed as 
+$\vect{s} = \vect{s}_1 + \sum_{i = 1}^k \alpha_i \vect{t}_i$ 
+where $\vect{t}_i = \vect{s}_{0i} - \vect{s}_1$, 
+$\alpha_i \geq 0$, and $A = \sum_{i = 1}^k \alpha_i \geq 1$.
+Then, $\tau(\vect{s}) \leq - \epsilon_N$.
+(A similar result holds symmetrically if $P$ and $N$ swap places.)
+\end{claim}
+\begin{proof}
+Let $\lambda_i = \alpha_i / A$. 
+Define
+$\vect{s}_0 =
+\vect{s}_1 + (\vect{s} - \vect{s}_1) / A = 
+\sum_{i = 1}^d \lambda_i \vect{s}_{0i}$,
+which is a convex combination of the $\vect{s}_{0i}$s.
+By Claim \ref{claim:convexhull}, $\tau(\vect{s}_0)  \leq - \epsilon_N$.
+Furthermore,
+$\vect{s} = \vect{s}_1 + A (\vect{s}_0 - \vect{s}_1)$,
+and by Claim \ref{claim:obstruction}, $\tau(\vect{s})  \leq - \epsilon_N$,
+which proves the claim.
+\end{proof}
+\fi
+
+
+
+
+\section{Evaluation}
+\label{sec:eval}
+
+\subsection{Test Sets}
+The evaluation used both synthetic and real benchmarks.
+The synthetic benchmarks consist of 
+an equal number of positive and negative random samples 
+in the hypercube $[0, 1]^d$.
+Although the random benchmark is not representative of 
+most real benchmarks, in which patterns are present in data, 
+its objective is to stress the solver with an 
+optimization program that has no simple solution.
+In the evaluation, $n = 10000$, $\theta = 0.51$
+and three different sample set
+were generated for every value of $d$.
+
+The evaluation also employed the real benchmarks summarized
+in Table \ref{tab:benchmarks}.
+Among many available classification benchmarks, 
+these test-beds were chosen among those that were
+a good fit for a binary classification problems.
+Furthermore, an important evaluation objective was 
+to isolate and measure the 
+effectiveness of the solver by avoiding the 
+confounding effects of other techniques,
+such as feature selection, non-binary classification,
+missing data, and structured outputs.
+Therefore, we only used benchmarks without missing data
+and with features that are numerical or that can naturally
+be translated into an integer count. 
+Additionally, the relaxation \eqref{eq:linearrelaxation} should fit in main memory, and when a benchmark was too large,
+a random subset of samples was used.
+\begin{table}
+\centering
+\begin{tabular}{l|r|r|r}
+{\bf Name\/} &  $n$ & $d$ & $|P| / |P \cup N|$ \\ \hline\hline
+Breast Cancer & 569 & 30 & 0.63 \\ \hline
+Wine Quality (red) & 1599 & 11 & 0.01 \\ \hline
+Wine Quality (white) & 4898 & 11 & 0.04 \\ \hline
+South German Credit & 1000 & 7 & 0.70 \\ \hline
+Crop Mapping & 10000 & 174 & 0.26 \\ \hline
+\end{tabular}
+\caption{Real data sets used in the evaluation.}
+\label{tab:benchmarks}
+\end{table}
+Additional details on these benchmarks are as follows.
+The breast cancer benchmark \cite{breastcancer}
+is a classic benchmark in the area of 
+classification with linear programming. 
+In this benchmark, the precision constraint is natural 
+because a false positive corresponds to diagnosis of benign cancer,
+which may lead to reduced testing
+and less aggressive therapy with consequent loss of life.
+The wine quality benchmarks \cite{winequality}
+contains the results of chemical tests
+on red and white wines, as well as a quality score
+ranging from 0 to 10.
+The classification algorithm attempts to find
+the few excellent wines (quality 8 or higher)
+in the sample set. 
+Few wines are excellent, and most wines are average,
+and thus the data-set is extremely unbalanced. 
+Specifically, excellent wines are about 
+1.1\% (red) to 3.8\% (white) of the samples.
+One way to appreciate the unbalance is that 
+a random taster is expected to try 88 bottles
+of red wines or 26 bottles of white wine before
+finding an excellent one.
+Wide-reach classification can be interpreted as the
+attempt to find as many excellent wines as possible
+by trying few wine bottles, and thus
+with the least expense and with the least effort.
+The South German credit benchmark \cite{southgermancredit}
+contains information on the credit risk of individual debtors
+and, by choice of the data provider, greatly over-samples bad creditors.
+Most attributes encode categorical data, such as a code for the 
+debtor's residence type, which have been omitted from the evaluation.
+Wide-reach classification can be interpreted as the attempt
+to maximize a loan portfolio while approving 
+only creditworthy borrowers.
+The crop mapping benchmark \cite{crops} contains optical and radar
+data of an area in Manitoba from satellites and drones.
+The goal is to determine the crop that is being grown
+in each plot.
+The crop type falls into one of seven possible cases and,
+in our evaluation, we re-frame it as a binary classification problem
+by arbitrarily focusing on the problem of finding the wheat plots of land.
+Furthermore, since the benchmark is so large that 
+even the linear relaxation \eqref{eq:linearrelaxation}
+runs out of memory in our evaluation environment, 
+we randomly sample about 10\% the original data points.
+
+\begin{table}
+\centering
+\begin{tabular}{l|r}
+{\bf Name\/} & $\theta$ \\ \hline
+Breast Cancer & 0.99  \\ \hline 
+Wine Quality (red) & 0.05  \\ \hline
+Wine Quality (white) & 0.1  \\ \hline
+South German Credit & 0.9  \\ \hline
+Crop Mapping & 0.5  \\ \hline
+\end{tabular}
+\caption{Evaluation parameters.}
+\label{tab:params}
+\end{table}
+The precision threshold $\theta$ was set to a value that is specific 
+to each benchmark and that depends on the fraction of positive samples
+in the original data-set. 
+The objective is both to improve the classification precision over
+random sampling and to satisfy specific benchmark requirements
+(such as high precision in the Breast Cancer benchmark).
+
+The evaluation was executed on Ubuntu 20.04 64-bit virtual machine
+with three Xeon cores (3.2Ghz) and 4GB of memory that was otherwise unloaded.
+The branch-and-cut algorithm was executed until a 120s time-out.
+
+The synthetic data-sets proved to be difficult for branch-and-cut
+to improve over the randomized classification algorithm,
+especially for $d \geq 4$. 
+In higher dimensions, the reach is higher even though $n$ is the same,
+a reflection of the fact that is easier to nearly separate $n$ points 
+in a higher-dimensional unit hypercube.
+Consequently, the randomized algorithm more easily finds a good classification.
+Another consequence is that the cutting planes require larger $P^+$ and $N^-$, and thus cut out less nodes than in lower dimensions.
+The net result is that, in higher dimensions, branch-and-cut did generate a few intermediate nodes, but did not completely fathom any of them.
+
+\begin{table}
+\centering
+\begin{tabular}{l|r|r|r}
+{\bf Name\/} & Randomized Reach & MILP Reach & Nodes \\ \hline\hline
+Breast Cancer & 204 & 357* & 9 \\ \hline 
+Wine Quality (red) & 1 & 7 & 4921 \\ \hline
+Wine Quality (white) & 31 & 31 & 2145 \\ \hline
+South German Credit & 70 & 75 & 4281 \\ \hline
+Crop Mapping & 1110 & 2674* & 3 \\ \hline
+\end{tabular}
+\caption{Evaluation results. 
+Randomized reach is the reach found by the best of 10000
+executions of the randomized algorithms,
+and MILP reach is the final reach before time-out of the 
+branch-and-cut algorithm.
+An asterisk denotes that the final solution is integer optimal. 
+Nodes is the number of sub-problems that have been fathomed during
+the search.}
+\label{tab:results}
+\end{table}
+The results on real data-sets are summarized in Table
+\ref{tab:results}.
+In many cases, branch-and-cut improved over the initial
+integer solution provided by the randomized algorithm.
+The only exception was the white wine quality, where there was no improvement
+even when the time-out was raised to 600s and branch-and-cut fathomed
+about 11000 nodes.
+Furthermore, in all experiments, 
+the node queue contained less than 60 nodes,
+which meant that the algorithm had a memory footprint of 13MB or less.
+Real benchmark benefited from scaling the constraint matrix in the
+linear programming relaxation, whereas scaling was detrimental in
+the synthetic benchmarks. 
+The intuition is that real-benchmarks comprise features in 
+different units and over different ranges, which are better scaled to
+improve stability.
+On the contrary, synthetic samples are already generated within a
+unit hypercube, and thus scaling only delays the solution.
+
+Since the branch-and-cut algorithm incorporates different methods,
+as described in Section \ref{sec:branchcut},
+we now turn to evaluate the relative benefit of each.
+First, Table \ref{tab:results} shows that the initial integer solution 
+(Section \ref{sec:rndinit}) was effective in finding a good feasible integer
+solution.
+Other than that, 
+the simplest and most effective improvement over plain 
+branch-and-bound is the heuristic method to find an integer
+solution (Section \ref{sec:iheur}).
+Even in the absence of the randomized initial solution,
+the rounding heuristic was able to find a feasible integer
+solution with a reasonable value of the objective value. 
+By contrast, the default rounding method almost always failed find a feasible integer solution at all.
+Local search (Section \ref{sec:localsearch}) works well when paired with
+the other methods, but more complicated branching and node selections
+procedures were required if the other methods,
+such as initial solution, are disabled. 
+For example, in the absence of other methods, 
+sub-problem selection based on integer infeasibility was better than DFS and than random selection.
+Cutting planes were effective in increasing the
+number of nodes that were fully fathomed, 
+sometimes by a factor of 17,
+but generally had only a marginal effect on the algorithm's reach.
+
+\iffalse
+Alternative approaches involve the maximization of a more complex
+objective depending both on geometric distances and on a loss functions,
+such as $F_1$, that in turn depends on integer counts \cite{svmperf}.
+
+
+
+Among standard strategies, an effective choice was to branch on
+the last fractional value (LFV). Lots of randomness in results.
+
+\subsection{Rounding}
+
+Table \ref{tab:iheur} shows the objective value of the final answer 
+with and without the heuristic.
+\begin{table}
+\centering
+\begin{tabular}{|r|r|r|} \hline
+{\bf Instance\/} & {\bf No Heuristic\/}    & {\bf Heuristic\/}  \\ \hline\hline
+1 & No integer feasible solution found &   237 \\ \hline
+2 & $-17.5916 \cdot 10^7$ & 211 \\ \hline
+3 & 205 & 247 \\ \hline
+\end{tabular}
+\caption{Objective value after 2 minute (wall-clock) run-time
+with and without the heuristic for finding an integer solution.
+The branching variable is LFV and the node selection is BLB.}
+\label{tab:iheur}
+\end{table}
+The heuristic was always able to find a reasonable feasible integer
+solution. The plain algorithm did in one instance, but in the other
+two cases either it did not find a feasible integer solution at all,
+or one that fails the precision constraint.
+
+The branching variable is another important parameter in 
+the branch-and-bound algorithm. 
+In the random square data-set and with the variable order
+as in \eqref{eq:widereach}, LFV is tantamount to branch on 
+a random $y\sv{s}$ variable if at all possible, and a 
+$x\sv{s}$ variable otherwise.
+An alternative is to pick uniformly at random one of the eligible
+variables (``branch-flat'').
+Table \ref{tab:ibranch} compares the three branching methods.
+\begin{table}
+\centering
+\begin{tabular}{|r|r|r|r|r|} \hline
+{\bf DTH\/} & {\bf LFV\/} & {\bf Branch Flat\/} & {\bf Branch Even\/} & 
+{\bf Branch Even(3)\/}\\ \hline\hline
+[-837495, 350] & 237 &  323.58 [264, 382] & 353.81 [295, 394]
+ & 297.77 [2120, 388] \\ \hline
+[-898551, 335] & 211 & 375.23 [311, 411] & 393.97[352, 438] & 350 [276, 404] \\ \hline
+[-790446, -153] & 247 & 392.55 [333, 450] & 423.13 [370, 449] & 365.68 244, 445] \\ \hline
+\end{tabular}
+\caption{Branching methods. DTH: heuristic by Dreebeck and Tomlin.}
+\label{tab:ibranch}
+\end{table}
+Furthermore, the branching direction must be right: reverse often 
+fails to find a solution of positive objective value.
+\begin{table}
+\centering
+\begin{tabular}{|r|r|r|} \hline
+{\bf Integer Infeasibility\/} & {\bf Level\/} & {\bf Random\/} \\ \hline\hline
+353.81 [295, 394] & 255.68 [101, 351] & 270.42 [118, 383] \\ \hline
+393.97[352, 438] & 342.32 [249, 217] & 335.9 [228, 418] \\ \hline
+423.13 [370, 449] & 371.35 [243, 433] & 368.26 [265, 445]\\ \hline
+\end{tabular}
+\caption{Selection: break ties after best bound.}
+\label{tab:selection}
+\end{table}
+
+
+
+\begin{table}
+\centering
+\begin{tabular}{|c|c|c|} \hline
+Always &  First Only & Never\\ \hline\hline
+378 & 403 & 211 \\ \hline
+433 & 422 & 226 \\ \hline
+412 & 348 & 202  \\ \hline
+\end{tabular}
+\caption{Branching choices}
+\label{tab:branching}
+\end{table}
+\fi
 
 \bibliographystyle{plain}
 \bibliography{classification}

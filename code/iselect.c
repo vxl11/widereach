@@ -154,7 +154,8 @@ int consistent_node(glp_tree *t, solution_data_t *solution_data) {
         // int curr_level = glp_ios_node_level(t, node);
         // curr_consistency += curr_consistency - curr_level;
         #ifdef EXPERIMENTAL
-            glp_printf("%i(%i,%i) ", node, data->is_consistent, curr_level);
+            glp_printf("%i(%i,%i) ", 
+                       node, data->is_consistent, glp_ios_node_level(t, node));
         #endif
         if (curr_consistency > best_consistency) { // && curr_level > best_level) {
             best_node = node;

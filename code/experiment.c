@@ -28,10 +28,12 @@ void single_run(int t, env_t *env) {
 
     glp_prob *p = milp(env);
     // glp_write_lp(p, NULL, "tmp.lp");
+    glp_scale_prob(p, GLP_SF_AUTO);
     glp_simplex(p, NULL);
 
     glp_iocp *parm = iocp(env);
     parm->tm_lim = 120000;
+    // parm->tm_lim = 600000;
     // parm->tm_lim = 1800000;
     parm->bt_tech = GLP_BT_DFS;
     // parm->bt_tech = GLP_BT_BLB;
@@ -56,8 +58,8 @@ void single_run(int t, env_t *env) {
 int main() {
     env_t env;
     env.params = params_default();
-    env.params->theta = 0.51;
-    // env.params->theta = 0.7;
+    env.params->theta = 0.5;
+    // env.params->theta = 0.5;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 10000;
@@ -66,14 +68,27 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    for (int s = 0; s < SAMPLE_SEEDS; s++) {
-    // for (int s = 0; s < 1; s++) {
+    // for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
     
-        samples_t *samples = random_samples(n, n / 2, 32);
-        // print_samples(env.samples);
+        // samples_t *samples = random_samples(n, n / 2, 4);
+        FILE *infile =
+            // fopen("../../data/breast-cancer/wdbc.dat", "r");
+            // fopen("../../data/wine-quality/winequality-red.dat", "r");
+            // fopen("../../data/wine-quality/winequality-white.dat", "r"); 
+            // fopen("../../data/south-german-credit/SouthGermanCredit.dat", "r");
+            // fopen("../../data/cross-sell/train-nocat.dat", "r"); */
+            // fopen("../../data/crops/sample.dat", "r");
+            fopen("../../data/crops/small-sample.dat", "r");
+        samples_t *samples = read_binary_samples(infile);
+        fclose(infile);
+        
         env.samples = samples;
-    
+        n = samples_total(samples);
+        env.params->lambda = 10 * (n + 1);
+        // print_samples(env.samples);
+        
         // for (int t = 0; t <= MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {
             single_run(t, &env);

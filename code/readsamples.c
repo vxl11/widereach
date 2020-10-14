@@ -4,7 +4,9 @@
 double *read_vector(FILE *infile, size_t dimension) {
     double *sample = CALLOC(dimension, double);
     for (size_t i = 0; i < dimension; i++) {
-        fscanf(infile, "%lg", sample+i);
+        if (fscanf(infile, "%lg", sample+i) != 1) {
+            exit(EXIT_FAILURE);
+        }
     }
     return sample;
 }
@@ -34,8 +36,10 @@ samples_t *read_binary_samples(FILE *infile) {
     samples->samples = CALLOC(2, double **);
     
     size_t *count = samples->count = CALLOC(2, size_t);
-    fscanf(infile, "%lu %lu %lu", 
-           &(samples->dimension), &(count[0]), &(count[1])); 
+    if (fscanf(infile, "%lu %lu %lu", 
+               &(samples->dimension), &(count[0]), &(count[1])) != 3) {
+        exit(EXIT_FAILURE);
+    }
     read_classes(infile, samples);
     
     return samples;
