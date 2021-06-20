@@ -403,6 +403,11 @@ void test_random() {
     CU_ASSERT(0. <= pt[0] && pt[0] < 1.);
     CU_ASSERT(0. <= pt[1] && pt[1] < 1.);
     free(pt);
+    
+    pt = random_point_affine(2, .9, .1);
+    CU_ASSERT(.9 <= pt[0] && pt[0] < 1.);
+    CU_ASSERT(.9 <= pt[1] && pt[1] < 1.);
+    free(pt);
 }
 
 void test_hyperplane() {

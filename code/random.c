@@ -36,12 +36,16 @@ void multiply_scalar(double a, size_t d, double *w) {
 	}
 }
 
-double *random_point(size_t dimension) {
+double *random_point_affine(size_t dimension, double shift, double side) {
 	double* values = CALLOC(dimension, double);
 	for (size_t i = 0; i < dimension; i++) {
-		values[i] = drand48();
+		values[i] = side * drand48() + shift;
 	}
 	return values;
+}
+
+double *random_point(size_t dimension) {
+  return random_point_affine(dimension, 0., 0.);
 }
 
 

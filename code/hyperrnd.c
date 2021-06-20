@@ -19,9 +19,10 @@ unsigned int hyper_seeds[HYPER_SEEDS] = {
     83898336, 41744843, 153111583, 318522606, 952537249, 298531860
 };
 
-#define CONTINUATION 100000
+#define TRIALS 100000
+// #define TRIALS 10000
 
-double single_run(int t, env_t *env) {
+double single_run(int s, int t, env_t *env) {
     if (t > 0) {
         srand48(hyper_seeds[t-1]);
     }
@@ -43,7 +44,7 @@ double single_run(int t, env_t *env) {
         double value = X - params->lambda * violation;
         if (value > best_value) {
             best_value = value;
-            glp_printf("%i\t%g\n", k, best_value);
+            glp_printf("%i\t%i\t%i\t%g\n", s, t, k, best_value);
         }
     }
     
@@ -55,13 +56,12 @@ int main() {
     env.params = params_default();
     env.params->theta = 0.51;
     // env.params->theta = 0.7;
-    env.params->branch_target = 0.0;
-    env.params->iheur_method = deep;
-    int n = 100000;
+    int n = 10000;
     env.params->lambda = 100 * (n + 1);
-    env.params->rnd_trials = CONTINUATION;
+    env.params->rnd_trials = TRIALS;
     
     for (size_t dimension = 2; dimension <= 2; dimension += dimension) {
+        // TODO #pragma omp parallel for
         for (int s = 0; s < SAMPLE_SEEDS; s++) {
         // for (int s = 0; s < 1; s++) {
             srand48(samples_seeds[s]);
@@ -73,7 +73,7 @@ int main() {
             // for (int t = 0; t <= HYPER_SEEDS; t++) {    
             for (int t = 0; t < 1; t++) {
                 // double value = 
-                single_run(t, &env);
+                single_run(s, t, &env);
                 // glp_printf("%g\n", value);
             }
             // glp_printf("---\n");

@@ -381,6 +381,14 @@ double multiply_scalar(
  * It returns a newly allocated vector. */
 double *random_point(size_t dimension);
 
+/** Generate a random point in the hypercube of the give dimension 
+ * located from [shift .... shift]^T to [shift+side ... shift+side]^T 
+ * (effectively translating the unit hypercube so that the lower left corner
+ * is shift away in every direction and scaling it so that each side has 
+ * the given length.)
+ */
+double *random_point_affine(size_t dimension, double shift, double side);
+
 /** Generates a random unit d-dimensional vector. */
 void random_unit_vector(
     /** Vector size */

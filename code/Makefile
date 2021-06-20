@@ -21,22 +21,22 @@ all:
 	echo $(CFLAGS)
 
 utest:	$(UOBJ) $(OBJ) $(BASE)
-	$(CC) $(CFLAGS) -o $@ $(UOBJ) $(OBJ) $(LIBS) -lcunit
+	$(CC) $(CFLAGS) -o $@ $(UOBJ) $(OBJ) $(LIBS) -lcunit -fopenmp
 
 itest:	$(OBJ) $(BASE) itest.o
-	$(CC) $(CFLAGS) -o $@ $(OBJ) itest.o $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJ) itest.o $(LIBS) -fopenmp
 
 experiment:	$(OBJ) $(BASE) experiment.o
-	$(CC) $(CFLAGS) -o $@ $(OBJ) experiment.o $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJ) experiment.o $(LIBS) -fopenmp
 
 hyperrnd:	$(OBJ) $(BASE) hyperrnd.o
-	$(CC) $(CFLAGS) -o $@ $(OBJ) hyperrnd.o $(LIBS)
+	$(CC) $(CFLAGS) -o $@ $(OBJ) hyperrnd.o $(LIBS) -fopenmp
 
 dependencies:
 	sudo apt install libcunit1-dev glpk-doc libglpk-dev
 
 %.o:	%.c $(BASE)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $<
+	$(CC) $(CFLAGS) $(INC) -c -o $@ $< -fopenmp
 
 clean:
 	rm *.o utest itest experiment experiment-* hyperrnd hyperrnd-*

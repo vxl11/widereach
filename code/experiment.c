@@ -58,8 +58,8 @@ void single_run(int t, env_t *env) {
 int main() {
     env_t env;
     env.params = params_default();
+    // env.params->theta = 0.99;
     env.params->theta = 0.5;
-    // env.params->theta = 0.5;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 10000;
@@ -72,17 +72,17 @@ int main() {
     for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
     
-        // samples_t *samples = random_samples(n, n / 2, 4);
-        FILE *infile =
+        samples_t *samples = random_samples(n, n / 2, 2);
+        // FILE *infile =
             // fopen("../../data/breast-cancer/wdbc.dat", "r");
             // fopen("../../data/wine-quality/winequality-red.dat", "r");
             // fopen("../../data/wine-quality/winequality-white.dat", "r"); 
             // fopen("../../data/south-german-credit/SouthGermanCredit.dat", "r");
             // fopen("../../data/cross-sell/train-nocat.dat", "r"); */
             // fopen("../../data/crops/sample.dat", "r");
-            fopen("../../data/crops/small-sample.dat", "r");
-        samples_t *samples = read_binary_samples(infile);
-        fclose(infile);
+            // fopen("../../data/crops/small-sample.dat", "r");
+        // samples_t *samples = read_binary_samples(infile);
+        // fclose(infile);
         
         env.samples = samples;
         n = samples_total(samples);
