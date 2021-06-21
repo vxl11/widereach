@@ -158,8 +158,8 @@ typedef struct {
     size_t *count;
     /** Shift parameters for the clusters (as in random_point_affine) */
     double *shift;
-    /** Size parameters for the clusters (as in random_point_affine) */
-    double *size;
+    /** Side parameters for the clusters (as in random_point_affine) */
+    double *side;
     /** Dimension of the sample space */
     size_t dimension;
 } clusters_info_t;
@@ -172,7 +172,7 @@ typedef struct {
  * No assumption is made about the allocation of the argument itself.
  *
  * @return the cluster descriptor */
-clusters_info_t *delete_cluster_info(clusters_info_t *);
+clusters_info_t *delete_clusters_info(clusters_info_t *);
 
 
 /* ---------------------- Read Samples ------------------------------ */

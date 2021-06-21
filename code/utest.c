@@ -531,7 +531,7 @@ void test_read_samples() {
     CU_ASSERT_DOUBLE_EQUAL(s[1][2], 6., 1e-12);
     free(s);
     fclose(infile);
-    
+
     count[0] = 0;
     infile = fmemopen(instring, INSIZE, "r");
     read_classes(infile, samples);
@@ -554,6 +554,12 @@ void test_read_samples() {
 }
 
 void test_clusters() {
+  clusters_info_t *info = CALLOC(1, clusters_info_t);
+  info->cluster_cnt = 1;
+  info->count = CALLOC(1, size_t); 
+  info->shift = CALLOC(1, double);
+  info->side = CALLOC(1, double);
+  free(delete_clusters_info(info));
 }
 
 
