@@ -47,6 +47,7 @@ double primary_value(int label) {
     return label > 0 ? 1. : 0.;
 }
 
+/*
 double **random_point_cluster(
         size_t count, 
         size_t dimension, 
@@ -57,7 +58,7 @@ double **random_point_cluster(
 		samples[j] = random_point_affine(dimension, shift, side);
 	}
 	return samples + j;
-}
+}*/
 
 double **random_points(size_t count, size_t dimension) {
 	double **samples = CALLOC(count, double *);
@@ -94,6 +95,7 @@ void set_sample_class(
 	samples->samples[class] = random_points(count, samples->dimension);
 }
 
+/*
 void set_sample_class_clusters(
 		samples_t *samples, 
 		size_t class, 
@@ -103,7 +105,7 @@ void set_sample_class_clusters(
 	samples->label[class] = label;
 	samples->count[class] = count;
 	samples->samples[class] = random_points(count, samples->dimension);
-}
+}*/
 
 
 samples_t *random_samples(
