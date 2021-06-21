@@ -148,6 +148,33 @@ int side_cnt(
 		double precision);
 
 
+/* ---------------------- Sample clusters --------------------------- */
+
+/** Descriptor of a set of clusters of samples */
+typdef struct {
+    /** Number of clusters */
+    size_t cluster_cnt, 
+    /** Array with the number of points in each of the cluster_cnt clusters */
+    size_t *count, 
+    /** Shift parameters for the clusters (as in random_point_affine) */
+    double *shift;
+    /** Size parameters for the clusters (as in random_point_affine) */
+    double *size,
+    /** Dimension of the sample space */
+    size_t dimension
+} clusters_info_t;
+
+
+/** @brief Delete the cluster descriptor.
+ *
+ * It is assumed that all the arrays within the cluster information
+ * have been dynamically allocated.
+ * No assumption is made about the allocation of the argument itself.
+ *
+ * @return the cluster descriptor */
+cluster_info_t *delete_cluster_info(cluster_info_t *);
+
+
 /* ---------------------- Read Samples ------------------------------ */
 /** Allocate and read a single vector. */
 double *read_vector(

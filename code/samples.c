@@ -81,8 +81,9 @@ double **random_point_clusters(
     double **samples = double **samples_pointer = CALLOC(count_total, double *);
     for (size_t h = 0; h < cluster_cnt; h++) {
       samples_pointer = random_point_cluster(count[h], dimension, shift, side, samples_pointer);
-}*/
-
+    }
+}
+*/
 
 void set_sample_class(
 		samples_t *samples, 
