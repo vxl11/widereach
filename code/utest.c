@@ -13,8 +13,12 @@ int init_samples() {
 extern double **random_points(size_t count, size_t dimension);
 extern void set_sample_class(samples_t *samples, size_t class, int label, 
                              size_t count);
+extern double **random_point_cluster(size_t count, size_t dimension, 
+                                     double shift, double side,
+                                     double **samples);
 
 void test_samples() {
+  // Test random_points
     double **points = random_points(3, 2);
     for (size_t i = 0; i < 3; i++) {
       for (size_t j = 0; j < 2; j++) {
@@ -25,6 +29,7 @@ void test_samples() {
     }
     free(points);
     
+    // Test set_sample_class
     samples_t *samples = CALLOC(1, samples_t);
     samples->dimension = 2;
 	samples->class_cnt = 1;
@@ -41,6 +46,19 @@ void test_samples() {
         }
     }
     free(delete_samples(samples));
+    
+    // Test random_point_cluster
+    points = CALLOC(3, double *);
+    double **points_ptr = random_point_cluster(3, 2, .9, .1, points);
+    CU_ASSERT_EQUAL(points_ptr, points + 3);
+    for (size_t i = 0; i < 3; i++) {
+      for (size_t j = 0; j < 2; j++) {
+          CU_ASSERT(points[i][j] >= .9);
+          CU_ASSERT(points[i][j] <= 1.);
+      }
+      free(points[i]);
+    }
+    free(points);
   
 	samples = random_samples(5, 3, 2);
 	CU_ASSERT(is_binary(samples));
