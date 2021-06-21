@@ -47,19 +47,6 @@ void test_samples() {
     }
     free(delete_samples(samples));
     
-    // Test random_point_cluster
-    points = CALLOC(3, double *);
-    double **points_ptr = random_point_cluster(3, 2, .9, .1, points);
-    CU_ASSERT_EQUAL(points_ptr, points + 3);
-    for (size_t i = 0; i < 3; i++) {
-      for (size_t j = 0; j < 2; j++) {
-          CU_ASSERT(points[i][j] >= .9);
-          CU_ASSERT(points[i][j] <= 1.);
-      }
-      free(points[i]);
-    }
-    free(points);
-  
 	samples = random_samples(5, 3, 2);
 	CU_ASSERT(is_binary(samples));
 	CU_ASSERT_EQUAL(samples->dimension, 2);
@@ -554,6 +541,19 @@ void test_read_samples() {
 }
 
 void test_clusters() {
+  // Test random_point_cluster
+  double **points = CALLOC(3, double *);
+  double **points_ptr = random_point_cluster(3, 2, .9, .1, points);
+  CU_ASSERT_EQUAL(points_ptr, points + 3);
+  for (size_t i = 0; i < 3; i++) {
+    for (size_t j = 0; j < 2; j++) {
+      CU_ASSERT(points[i][j] >= .9);
+      CU_ASSERT(points[i][j] <= 1.);
+    }
+    free(points[i]);
+  }
+  free(points);
+  
   clusters_info_t *info = CALLOC(1, clusters_info_t);
   info->cluster_cnt = 1;
   info->count = CALLOC(1, size_t); 

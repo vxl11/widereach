@@ -47,18 +47,6 @@ double primary_value(int label) {
     return label > 0 ? 1. : 0.;
 }
 
-double **random_point_cluster(
-        size_t count, 
-        size_t dimension, 
-        double shift, 
-        double side,
-        double **samples) {
-    for (size_t j = 0; j < count; j++) {
-		samples[j] = random_point_affine(dimension, shift, side);
-	}
-	return samples + count;
-}
-
 double **random_points(size_t count, size_t dimension) {
 	double **samples = CALLOC(count, double *);
 	for (size_t j = 0; j < count; j++) {
