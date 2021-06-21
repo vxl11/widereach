@@ -174,6 +174,9 @@ typedef struct {
  * @return the cluster descriptor */
 clusters_info_t *delete_clusters_info(clusters_info_t *);
 
+/** @return total number of samples across all counters */
+size_t clusters_count(clusters_info_t *);
+
 
 /* ---------------------- Read Samples ------------------------------ */
 /** Allocate and read a single vector. */

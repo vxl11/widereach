@@ -21,3 +21,41 @@ double **random_point_cluster(
 	}
 	return samples + count;
 }
+
+size_t clusters_count(clusters_info_t *info) {
+  size_t cluster_cnt = info->cluster_cnt;
+  size_t *count = info->count;
+  size_t count_total = 0;
+  for (size_t h = 0; h < cluster_cnt; h++) {
+    count_total += count[h];
+  }
+  return count_total;
+}
+
+/*
+double **random_point_clusters(cluster_info_t *info) {
+  size_t cluster_cnt = info->cluster_cnt;
+  
+  size_t count_total = 0;
+  for (size_t h = 0; h < cluster_cnt; h++) {
+    count_total += count[h];
+  }
+  double **samples = double **samples_pointer = CALLOC(count_total, double *);
+    
+  for (size_t h = 0; h < cluster_cnt; h++) {
+    samples_pointer = random_point_cluster(count[h], dimension, shift, side, samples_pointer);
+  }
+}
+*/
+
+/*
+void set_sample_class_clusters(
+		samples_t *samples, 
+		size_t class, 
+		int label, 
+        size_t cluster_cnt,
+		size_t *count) {
+	samples->label[class] = label;
+	samples->count[class] = count;
+	samples->samples[class] = random_points(count, samples->dimension);
+}*/

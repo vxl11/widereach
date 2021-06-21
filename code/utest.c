@@ -13,9 +13,6 @@ int init_samples() {
 extern double **random_points(size_t count, size_t dimension);
 extern void set_sample_class(samples_t *samples, size_t class, int label, 
                              size_t count);
-extern double **random_point_cluster(size_t count, size_t dimension, 
-                                     double shift, double side,
-                                     double **samples);
 
 void test_samples() {
   // Test random_points
@@ -540,6 +537,11 @@ void test_read_samples() {
     free(delete_samples(samples));
 }
 
+extern double **random_point_cluster(size_t count, size_t dimension, 
+                                     double shift, double side,
+                                     double **samples);
+size_t clusters_count(clusters_info_t *);
+
 void test_clusters() {
   // Test random_point_cluster
   double **points = CALLOC(3, double *);
@@ -557,6 +559,8 @@ void test_clusters() {
   clusters_info_t *info = CALLOC(1, clusters_info_t);
   info->cluster_cnt = 1;
   info->count = CALLOC(1, size_t); 
+  info->count[0] = 5;
+  CU_ASSERT_EQUAL(clusters_count(info), 5);
   info->shift = CALLOC(1, double);
   info->side = CALLOC(1, double);
   free(delete_clusters_info(info));
