@@ -553,6 +553,9 @@ void test_read_samples() {
     free(delete_samples(samples));
 }
 
+void test_clusters() {
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -614,6 +617,10 @@ int main() {
     // Read samples
     CU_pSuite read_samples = CU_add_suite("readsamples", NULL, NULL);
 	CU_add_test(read_samples, "readsamples", test_read_samples);
+    
+    // Clusters
+    CU_pSuite clusters = CU_add_suite("clusters", NULL, NULL);
+	CU_add_test(clusters, "clusters", test_clusters);
 
 	// Run tests
 	CU_basic_run_tests();
