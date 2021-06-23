@@ -540,29 +540,47 @@ void test_read_samples() {
 extern double **random_point_cluster(size_t count, size_t dimension, 
                                      double shift, double side,
                                      double **samples);
-size_t clusters_count(clusters_info_t *);
+extern size_t clusters_count(clusters_info_t *);
+extern double **random_point_clusters(clusters_info_t *info);
+
+void validate_points(double **points, size_t count, double min, double max) {
+  for (size_t i = 0; i < count; i++) {
+    for (size_t j = 0; j < 2; j++) {
+      CU_ASSERT(points[i][j] >= min);
+      CU_ASSERT(points[i][j] <= max);
+    }
+    free(points[i]);
+  }
+}
 
 void test_clusters() {
   // Test random_point_cluster
   double **points = CALLOC(3, double *);
   double **points_ptr = random_point_cluster(3, 2, .9, .1, points);
   CU_ASSERT_EQUAL(points_ptr, points + 3);
-  for (size_t i = 0; i < 3; i++) {
-    for (size_t j = 0; j < 2; j++) {
-      CU_ASSERT(points[i][j] >= .9);
-      CU_ASSERT(points[i][j] <= 1.);
-    }
-    free(points[i]);
-  }
+  validate_points(points, 3, .9, 1.);
   free(points);
   
+  // Test cluster count and delete
   clusters_info_t *info = CALLOC(1, clusters_info_t);
-  info->cluster_cnt = 1;
-  info->count = CALLOC(1, size_t); 
-  info->count[0] = 5;
+  info->cluster_cnt = 2;
+  info->count = CALLOC(2, size_t); 
+  info->count[0] = 3;
+  info->count[1] = 2;
   CU_ASSERT_EQUAL(clusters_count(info), 5);
-  info->shift = CALLOC(1, double);
-  info->side = CALLOC(1, double);
+  
+  // Test random point clusters
+  info->dimension = 2;
+  info->shift = CALLOC(2, double);
+  info->side = CALLOC(2, double);
+  info->shift[0] = info->side[0] = 0.;
+  info->shift[1] = .9;
+  info->side[1] = .1;
+  points = random_point_clusters(info);
+  validate_points(points, 3, 0., 1.);
+  validate_points(points + 3, 2, .9, 1.);
+  free(points);
+  
   free(delete_clusters_info(info));
 }
 

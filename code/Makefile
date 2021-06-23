@@ -1,7 +1,7 @@
 CC = gcc
 
 ifdef DEV
-  CFLAGS = -g -Wall
+  CFLAGS = -g -Wall -fprofile-arcs -ftest-coverage
 else
   CFLAGS = -O3 -DNDEBUG -funroll-loops
 endif
@@ -15,13 +15,16 @@ OBJ = samples.o sparse_vector.o env.o indexing.o glpk.o params.o callback.o \
       obstruction.o interdiction.o cuts.o icutgen.o readsamples.o clusters.o
 UOBJ = utest.o
 
-.PHONY: all clean dependencies
+.PHONY: all coverage clean dependencies
 
 all:
 	echo $(CFLAGS)
 
 utest:	$(UOBJ) $(OBJ) $(BASE)
 	$(CC) $(CFLAGS) -o $@ $(UOBJ) $(OBJ) $(LIBS) -lcunit -fopenmp
+
+coverage:	utest
+	utest; gcovr
 
 itest:	$(OBJ) $(BASE) itest.o
 	$(CC) $(CFLAGS) -o $@ $(OBJ) itest.o $(LIBS) -fopenmp
@@ -39,4 +42,4 @@ dependencies:
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $< -fopenmp
 
 clean:
-	rm *.o utest itest experiment experiment-* hyperrnd hyperrnd-*
+	rm --force *.o *.gcno *gcda utest itest experiment experiment-* hyperrnd hyperrnd-*

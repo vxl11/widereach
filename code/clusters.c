@@ -41,6 +41,7 @@ double **random_point_clusters(clusters_info_t *info) {
   size_t dimension = info->dimension;
   double *shift = info->shift;
   double *side = info->side;
+  
   double **samples_pointer = samples;
   for (size_t h = 0; h < cluster_cnt; h++) {
     samples_pointer = 

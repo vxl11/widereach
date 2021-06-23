@@ -353,3 +353,7 @@ widereach
 itest
 experiment*
 hyperrnd*
+
+# Profiles
+*.gcno
+*.gcda
