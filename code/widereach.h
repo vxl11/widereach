@@ -165,9 +165,15 @@ typedef struct {
 } clusters_info_t;
 
 
-/** Generate a new cluster information record for a single cluster
- * with zero shift and unit side */
-clusters_info_t *new_clusters_info_singleton(size_t count, size_t dimension);
+/** Fills in a cluster information record for a single cluster
+ * with zero shift and unit side 
+ *
+ * @return the cluster information record
+ */
+clusters_info_t *clusters_info_singleton(
+  clusters_info_t *info, 
+  size_t count, 
+  size_t dimension);
 
 /** @brief Delete the cluster descriptor.
  *
@@ -180,6 +186,17 @@ clusters_info_t *delete_clusters_info(clusters_info_t *);
 
 /** @return total number of samples across all counters */
 size_t clusters_count(clusters_info_t *);
+
+/** Generates random binary samples. Each sample class is described by the 
+ * corresponding entry in the cluster information array.
+ *
+ * The drand48(3) functions must have been seeded before invoking this method.
+ *
+ * @return A newly allocated group of samples
+ **/
+samples_t *random_sample_clusters(
+  // Array of two cluster information records
+  clusters_info_t *);
 
 
 /* ---------------------- Read Samples ------------------------------ */

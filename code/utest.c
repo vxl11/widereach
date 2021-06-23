@@ -597,7 +597,8 @@ void test_clusters() {
   samples->label = CALLOC(2, int);
   samples->count = CALLOC(2, size_t);
   samples->samples = CALLOC(2, double **);
-  clusters_info_t *info_negative = new_clusters_info_singleton(2, 2);
+  clusters_info_t *info_negative = 
+    clusters_info_singleton(CALLOC(1, clusters_info_t), 2, 2);
   set_sample_class_clusters(samples, 0, -1, info);
   set_sample_class_clusters(samples, 1, 1, info);
   points = samples->samples[0];

@@ -21,6 +21,7 @@ all:
 	echo $(CFLAGS)
 
 utest:	$(UOBJ) $(OBJ) $(BASE)
+	rm --force *.gcno *gcda;\
 	$(CC) $(CFLAGS) -o $@ $(UOBJ) $(OBJ) $(LIBS) -lcunit -fopenmp
 
 coverage:	utest
