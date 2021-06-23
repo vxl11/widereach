@@ -599,17 +599,33 @@ void test_clusters() {
   samples->samples = CALLOC(2, double **);
   clusters_info_t *info_negative = 
     clusters_info_singleton(CALLOC(1, clusters_info_t), 2, 2);
-  set_sample_class_clusters(samples, 0, -1, info);
+  set_sample_class_clusters(samples, 0, -1, info_negative);
   set_sample_class_clusters(samples, 1, 1, info);
-  points = samples->samples[0];
-  validate_points(points, 2, 0., 1.);
+  validate_points(samples->samples[0], 2, 0., 1.);
   points = samples->samples[1];
   validate_points(points, 3, 0., 1.);
   validate_points(points + 3, 2, .9, 1.);
   free(delete_samples(samples));
-  
   free(delete_clusters_info(info));
   free(delete_clusters_info(info_negative));
+  
+  // Test random sample clusters
+  clusters_info_t clusters[2];
+  clusters_info_singleton(clusters, 2, 2);
+  info = clusters + 1;
+  info->dimension = 2;
+  info->cluster_cnt = 2;
+  info->count = CALLOC(2, size_t); 
+  info->count[0] = 3;
+  info->count[1] = 2;
+  info->shift = CALLOC(2, double);
+  info->side = CALLOC(2, double);
+  info->shift[0] = info->side[0] = 0.;
+  info->shift[1] = .9;
+  info->side[1] = .1;
+  samples = random_sample_clusters(clusters);
+  CU_FAIL();
+  
 }
 
 

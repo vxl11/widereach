@@ -14,7 +14,7 @@ clusters_info_t *clusters_info_singleton(
     clusters_info_t *info, size_t count, size_t dimension) {
   info->cluster_cnt = 1;
   info->count = CALLOC(1, size_t);
-  info->count[0] = 1;
+  info->count[0] = count;
   info->shift = CALLOC(1, double);
   info->shift[0] = 0.;
   info->side = CALLOC(1, double);
