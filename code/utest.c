@@ -542,6 +542,14 @@ extern double **random_point_cluster(size_t count, size_t dimension,
                                      double **samples);
 extern size_t clusters_count(clusters_info_t *);
 extern double **random_point_clusters(clusters_info_t *info);
+extern void set_sample_class_clusters(samples_t *, size_t class, int label, 
+		clusters_info_t *);
+
+void free_points(double **points, size_t count) {
+  for (size_t i = 0; i < count; i++) {
+    free(points[i]);
+  }
+}
 
 void validate_points(double **points, size_t count, double min, double max) {
   for (size_t i = 0; i < count; i++) {
@@ -549,7 +557,6 @@ void validate_points(double **points, size_t count, double min, double max) {
       CU_ASSERT(points[i][j] >= min);
       CU_ASSERT(points[i][j] <= max);
     }
-    free(points[i]);
   }
 }
 
@@ -559,6 +566,7 @@ void test_clusters() {
   double **points_ptr = random_point_cluster(3, 2, .9, .1, points);
   CU_ASSERT_EQUAL(points_ptr, points + 3);
   validate_points(points, 3, .9, 1.);
+  free_points(points, 3);
   free(points);
   
   // Test cluster count and delete
@@ -579,9 +587,28 @@ void test_clusters() {
   points = random_point_clusters(info);
   validate_points(points, 3, 0., 1.);
   validate_points(points + 3, 2, .9, 1.);
+  free_points(points, 5);
   free(points);
   
+  // Test set sample class clusters
+  samples_t *samples = CALLOC(1, samples_t);
+  samples->dimension = 2;
+  samples->class_cnt = 2;
+  samples->label = CALLOC(2, int);
+  samples->count = CALLOC(2, size_t);
+  samples->samples = CALLOC(2, double **);
+  clusters_info_t *info_negative = new_clusters_info_singleton(2, 2);
+  set_sample_class_clusters(samples, 0, -1, info);
+  set_sample_class_clusters(samples, 1, 1, info);
+  points = samples->samples[0];
+  validate_points(points, 2, 0., 1.);
+  points = samples->samples[1];
+  validate_points(points, 3, 0., 1.);
+  validate_points(points + 3, 2, .9, 1.);
+  free(delete_samples(samples));
+  
   free(delete_clusters_info(info));
+  free(delete_clusters_info(info_negative));
 }
 
 

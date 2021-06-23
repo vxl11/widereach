@@ -165,6 +165,10 @@ typedef struct {
 } clusters_info_t;
 
 
+/** Generate a new cluster information record for a single cluster
+ * with zero shift and unit side */
+clusters_info_t *new_clusters_info_singleton(size_t count, size_t dimension);
+
 /** @brief Delete the cluster descriptor.
  *
  * It is assumed that all the arrays within the cluster information

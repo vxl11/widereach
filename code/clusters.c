@@ -10,6 +10,19 @@ clusters_info_t *delete_clusters_info(clusters_info_t *info) {
   return info;
 }
 
+clusters_info_t *new_clusters_info_singleton(size_t count, size_t dimension) {
+  clusters_info_t *info = CALLOC(1, clusters_info_t);
+  info->cluster_cnt = 1;
+  info->count = CALLOC(1, size_t);
+  info->count[0] = 1;
+  info->shift = CALLOC(1, double);
+  info->shift[0] = 0.;
+  info->side = CALLOC(1, double);
+  info->side[0] = 1.;
+  info->dimension = dimension;
+  return info;
+}
+
 double **random_point_cluster(
         size_t count, 
         size_t dimension, 
@@ -56,14 +69,12 @@ double **random_point_clusters(clusters_info_t *info) {
   return samples;
 }
 
-/*
 void set_sample_class_clusters(
 		samples_t *samples, 
 		size_t class, 
 		int label, 
-        size_t cluster_cnt,
-		size_t *count) {
+		clusters_info_t *info) {
 	samples->label[class] = label;
-	samples->count[class] = count;
-	samples->samples[class] = random_points(count, samples->dimension);
-}*/
+	samples->count[class] = clusters_count(info);
+	samples->samples[class] = random_point_clusters(info);
+}
