@@ -613,7 +613,7 @@ void test_clusters() {
   clusters_info_t clusters[2];
   clusters_info_singleton(clusters, 2, 2);
   info = clusters + 1;
-  info->dimension = 2;
+  info->dimension = 1;
   info->cluster_cnt = 2;
   info->count = CALLOC(2, size_t); 
   info->count[0] = 3;
@@ -624,8 +624,16 @@ void test_clusters() {
   info->shift[1] = .9;
   info->side[1] = .1;
   samples = random_sample_clusters(clusters);
-  CU_FAIL();
-  
+  CU_ASSERT_EQUAL(samples->dimension, 2);
+  CU_ASSERT_EQUAL(samples->label[0], -1);
+  CU_ASSERT_EQUAL(samples->count[0], 2);
+  validate_points(samples->samples[0], 2, 0., 1.);
+  points = samples->samples[1];
+  validate_points(points, 3, 0., 1.);
+  validate_points(points + 3, 2, .9, 1.);
+  free(delete_samples(samples));
+  delete_clusters_info(clusters);
+  delete_clusters_info(info);
 }
 
 
