@@ -82,13 +82,15 @@ void set_sample_class_clusters(
 samples_t *random_sample_clusters(clusters_info_t *info) {
   samples_t *samples = CALLOC(1, samples_t);
   
-  size_t dimension;
-  if (info[1].dimension < info[0].dimension) {
-    dimension = info[0].dimension;
+  size_t *dimension = &(samples->dimension);
+  size_t *dimension_negative = &(info[0].dimension);
+  size_t *dimension_positive = &(info[1].dimension);
+  if (*dimension_positive < *dimension_negative) {
+    *dimension = *dimension_negative;
   } else {
-    dimension = info[1].dimension;
+    *dimension = *dimension_positive;
   }
-  samples->dimension = info[0].dimension = info[1].dimension = dimension;
+  *dimension_negative = *dimension_positive = *dimension;
   
   samples->class_cnt = 2;
   samples->label = CALLOC(2, int);

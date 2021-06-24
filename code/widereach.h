@@ -195,7 +195,9 @@ size_t clusters_count(clusters_info_t *);
  * @return A newly allocated group of samples
  **/
 samples_t *random_sample_clusters(
-  // Array of two cluster information records
+  /** Array of two cluster information records. 
+   * The dimension of the samples is the largest of the dimension of the 
+   * two records. */
   clusters_info_t *);
 
 
