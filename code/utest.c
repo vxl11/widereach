@@ -436,6 +436,13 @@ void test_random() {
     CU_ASSERT(0. <= pt[0] && pt[0] < 1.);
     CU_ASSERT(0. <= pt[1] && pt[1] < 1.);
     free(pt);
+    double cumulative = 0.;
+    for (size_t t = 0; t < 30; t++) {
+      pt = random_point(2);
+      cumulative += pt[0];
+      free(pt);
+    }
+    CU_ASSERT(cumulative > 0.);
     
     pt = random_point_affine(2, .9, .1);
     CU_ASSERT(.9 <= pt[0] && pt[0] < 1.);

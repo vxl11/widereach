@@ -80,8 +80,8 @@ int main() {
     info->side = CALLOC(cluster_cnt, double);
     info->shift[0] = 0.;
     info->side[0] = 1.;
-    info->shift[1] = .5;
-    info->side[1] = .5;
+    info->shift[1] = .75;
+    info->side[1] = .25;
     info->count[0] = info->count[1] = n / 10;
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {

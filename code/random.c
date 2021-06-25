@@ -45,7 +45,7 @@ double *random_point_affine(size_t dimension, double shift, double side) {
 }
 
 double *random_point(size_t dimension) {
-  return random_point_affine(dimension, 0., 0.);
+  return random_point_affine(dimension, 0., 1.);
 }
 
 
