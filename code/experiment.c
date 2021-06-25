@@ -1,6 +1,7 @@
 #include <stdio.h>
 
 #include "widereach.h"
+#include "helper.h"
 
 #define SAMPLE_SEEDS 3
 unsigned long int samples_seeds[SAMPLE_SEEDS] = {
@@ -59,20 +60,38 @@ int main() {
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
-    env.params->theta = 0.5;
+    env.params->theta = 0.3;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
-    int n = 10000;
-    env.params->lambda = 100 * (n + 1);
+    int n = 1000;
+    // env.params->lambda = 100 * (n + 1); 
     env.params->rnd_trials = 10000;
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
+    
+    size_t dimension = 2;
+    clusters_info_t clusters[2];
+    clusters_info_singleton(clusters, n * .8, dimension);
+    clusters_info_t *info = clusters + 1;
+    info->dimension = dimension;
+    size_t cluster_cnt = info->cluster_cnt = 2;
+    info->count = CALLOC(cluster_cnt, size_t); 
+    info->shift = CALLOC(cluster_cnt, double);
+    info->side = CALLOC(cluster_cnt, double);
+    info->shift[0] = 0.;
+    info->side[0] = 1.;
+    info->shift[1] = .5;
+    info->side[1] = .5;
+    info->count[0] = info->count[1] = n / 10;
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {
     for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
     
-        samples_t *samples = random_samples(n, n / 2, 2);
+        samples_t *samples;
+        
+        // samples = random_samples(n, n / 2, dimension);
+        samples = random_sample_clusters(clusters);
         // FILE *infile =
             // fopen("../../data/breast-cancer/wdbc.dat", "r");
             // fopen("../../data/wine-quality/winequality-red.dat", "r");
@@ -88,10 +107,14 @@ int main() {
         n = samples_total(samples);
         env.params->lambda = 10 * (n + 1);
         // print_samples(env.samples);
+        // return 0;
         
         // for (int t = 0; t <= MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {
             single_run(t, &env);
         }
     }
+    
+    delete_clusters_info(clusters);
+    delete_clusters_info(clusters + 1);
 }

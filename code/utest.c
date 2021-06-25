@@ -581,7 +581,8 @@ void test_clusters() {
   info->dimension = 2;
   info->shift = CALLOC(2, double);
   info->side = CALLOC(2, double);
-  info->shift[0] = info->side[0] = 0.;
+  info->shift[0] = 0.;
+  info->side[0] = 1.;
   info->shift[1] = .9;
   info->side[1] = .1;
   points = random_point_clusters(info);
@@ -620,7 +621,8 @@ void test_clusters() {
   info->count[1] = 2;
   info->shift = CALLOC(2, double);
   info->side = CALLOC(2, double);
-  info->shift[0] = info->side[0] = 0.;
+  info->shift[0] = 0.;
+  info->side[0] = 1.;
   info->shift[1] = .9;
   info->side[1] = .1;
   samples = random_sample_clusters(clusters);
