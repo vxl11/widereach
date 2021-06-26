@@ -56,14 +56,29 @@ void single_run(int t, env_t *env) {
     free(delete_solution_data(env->solution_data));
 }
 
+// Compute 10^d, where d is even or d=1, 3
+int pow10quick(int d) {
+  if (!d) {
+    return 1;
+  }
+  if (1 == d) {
+    return 10;
+  }
+  if (3 == d) {
+    return 1000;
+  }
+  int partial = pow10quick(d / 2);
+  return partial * partial;
+}
+
 int main() {
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
-    env.params->theta = 0.3;
+    env.params->theta = 0.9;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
-    int n = 1000;
+    int n = 400;
     // env.params->lambda = 100 * (n + 1); 
     env.params->rnd_trials = 10000;
     // env.params->rnd_trials_cont = 10;
@@ -71,6 +86,7 @@ int main() {
     
     size_t dimension = 2;
     clusters_info_t clusters[2];
+    // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
     clusters_info_t *info = clusters + 1;
     info->dimension = dimension;
@@ -80,8 +96,8 @@ int main() {
     info->side = CALLOC(cluster_cnt, double);
     info->shift[0] = 0.;
     info->side[0] = 1.;
-    info->shift[1] = .75;
-    info->side[1] = .25;
+    info->shift[1] = .9;
+    info->side[1] = .1;
     info->count[0] = info->count[1] = n / 10;
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {

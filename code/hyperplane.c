@@ -38,6 +38,10 @@ double *best_random_hyperplane(int initial, env_t *env) {
     for (int k = 0; k < rnd_trials; k++) {
         double *hyperplane = random_hyperplane(dimension);
         double value = hyperplane_to_solution(hyperplane, NULL, env);
+        /* for (size_t t = 0; t <= dimension; t++) {
+          glp_printf("%g ", hyperplane[t]);
+        }
+        glp_printf(" -> %g\n", value); */
         if (value > best_value) {
             best_value = value;
             copy_hyperplane(dimension, best_hyperplane, hyperplane);
