@@ -62,7 +62,7 @@ int pow10quick(int d) {
     return 1;
   }
   if (d % 2) {
-    return 10 % pow10quick(d - 1);
+    return 10 * pow10quick(d - 1);
   }
   int partial = pow10quick(d / 2);
   return partial * partial;
@@ -72,10 +72,10 @@ int main() {
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
-    env.params->theta = 0.9;
+    env.params->theta = 0.4;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
-    int n = 400;
+    // int n = 400;
     // env.params->lambda = 100 * (n + 1); 
     env.params->rnd_trials = 10000;
     // env.params->rnd_trials_cont = 10;
@@ -83,7 +83,7 @@ int main() {
     
     size_t dimension = 2;
     clusters_info_t clusters[2];
-    // int n = pow10quick(dimension);
+    int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
     clusters_info_t *info = clusters + 1;
     info->dimension = dimension;
@@ -119,8 +119,9 @@ int main() {
         env.samples = samples;
         n = samples_total(samples);
         env.params->lambda = 10 * (n + 1);
-        // print_samples(env.samples);
-        // return 0;
+        /*
+        print_samples(env.samples);
+        return 0; */
         
         // for (int t = 0; t <= MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {
