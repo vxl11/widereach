@@ -645,6 +645,25 @@ void test_clusters() {
   delete_clusters_info(info);
 }
 
+void test_exec() {
+  srand48(195583786);
+  
+  int n = 16;
+  samples_t *samples = random_samples(n, n / 2, 2);
+  
+  env_t env;
+  env.samples = samples;
+  env.params = params_default();
+  env.params->theta = 0.8;
+  env.params->branch_target = 0.0;
+  env.params->iheur_method = deep;
+  env.params->lambda = 10 * (n + 1); 
+  env.params->rnd_trials = 100;
+  env.params->rnd_trials_cont = 0;
+  
+  single_run(NULL, 120000, &env);
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -710,6 +729,10 @@ int main() {
     // Clusters
     CU_pSuite clusters = CU_add_suite("clusters", NULL, NULL);
 	CU_add_test(clusters, "clusters", test_clusters);
+
+    // Execution support
+    CU_pSuite exec = CU_add_suite("execution", NULL, NULL);
+	CU_add_test(exec, "execution", test_exec);
 
 	// Run tests
 	CU_basic_run_tests();
