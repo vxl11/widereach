@@ -19,43 +19,6 @@ unsigned int mip_seeds[MIP_SEEDS] = {
     83898336, 41744843, 153111583, 318522606, 952537249, 298531860
 };
 
-void single_run(int t, env_t *env) {
-    samples_t *samples = env->samples;
-    env->solution_data = solution_data_init(samples_total(samples));
-        
-    if (t > 0) {
-        srand48(mip_seeds[t-1]);
-    }
-
-    glp_prob *p = milp(env);
-    // glp_write_lp(p, NULL, "tmp.lp");
-    glp_scale_prob(p, GLP_SF_AUTO);
-    glp_simplex(p, NULL);
-
-    glp_iocp *parm = iocp(env);
-    parm->tm_lim = 120000;
-    // parm->tm_lim = 600000;
-    // parm->tm_lim = 1800000;
-    parm->bt_tech = GLP_BT_DFS;
-    // parm->bt_tech = GLP_BT_BLB;
-    /* MFV chooses the largest {x} (e.g., 0.99 in favor of 0.1)
-    * It would be similar to branch_target=1 for the positive samples,
-    * but the opposite for negative samples */
-    // parm->br_tech = GLP_BR_LFV;
-    glp_intopt(p, parm);
-    free(parm);
-
-    glp_printf("Objective: %g\n", glp_mip_obj_val(p));
-    /*
-    int index_max = violation_idx(0, env.samples);
-    for (int i = 1; i <= index_max; i++) {
-        glp_printf("%s:\t%g\n", glp_get_col_name(p, i), glp_mip_col_val(p, i));
-    }*/
-
-    glp_delete_prob(p);
-    free(delete_solution_data(env->solution_data));
-}
-
 // Compute 10^d, where d is even or d=1, 3
 int pow10quick(int d) {
   if (!d) {
@@ -72,18 +35,18 @@ int main() {
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
-    env.params->theta = 0.4;
+    env.params->theta = 0.15;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
-    // int n = 400;
+    int n = 400;
     // env.params->lambda = 100 * (n + 1); 
     env.params->rnd_trials = 10000;
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 2;
+    size_t dimension = 3;
     clusters_info_t clusters[2];
-    int n = pow10quick(dimension);
+    // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
     clusters_info_t *info = clusters + 1;
     info->dimension = dimension;
@@ -104,28 +67,28 @@ int main() {
         samples_t *samples;
         
         // samples = random_samples(n, n / 2, dimension);
-        samples = random_sample_clusters(clusters);
-        // FILE *infile =
+        // samples = random_sample_clusters(clusters);
+        FILE *infile =
             // fopen("../../data/breast-cancer/wdbc.dat", "r");
-            // fopen("../../data/wine-quality/winequality-red.dat", "r");
+            fopen("../../data/wine-quality/winequality-red.dat", "r");
             // fopen("../../data/wine-quality/winequality-white.dat", "r"); 
             // fopen("../../data/south-german-credit/SouthGermanCredit.dat", "r");
             // fopen("../../data/cross-sell/train-nocat.dat", "r"); */
             // fopen("../../data/crops/sample.dat", "r");
             // fopen("../../data/crops/small-sample.dat", "r");
-        // samples_t *samples = read_binary_samples(infile);
-        // fclose(infile);
+        samples = read_binary_samples(infile);
+        fclose(infile);
         
         env.samples = samples;
         n = samples_total(samples);
         env.params->lambda = 10 * (n + 1);
-        /*
-        print_samples(env.samples);
-        return 0; */
+        
+        /*print_samples(env.samples);
+        return 0; */ 
         
         // for (int t = 0; t <= MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {
-            single_run(t, &env);
+            single_run(t ? mip_seeds + (t - 1) : NULL, 120000, &env);
         }
     }
     

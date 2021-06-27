@@ -629,6 +629,19 @@ int is_path_consistent(sparse_vector_t *, double *);
  * entries that are consistent in the two arguments. */
 int consistency_count(sparse_vector_t *, double *);
 
+
+/* --------------------------- Execution -------------------------------- */
+
+/** Launch a single experimeent */
+void single_run(
+  /** Seed for the random number generator, or NULL if the drand48 does not
+   * need to be reseeded */
+  unsigned int *seed, 
+  /** Time limit in milliseconds */
+  int tm_lim, 
+  env_t *);
+
+
 /* ----------------------------- GLPK ----------------------------------- */
 
 /** Return GLPK solver parameters initialized from the given parameters */
