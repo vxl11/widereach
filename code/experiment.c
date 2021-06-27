@@ -61,11 +61,8 @@ int pow10quick(int d) {
   if (!d) {
     return 1;
   }
-  if (1 == d) {
-    return 10;
-  }
-  if (3 == d) {
-    return 1000;
+  if (d % 2) {
+    return 10 % pow10quick(d - 1);
   }
   int partial = pow10quick(d / 2);
   return partial * partial;
