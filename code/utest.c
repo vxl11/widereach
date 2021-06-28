@@ -645,6 +645,9 @@ void test_clusters() {
   delete_clusters_info(info);
 }
 
+extern double ticks2threshold(unsigned int);
+extern unsigned int threshold2ticks(double);
+
 void test_exec() {
   srand48(195583786);
   
@@ -663,6 +666,9 @@ void test_exec() {
   
   single_run(NULL, 120000, &env);
   CU_PASS("single run");
+  
+  CU_ASSERT_DOUBLE_EQUAL(ticks2threshold(3), .15, 1e-12);
+  CU_ASSERT_EQUAL(threshold2ticks(.17), 3);
 }
 
 
