@@ -89,8 +89,9 @@ int main() {
         // for (int t = 0; t < MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {
             unsigned int *seed = mip_seeds + t;
-            precision_threshold(seed, &env);
-            glp_printf("Theta: %g\n", env.params->theta);
+            // precision_threshold(seed, &env);
+            // precision_scan(seed, &env);
+            // glp_printf("Theta: %g\n", env.params->theta);
             single_run(seed, 120000, &env);
         }
     }
