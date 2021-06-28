@@ -656,19 +656,22 @@ void test_exec() {
   
   env_t env;
   env.samples = samples;
-  env.params = params_default();
-  env.params->theta = 0.8;
-  env.params->branch_target = 0.0;
-  env.params->iheur_method = deep;
-  env.params->lambda = 10 * (n + 1); 
-  env.params->rnd_trials = 100;
-  env.params->rnd_trials_cont = 0;
+  params_t *parms = env.params = params_default();
+  parms->theta = 0.8;
+  parms->branch_target = 0.0;
+  parms->iheur_method = deep;
+  parms->lambda = 10 * (n + 1); 
+  parms->rnd_trials = 100;
+  parms->rnd_trials_cont = 0;
   
   single_run(NULL, 120000, &env);
   CU_PASS("single run");
   
   CU_ASSERT_DOUBLE_EQUAL(ticks2threshold(3), .15, 1e-12);
   CU_ASSERT_EQUAL(threshold2ticks(.17), 3);
+  
+  double theta = precision_threshold(NULL, &env);
+  CU_ASSERT_DOUBLE_EQUAL(theta, parms->theta, 1e-12);
 }
 
 

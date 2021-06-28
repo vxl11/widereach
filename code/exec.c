@@ -69,6 +69,7 @@ double precision_threshold(unsigned int *seed, env_t *env) {
   double obj;
   do {
     parms->theta = ticks2threshold(middle);
+    glp_printf("Search, theta = %g\n", parms->theta);
     obj = single_run(seed, TM_LIM_SEARCH, env);
     if (obj > 0.) {
       advance_search(&middle, &left, right);

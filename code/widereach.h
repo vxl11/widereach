@@ -643,6 +643,13 @@ double single_run(
   int tm_lim, 
   env_t *);
 
+/** Binary search on theta to find the approximately largest value of 
+ * feasible theta */
+double precision_threshold(
+  /** Seed, as in single run */
+  unsigned int *seed, 
+  env_t *);
+
 
 /* ----------------------------- GLPK ----------------------------------- */
 
