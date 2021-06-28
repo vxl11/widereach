@@ -35,7 +35,7 @@ int main() {
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
-    env.params->theta = 0.15;
+    env.params->theta = 0.6;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 400;
@@ -44,7 +44,7 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 3;
+    size_t dimension = 2;
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
@@ -67,28 +67,31 @@ int main() {
         samples_t *samples;
         
         // samples = random_samples(n, n / 2, dimension);
-        // samples = random_sample_clusters(clusters);
-        FILE *infile =
+        samples = random_sample_clusters(clusters);
+        // FILE *infile =
             // fopen("../../data/breast-cancer/wdbc.dat", "r");
-            fopen("../../data/wine-quality/winequality-red.dat", "r");
+            // fopen("../../data/wine-quality/winequality-red.dat", "r");
             // fopen("../../data/wine-quality/winequality-white.dat", "r"); 
             // fopen("../../data/south-german-credit/SouthGermanCredit.dat", "r");
             // fopen("../../data/cross-sell/train-nocat.dat", "r"); */
             // fopen("../../data/crops/sample.dat", "r");
             // fopen("../../data/crops/small-sample.dat", "r");
-        samples = read_binary_samples(infile);
-        fclose(infile);
+        // samples = read_binary_samples(infile);
+        // fclose(infile);
         
         env.samples = samples;
         n = samples_total(samples);
-        env.params->lambda = 10 * (n + 1);
+        env.params->lambda = 20 * (n + 1);
         
         /*print_samples(env.samples);
         return 0; */ 
         
-        // for (int t = 0; t <= MIP_SEEDS; t++) {    
+        // for (int t = 0; t < MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {
-            single_run(t ? mip_seeds + (t - 1) : NULL, 120000, &env);
+            unsigned int *seed = mip_seeds + t;
+            precision_threshold(seed, &env);
+            glp_printf("Theta: %g\n", env.params->theta);
+            single_run(seed, 120000, &env);
         }
     }
     

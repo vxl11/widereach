@@ -644,8 +644,20 @@ double single_run(
   env_t *);
 
 /** Binary search on theta to find the approximately largest value of 
- * feasible theta */
+ * feasible theta and sets it in the env.
+ * 
+ * @return the theta threshold
+ */
 double precision_threshold(
+  /** Seed, as in single run */
+  unsigned int *seed, 
+  env_t *);
+
+/** Scan through all values of theta to find the largest objective value 
+ * 
+ * @return the theta threshold
+ */
+double precision_scan(
   /** Seed, as in single run */
   unsigned int *seed, 
   env_t *);
