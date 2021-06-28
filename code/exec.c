@@ -51,8 +51,12 @@ unsigned int threshold2ticks(double threshold) {
   return (unsigned int) round(threshold * SCALE_SEARCH);
 }
 
-unsigned int midpoint(unsigned int left, unsigned int right) {
-  return (left + right) / 2;
+void advance_search(
+    unsigned int *middle, 
+    unsigned int *moving, 
+    unsigned int hinge) {
+  *moving = *middle;
+  *middle = (*middle + hinge) / 2;
 }
 
 double precision_threshold(unsigned int *seed, env_t *env) {
@@ -67,11 +71,9 @@ double precision_threshold(unsigned int *seed, env_t *env) {
     parms->theta = ticks2threshold(middle);
     obj = single_run(seed, TM_LIM_SEARCH, env);
     if (obj > 0.) {
-      left = middle;
-      middle = midpoint(middle, right);    
+      advance_search(&middle, &left, right);
     } else if (obj < 0.) {
-      right = middle;
-      middle = midpoint(left, middle);
+      advance_search(&middle, &right, left);
     }
   } while (left < right - 1 && obj != 0.);
   
