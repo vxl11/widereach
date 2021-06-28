@@ -1,5 +1,3 @@
-#include <math.h>
-
 #include "widereach.h"
 
 double single_run(unsigned int *seed, int tm_lim, env_t *env) {
@@ -39,73 +37,3 @@ double single_run(unsigned int *seed, int tm_lim, env_t *env) {
     
     return obj;
 }
-
-#define TM_LIM_SEARCH 5000
-#define SCALE_SEARCH 20
-
-double ticks2threshold(unsigned int ticks) {
-  return ticks / (double) SCALE_SEARCH;
-}
-
-unsigned int threshold2ticks(double threshold) {
-  return (unsigned int) round(threshold * SCALE_SEARCH);
-}
-
-void advance_search(
-    unsigned int *middle, 
-    unsigned int *moving, 
-    unsigned int hinge) {
-  *moving = *middle;
-  *middle = (*middle + hinge) / 2;
-}
-
-void advance_max(
-    double *obj_max, 
-    double obj, 
-    unsigned int *theta_max, 
-    unsigned int theta) {
-  if (!*theta_max || obj > *obj_max) {
-    *obj_max = obj;
-    *theta_max = theta;
-  }
-}
-
-double precision_threshold(unsigned int *seed, env_t *env) {
-  params_t *parms = env->params;
-  
-  unsigned int left = 1;
-  unsigned int right = SCALE_SEARCH;
-  unsigned int middle = threshold2ticks(parms->theta);
-  
-  double obj, obj_max;
-  unsigned int theta_max = 0;
-  
-  do {
-    parms->theta = ticks2threshold(middle);
-    obj = single_run(seed, TM_LIM_SEARCH, env);
-    glp_printf("Search, theta = %g, obj = %g\n", parms->theta, obj);
-    
-    if (obj >= 0.) {
-      advance_search(&middle, &left, right);
-    } else {
-      advance_search(&middle, &right, left);
-    }
-    advance_max(&obj_max, obj, &theta_max, middle);
-  } while (right > left + 1); 
-  
-  return parms->theta = ticks2threshold(theta_max);
-}
-
-double precision_scan(unsigned int *seed, env_t *env) {
-  params_t *parms = env->params;
-  double obj, obj_max;
-  unsigned int theta_max = 0;
-  for (unsigned int theta = 1; theta < SCALE_SEARCH; theta++) {
-    parms->theta = ticks2threshold(theta);
-    obj = single_run(seed, TM_LIM_SEARCH, env);
-    glp_printf("Scan, theta = %g, obj = %g\n", parms->theta, obj);
-    advance_max(&obj_max, obj, &theta_max, theta);
-  }
-  return parms->theta = ticks2threshold(theta_max);
-}
-  

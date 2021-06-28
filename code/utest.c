@@ -671,30 +671,6 @@ void test_exec() {
   
   single_run(NULL, 120000, &env);
   CU_PASS("single run");
-  
-  CU_ASSERT_DOUBLE_EQUAL(ticks2threshold(3), .15, 1e-12);
-  CU_ASSERT_EQUAL(threshold2ticks(.17), 3);
-  
-  double obj_max;
-  unsigned int theta_max = 0;
-  advance_max(&obj_max, 10., &theta_max, 1);
-  CU_ASSERT_DOUBLE_EQUAL(obj_max, 10., 1e-12);
-  CU_ASSERT_EQUAL(theta_max, 1);
-  advance_max(&obj_max, 9., &theta_max, 3);
-  CU_ASSERT_DOUBLE_EQUAL(obj_max, 10., 1e-12);
-  CU_ASSERT_EQUAL(theta_max, 1);
-  advance_max(&obj_max, 10., &theta_max, 3);
-  CU_ASSERT_DOUBLE_EQUAL(obj_max, 10., 1e-12);
-  CU_ASSERT_EQUAL(theta_max, 1);
-  advance_max(&obj_max, 11., &theta_max, 3);
-  CU_ASSERT_DOUBLE_EQUAL(obj_max, 11., 1e-12);
-  CU_ASSERT_EQUAL(theta_max, 3);
-  
-  double theta = precision_threshold(NULL, &env);
-  CU_ASSERT_DOUBLE_EQUAL(theta, parms->theta, 1e-12);
-  
-  theta = precision_scan(NULL, &env);
-  CU_ASSERT_DOUBLE_EQUAL(theta, parms->theta, 1e-12);
 }
 
 
