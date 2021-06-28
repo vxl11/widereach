@@ -1,6 +1,8 @@
+#include <math.h>
+
 #include "widereach.h"
 
-void single_run(unsigned int *seed, int tm_lim, env_t *env) {
+double single_run(unsigned int *seed, int tm_lim, env_t *env) {
     samples_t *samples = env->samples;
     env->solution_data = solution_data_init(samples_total(samples));
         
@@ -24,7 +26,8 @@ void single_run(unsigned int *seed, int tm_lim, env_t *env) {
     glp_intopt(p, parm);
     free(parm);
 
-    glp_printf("Objective: %g\n", glp_mip_obj_val(p));
+    double obj = glp_mip_obj_val(p);
+    glp_printf("Objective: %g\n", obj);
     /*
     int index_max = violation_idx(0, env.samples);
     for (int i = 1; i <= index_max; i++) {
@@ -33,4 +36,45 @@ void single_run(unsigned int *seed, int tm_lim, env_t *env) {
 
     glp_delete_prob(p);
     free(delete_solution_data(env->solution_data));
+    
+    return obj;
 }
+
+#define TM_LIM_SEARCH 5000
+#define SCALE_SEARCH 20
+
+double ticks2threshold(unsigned int ticks) {
+  return ticks / (double) SCALE_SEARCH;
+}
+
+unsigned int threshold2ticks(double threshold) {
+  return (unsigned int) round(threshold * SCALE_SEARCH);
+}
+
+unsigned int midpoint(unsigned int left, unsigned int right) {
+  return (left + right) / 2;
+}
+
+double precision_threshold(unsigned int *seed, env_t *env) {
+  params_t *parms = env->params;
+  
+  unsigned int left = 1;
+  unsigned int right = SCALE_SEARCH;
+  unsigned int middle = threshold2ticks(parms->theta);
+  
+  double obj;
+  do {
+    parms->theta = ticks2threshold(middle);
+    obj = single_run(seed, TM_LIM_SEARCH, env);
+    if (obj > 0.) {
+      left = middle;
+      middle = midpoint(middle, right);    
+    } else if (obj < 0.) {
+      right = middle;
+      middle = midpoint(left, middle);
+    }
+  } while (left < right - 1 && obj != 0.);
+  
+  return parms->theta;
+}
+  

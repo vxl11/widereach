@@ -662,6 +662,7 @@ void test_exec() {
   env.params->rnd_trials_cont = 0;
   
   single_run(NULL, 120000, &env);
+  CU_PASS("single run");
 }
 
 

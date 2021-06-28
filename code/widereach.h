@@ -632,8 +632,10 @@ int consistency_count(sparse_vector_t *, double *);
 
 /* --------------------------- Execution -------------------------------- */
 
-/** Launch a single experimeent */
-void single_run(
+/** Launch a single experiment 
+ 
+ @return the objective value at the end of the run */
+double single_run(
   /** Seed for the random number generator, or NULL if the drand48 does not
    * need to be reseeded */
   unsigned int *seed, 
