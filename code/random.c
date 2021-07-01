@@ -60,3 +60,38 @@ void random_unit_vector(size_t d, double *w) {
 	}
 	multiply_scalar(1. / sqrt(length_squared(d, w)), d, w);
 }
+
+void cumulative2density(
+    double side,
+    size_t dimension, 
+    double *cumulative, 
+    double *density) {
+  size_t cumulative_size = dimension - 1;
+  density[0] = cumulative[0];
+  for (size_t i = 1; i < cumulative_size; i++) {
+    density[i] = cumulative[i] - cumulative[i - 1];
+  }
+  density[cumulative_size] = side - cumulative[cumulative_size - 1];
+}
+
+int has_zero(size_t dimension, double *w) {
+  for (size_t i = 0; i < dimension; i++) {
+    if (0. == w[i]) {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+void random_simplex_point(double side, size_t dimension, double *w) {
+  size_t cumulative_size = dimension - 1;
+  double *cumulative;
+  while (1) {
+    cumulative = random_point_affine(cumulative_size, 0., side);
+    cumulative2density(side, dimension, cumulative, w);
+    free(cumulative);
+    if (!has_zero(dimension, w)) {
+      break;
+    }
+  }
+}

@@ -417,6 +417,13 @@ void test_paths() {
     free(path);
 }
 
+extern void cumulative2density(
+    double side,
+    size_t dimension,
+    double *cumulative, 
+    double *density);
+extern int has_zero(size_t, double *);
+
 void test_random() {
     double w[] = { 0., 0. };
     CU_ASSERT_DOUBLE_EQUAL(length_squared(2, w), 0., 1e-9);
@@ -447,6 +454,26 @@ void test_random() {
     pt = random_point_affine(2, .9, .1);
     CU_ASSERT(.9 <= pt[0] && pt[0] < 1.);
     CU_ASSERT(.9 <= pt[1] && pt[1] < 1.);
+    free(pt);
+    
+    pt = CALLOC(3, double);
+    double *cumul = CALLOC(2, double);
+    cumul[0] = .3;
+    cumul[1] = .8;
+    cumulative2density(1., 3, cumul, pt);
+    CU_ASSERT_DOUBLE_EQUAL(pt[0], .3, 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(pt[1], .5, 1e-9);
+    CU_ASSERT_DOUBLE_EQUAL(pt[2], .2, 1e-9);
+    CU_ASSERT_FALSE(has_zero(3, pt));
+    pt[1] = 0.;
+    CU_ASSERT(has_zero(3, pt));
+    free(cumul);
+    free(pt);
+    
+    pt = CALLOC(3, double);
+    random_simplex_point(.5, 3, pt);
+    CU_ASSERT_FALSE(has_zero(3, pt));
+    CU_ASSERT(pt[0] + pt[1] + pt[2] <= .5);
     free(pt);
 }
 

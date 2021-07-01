@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <math.h>
 
 #include "widereach.h"
 #include "helper.h"
@@ -35,7 +36,7 @@ int main() {
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
-    env.params->theta = 0.6;
+    env.params->theta = 0.7;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 400;
@@ -44,7 +45,7 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 2;
+    size_t dimension = 3;
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
@@ -56,8 +57,9 @@ int main() {
     info->side = CALLOC(cluster_cnt, double);
     info->shift[0] = 0.;
     info->side[0] = 1.;
-    info->shift[1] = .9;
-    info->side[1] = .1;
+    info->side[1] = pow(.01, 1. / (double) dimension);
+    info->shift[1] = 1. - info->side[1];
+    
     info->count[0] = info->count[1] = n / 10;
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {
@@ -89,7 +91,7 @@ int main() {
         // for (int t = 0; t < MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {
             unsigned int *seed = mip_seeds + t;
-            // precision_threshold(seed, &env);
+            // precision_threshold(seed, &env); See branch theta-search
             // precision_scan(seed, &env);
             // glp_printf("Theta: %g\n", env.params->theta);
             single_run(seed, 120000, &env);
