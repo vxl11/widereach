@@ -450,14 +450,14 @@ void random_unit_vector(
      *  stores the result of the computation */
     double *w);
 
-/** Generates a random vector in the volume under the simplex */
-void random_simplex_point(
+/** Generates a random vector in the volume under the simplex of the given
+ * dimension. It returns a newly allocated vector.
+ */
+double *random_simplex_point(
     /** Simplex side */
     double side,
     /** Vector size */
-    size_t dimension, 
-    /** Stores the result of the computation */
-    double *w);
+    size_t dimension);
 
 /** Copy a hyperplane of the given dimension into another one.
  * A hyperplane is defined as dimension+1 vector in which the first

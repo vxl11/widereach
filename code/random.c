@@ -83,15 +83,17 @@ int has_zero(size_t dimension, double *w) {
   return 0;
 }
 
-void random_simplex_point(double side, size_t dimension, double *w) {
+double *random_simplex_point(double side, size_t dimension) {
+  double *values = CALLOC(dimension, double);
   size_t cumulative_size = dimension - 1;
   double *cumulative;
   while (1) {
     cumulative = random_point_affine(cumulative_size, 0., side);
-    cumulative2density(side, dimension, cumulative, w);
+    cumulative2density(side, dimension, cumulative, values);
     free(cumulative);
-    if (!has_zero(dimension, w)) {
+    if (!has_zero(dimension, values)) {
       break;
     }
   }
+  return values;
 }

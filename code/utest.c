@@ -470,8 +470,7 @@ void test_random() {
     free(cumul);
     free(pt);
     
-    pt = CALLOC(3, double);
-    random_simplex_point(.5, 3, pt);
+    pt = random_simplex_point(.5, 3);
     CU_ASSERT_FALSE(has_zero(3, pt));
     CU_ASSERT(pt[0] + pt[1] + pt[2] <= .5);
     free(pt);
