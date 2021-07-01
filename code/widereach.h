@@ -66,6 +66,14 @@ size_t positives(const samples_t *);
 /** Return the number of negative samples in a binary sample set */
 size_t negatives(const samples_t *);
 
+/** Sets the count samples in the given class with the given label
+ * to be uniformly distributed over the hypercube */
+void set_sample_class(
+		samples_t *samples, 
+		size_t class, 
+		int label, 
+		size_t count);
+
 /** Generates random binary samples in the unit square in the given dimension.
  *
  * The drand48(3) functions must have been seeded before invoking this method.

@@ -20,3 +20,19 @@ void set_sample_class_simplex(
 	samples->samples[class] = 
       random_simplex_points(count, side, samples->dimension);
 }
+
+samples_t *random_simplex_samples(
+		size_t count, size_t positives, size_t dimension, double side) {
+	samples_t *samples = CALLOC(1, samples_t);
+	samples->dimension = dimension;
+	samples->class_cnt = 2;
+	samples->label = CALLOC(2, int);
+	samples->count = CALLOC(2, size_t);
+	samples->samples = CALLOC(2, double **);
+	if (positives > count) {
+		positives = count;
+	}
+	set_sample_class(samples, 0, -1, count - positives);
+	set_sample_class_simplex(samples, 1,  1, positives, side);
+	return samples;
+}
