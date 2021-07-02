@@ -712,7 +712,7 @@ extern void set_sample_class_simplex(
 
 void test_simplex() {
     // Test random_points
-    double **points = random_simplex_points(3, .1, 2);
+    double **points = random_simplex_points(7, .1, 2);
     double norm;
     for (size_t i = 0; i < 3; i++) {
       norm = 0.;
@@ -732,9 +732,9 @@ void test_simplex() {
 	samples->label = CALLOC(1, int);
 	samples->count = CALLOC(1, size_t);
 	samples->samples = CALLOC(1, double **);
-    set_sample_class_simplex(samples, 0, -1, 2, .1); 
+    set_sample_class_simplex(samples, 0, -1, 5, .1); 
     CU_ASSERT_EQUAL(samples->label[0], -1);
-    CU_ASSERT_EQUAL(samples->count[0], 2);        
+    CU_ASSERT_EQUAL(samples->count[0], 5);        
     norm = 0.;
     for (size_t j = 0; j < 2; j++) {
       norm += samples->samples[0][1][j];

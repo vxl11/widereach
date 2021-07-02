@@ -3,9 +3,13 @@
 
 double **random_simplex_points(size_t count, double side, size_t dimension) {
 	double **samples = CALLOC(count, double *);
-	for (size_t j = 0; j < count; j++) {
+    size_t count_simplex = count / 2;
+	for (size_t j = 0; j < count_simplex; j++) {
 		samples[j] = random_simplex_point(side, dimension);
 	}
+	for (size_t j = count_simplex; j < count; j++) {
+      samples[j] = random_point(dimension);
+    }
 	return samples;
 }
 
@@ -33,7 +37,6 @@ samples_t *random_simplex_samples(
 		positives = count;
 	}
 	set_sample_class(samples, 0, -1, count - positives);
-    // TODO add random positives
 	set_sample_class_simplex(samples, 1,  1, positives, side);
 	return samples;
 }
