@@ -699,6 +699,50 @@ void test_exec() {
   CU_PASS("single run");
 }
 
+extern double **random_simplex_points(
+    size_t count, 
+    double side, 
+    size_t dimension);
+extern void set_sample_class_simplex(
+		samples_t *samples, 
+		size_t class, 
+		int label, 
+		size_t count,
+        double side);
+
+void test_simplex() {
+    // Test random_points
+    double **points = random_simplex_points(3, .1, 2);
+    double norm;
+    for (size_t i = 0; i < 3; i++) {
+      norm = 0.;
+      for (size_t j = 0; j < 2; j++) {
+          CU_ASSERT(points[i][j] >= 0.);
+          norm += points[i][j];
+      }
+      CU_ASSERT(norm <= .1);
+      free(points[i]);
+    }
+    free(points);
+    
+    // Test set_sample_class_simplex
+    samples_t *samples = CALLOC(1, samples_t);
+    samples->dimension = 2;
+	samples->class_cnt = 1;
+	samples->label = CALLOC(1, int);
+	samples->count = CALLOC(1, size_t);
+	samples->samples = CALLOC(1, double **);
+    set_sample_class_simplex(samples, 0, -1, 2, .1); 
+    CU_ASSERT_EQUAL(samples->label[0], -1);
+    CU_ASSERT_EQUAL(samples->count[0], 2);        
+    norm = 0.;
+    for (size_t j = 0; j < 2; j++) {
+      norm += samples->samples[0][1][j];
+    }
+    CU_ASSERT(norm <= .1);
+    free(delete_samples(samples));
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -764,6 +808,10 @@ int main() {
     // Clusters
     CU_pSuite clusters = CU_add_suite("clusters", NULL, NULL);
 	CU_add_test(clusters, "clusters", test_clusters);
+    
+    // Simplex
+    CU_pSuite simplex = CU_add_suite("simplex", NULL, NULL);
+	CU_add_test(simplex, "simplex", test_simplex);
 
     // Execution support
     CU_pSuite exec = CU_add_suite("execution", NULL, NULL);

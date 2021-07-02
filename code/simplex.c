@@ -33,6 +33,7 @@ samples_t *random_simplex_samples(
 		positives = count;
 	}
 	set_sample_class(samples, 0, -1, count - positives);
+    // TODO add random positives
 	set_sample_class_simplex(samples, 1,  1, positives, side);
 	return samples;
 }
