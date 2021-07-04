@@ -244,6 +244,21 @@ void read_classes(
 samples_t *read_binary_samples(FILE *);
 
 
+/* ---------------------- Simplexes --------------------------------- */
+
+/** Generates random binary samples in the simplex in the given dimension.
+ * Function arguments are similar to random_samples, plus the simplex side.
+ *
+ * The drand48(3) functions must have been seeded before invoking this method.
+ *
+ * @return A newly allocated group of samples
+ **/
+samples_t *random_simplex_samples(
+  size_t count, size_t positives, size_t dimension, 
+  /** Simplex side length */
+  double side);
+
+
 /* ---------------------- Sparse Vectors ---------------------------- */
 
 /** Sparse vector in GLPK format */

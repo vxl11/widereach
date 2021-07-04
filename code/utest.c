@@ -741,6 +741,20 @@ void test_simplex() {
     }
     CU_ASSERT(norm <= .1);
     free(delete_samples(samples));
+    
+    samples = random_simplex_samples(7, 5, 2, .1);
+	CU_ASSERT_EQUAL(samples->dimension, 2);
+	CU_ASSERT_EQUAL(samples_total(samples), 7);
+	CU_ASSERT_EQUAL(positives(samples), 5);
+	CU_ASSERT_EQUAL(negatives(samples), 2);
+    for (size_t i = 0; i < 2; i++) {
+      norm = 0.;
+      for (size_t j = 0; j < 2; j++) {
+        norm += samples->samples[1][i][j];
+      }
+      CU_ASSERT(norm <= .1);
+    }
+    free(delete_samples(samples));
 }
 
 
