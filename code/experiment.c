@@ -32,7 +32,23 @@ int pow10quick(int d) {
   return partial * partial;
 }
 
+#define FACT_MAX 8
+unsigned int factorial[FACT_MAX];
+
+void initialize_factorial() {
+  factorial[0] = 1.;
+  for (size_t i = 1; i < FACT_MAX; i++) {
+    factorial[i] = i * factorial[i - 1];
+  }
+}
+
+double fact(unsigned int n) {
+  return (double) factorial[n];
+}
+
 int main() {
+    initialize_factorial();
+    
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
@@ -45,7 +61,7 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 3;
+    size_t dimension = 2;
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
@@ -69,7 +85,9 @@ int main() {
         samples_t *samples;
         
         // samples = random_samples(n, n / 2, dimension);
-        samples = random_sample_clusters(clusters);
+        // samples = random_sample_clusters(clusters);
+        double side = sqrt(fact(dimension) / fact(FACT_MAX - 1));
+        samples = random_simplex_samples(n, n / 5, dimension, side);
         // FILE *infile =
             // fopen("../../data/breast-cancer/wdbc.dat", "r");
             // fopen("../../data/wine-quality/winequality-red.dat", "r");
@@ -85,8 +103,8 @@ int main() {
         n = samples_total(samples);
         env.params->lambda = 20 * (n + 1);
         
-        /*print_samples(env.samples);
-        return 0; */ 
+        print_samples(env.samples);
+        return 0; 
         
         // for (int t = 0; t < MIP_SEEDS; t++) {    
         for (int t = 0; t < 1; t++) {

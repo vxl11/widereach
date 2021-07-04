@@ -66,12 +66,10 @@ void cumulative2density(
     size_t dimension, 
     double *cumulative, 
     double *density) {
-  size_t cumulative_size = dimension - 1;
   density[0] = cumulative[0];
-  for (size_t i = 1; i < cumulative_size; i++) {
+  for (size_t i = 1; i < dimension; i++) {
     density[i] = cumulative[i] - cumulative[i - 1];
   }
-  density[cumulative_size] = side - cumulative[cumulative_size - 1];
 }
 
 int has_zero(size_t dimension, double *w) {
@@ -83,12 +81,24 @@ int has_zero(size_t dimension, double *w) {
   return 0;
 }
 
+int doublecmp(const void *a, const void *b) {
+  double x = *((double *) a);
+  double y = *((double *) b);
+  if (x > y) {
+    return 1;
+  } 
+  if (x == y) {
+    return 0;
+  }
+  return -1;
+}
+
 double *random_simplex_point(double side, size_t dimension) {
   double *values = CALLOC(dimension, double);
-  size_t cumulative_size = dimension - 1;
   double *cumulative;
   while (1) {
-    cumulative = random_point_affine(cumulative_size, 0., side);
+    cumulative = random_point_affine(dimension, 0., side);
+    qsort(cumulative, dimension, sizeof(double), doublecmp);
     cumulative2density(side, dimension, cumulative, values);
     free(cumulative);
     if (!has_zero(dimension, values)) {
