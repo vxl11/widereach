@@ -251,6 +251,7 @@ int *sorted_by_violation(double *hyperplane, env_t *env) {
         double dist_dir = 
             // sample_violation(loc, samples, hyperplane, precision[class]);
             fabs(distance(loc, samples, hyperplane, precision[class]));
+        free(loc);
         if (dist_dir < 0.) {
             dist_dir = DBL_MAX;
         }
