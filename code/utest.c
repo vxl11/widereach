@@ -553,6 +553,7 @@ void test_read_samples() {
     fclose(infile);
     
     samples_t *samples = CALLOC(1, samples_t);
+    samples->class_cnt = 2;
     samples->dimension = 3;
     size_t *count = samples->count = CALLOC(2, size_t);    
     count[0] = 0;
@@ -571,7 +572,6 @@ void test_read_samples() {
     free(s);
     fclose(infile);
 
-    delete_samples(samples);
     samples->class_cnt = 2;
     samples->label = NULL;
     count = samples->count = CALLOC(2, size_t); 
