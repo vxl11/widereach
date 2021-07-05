@@ -562,6 +562,8 @@ void test_read_samples() {
     CU_ASSERT_DOUBLE_EQUAL(s[0][0], 1., 1e-12);
     CU_ASSERT_DOUBLE_EQUAL(s[1][1], 5., 1e-12);
     CU_ASSERT_DOUBLE_EQUAL(s[1][2], 6., 1e-12);
+    free(s[0]);
+    free(s[1]);
     free(s);
     fclose(infile);
 
@@ -713,6 +715,8 @@ void test_exec() {
   
   single_run(NULL, 120000, &env);
   CU_PASS("single run");
+  free(delete_samples(samples));
+  free(parms);
 }
 
 extern double **random_simplex_points(
