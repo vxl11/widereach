@@ -519,6 +519,8 @@ void test_cuts() {
     sparse_vector_t *rhs;
     double lhs;
     interdiction_cut(pth, interdicted, &rhs, &lhs);
+    free(delete_sparse_vector(pth));
+    free(delete_sparse_vector(interdicted));
     CU_ASSERT_EQUAL(rhs->len, 5);
     CU_ASSERT_EQUAL(rhs->ind[1], 2);
     CU_ASSERT_DOUBLE_EQUAL(rhs->val[1], 1., 1e-12);
