@@ -540,7 +540,7 @@ void test_cuts() {
 void test_read_samples() {
     char instring[INSIZE];
     FILE *infile = fmemopen(instring, 0, "r");
-    read_vector(infile, 0);
+    free(read_vector(infile, 0));
     fclose(infile);
     
     int inptr = snprintf(instring, INSIZE, "%g %g %g\n", 1., 2., 3.);
@@ -570,6 +570,7 @@ void test_read_samples() {
     free(s);
     fclose(infile);
 
+    delete_samples(samples);
     count[0] = 0;
     infile = fmemopen(instring, INSIZE, "r");
     read_classes(infile, samples);
