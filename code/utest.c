@@ -744,6 +744,10 @@ void test_simplex() {
       CU_ASSERT(norm < .1);
       free(points[i]);
     }
+    for (size_t i = 3; i < 7; i++) {
+      free(points[i]);
+    }
+
     free(points);
     
     // Test set_sample_class_simplex

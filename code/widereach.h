@@ -783,7 +783,7 @@ typedef struct {
 /** Additional data to be stored in each tree node */
 typedef struct {
 	/** Flag denoting whether the top level node data has been initialized
-     * (branch data has only been initialized to the default state */
+     * (branch data has only been initialized to the default state) */
 	int initialized;
     /** Branching data */
     branch_data_t branch_data;
