@@ -338,6 +338,7 @@ void test_iheur() {
 	CU_ASSERT_DOUBLE_EQUAL(Y, 1., 1e-12);
 
 	free(delete_samples(samples));
+    free(env.params);
 	free(params);
 }
 
