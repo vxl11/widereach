@@ -142,6 +142,8 @@ double *fractional_solution(glp_prob *p, samples_t *samples) {
     return solution;
 }
 
+/* This function should be refactored because it had way too many memory
+ * leaks. */
 void iheur(glp_tree *t, env_t *env) {
     int curr_node = glp_ios_curr_node(t);
     #ifdef EXPERIMENTAL
@@ -160,12 +162,11 @@ void iheur(glp_tree *t, env_t *env) {
     // Attempt to find an initial solution based on a random hyperplane
     solution_data_t *solution_data = env->solution_data;
     double *random_solution = blank_solution(samples);
+    double *h = best_random_hyperplane(NULL == solution_data->integer_solution, 
+                                       env);
     double random_objective_value = 
-            hyperplane_to_solution(
-                best_random_hyperplane(NULL == solution_data->integer_solution, 
-                                       env), 
-                random_solution, 
-                env);
+      hyperplane_to_solution(h, random_solution, env);
+    free(h);
     if (random_objective_value > value) {
         free(solution);
         solution = random_solution;
