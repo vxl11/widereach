@@ -205,7 +205,7 @@ void test_indexing() {
     CU_ASSERT_DOUBLE_EQUAL(sparse->val[1], 1., 1e-12);
     CU_ASSERT_EQUAL(sparse->ind[2], 7);
     CU_ASSERT_DOUBLE_EQUAL(sparse->val[2], 2., 1e-12);
-    free(sparse);
+    free(delete_sparse_vector(sparse));
     
     double hyperplane[3] = { 1., 1., -1. };
     env_t env;
@@ -414,7 +414,7 @@ void test_paths() {
     append(path, 1, .1);
     CU_ASSERT_FALSE(is_path_consistent(path, a));
     CU_ASSERT_EQUAL(consistency_count(path, a), 2);
-    free(path);
+    free(delete_sparse_vector(path));
 }
 
 extern int doublecmp(const void *, const void *);
@@ -503,6 +503,9 @@ void test_hyperplane() {
 	env.samples = random_samples(5, 3, 2);
 	env.solution_data = solution_data_init(5);
     free(best_random_hyperplane(0, &env));
+    free(delete_solution_data(env.solution_data));
+    free(delete_samples(env.samples));
+    free(env.params);
 }
 
 void test_cuts() {
