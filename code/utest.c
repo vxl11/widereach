@@ -570,6 +570,8 @@ void test_read_samples() {
     free(s[0]);
     free(s[1]);
     free(s);
+    free(samples->samples);
+    free(samples->count);
     fclose(infile);
 
     samples->class_cnt = 2;
