@@ -554,7 +554,8 @@ void test_read_samples() {
     
     samples_t *samples = CALLOC(1, samples_t);
     samples->dimension = 3;
-    size_t *count = samples->count = CALLOC(2, size_t);
+    size_t *count = samples->count = CALLOC(2, size_t);    
+    count[0] = 0;
     count[1] = 2;
     samples->samples = CALLOC(2, double **);
     inptr += snprintf(instring + inptr, INSIZE - inptr, 
@@ -571,7 +572,12 @@ void test_read_samples() {
     fclose(infile);
 
     delete_samples(samples);
+    samples->class_cnt = 2;
+    samples->label = NULL;
+    count = samples->count = CALLOC(2, size_t); 
     count[0] = 0;
+    count[1] = 2;
+    samples->samples = CALLOC(2, double **);
     infile = fmemopen(instring, INSIZE, "r");
     read_classes(infile, samples);
     s = samples->samples[1];
@@ -587,7 +593,7 @@ void test_read_samples() {
     infile = fmemopen(instring, INSIZE, "r");
     samples = read_binary_samples(infile);
     CU_ASSERT_EQUAL(samples->class_cnt, 2);
-    CU_ASSERT_DOUBLE_EQUAL(s[0][1], 2., 1e-12);
+    CU_ASSERT_DOUBLE_EQUAL(samples->samples[1][0][1], 2., 1e-12);
     fclose(infile);
     free(delete_samples(samples));
 }

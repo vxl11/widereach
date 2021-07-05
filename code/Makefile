@@ -16,7 +16,7 @@ OBJ = samples.o sparse_vector.o env.o indexing.o glpk.o params.o callback.o \
       simplex.o
 UOBJ = utest.o
 
-.PHONY: all coverage clean dependencies
+.PHONY: all coverage clean dependencies 
 
 all:
 	echo $(CFLAGS)
@@ -27,7 +27,7 @@ utest:	$(UOBJ) $(OBJ) $(BASE)
 
 coverage:	utest
 	utest; gcovr
-
+	
 itest:	$(OBJ) $(BASE) itest.o
 	$(CC) $(CFLAGS) -o $@ $(OBJ) itest.o $(LIBS) -fopenmp
 
