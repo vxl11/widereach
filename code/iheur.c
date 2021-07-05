@@ -91,11 +91,12 @@ double iheur_round(
 		env_t *env) {
 	samples_t *samples = env->samples;
 	sample_locator_t *loc = locator(i, samples);
+    double solution_rounded;
 	if (loc->class < 0) {
-		return solution;
-	}
-
-	double solution_rounded = rounded(loc, solution, plane, X, Y, env);
+		solution_rounded = solution;
+	} else {
+      solution_rounded = rounded(loc, solution, plane, X, Y, env);
+    }
 	free(loc); 
 	return solution_rounded;
 }
