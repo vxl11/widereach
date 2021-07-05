@@ -32,7 +32,7 @@ int pow10quick(int d) {
   return partial * partial;
 }
 
-#define FACT_MAX 8
+#define FACT_MAX 9
 unsigned int factorial[FACT_MAX];
 
 void initialize_factorial() {
@@ -52,7 +52,7 @@ int main() {
     env_t env;
     env.params = params_default();
     // env.params->theta = 0.99;
-    env.params->theta = 0.7;
+    env.params->theta = 0.95;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 400;
@@ -78,8 +78,8 @@ int main() {
     
     info->count[0] = info->count[1] = n / 10;
     
-    // for (int s = 0; s < SAMPLE_SEEDS; s++) {
-    for (int s = 0; s < 1; s++) {
+    for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    // for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
     
         samples_t *samples;
@@ -103,17 +103,18 @@ int main() {
         n = samples_total(samples);
         env.params->lambda = 20 * (n + 1);
         
-        print_samples(env.samples);
-        return 0; 
+        /* print_samples(env.samples);
+        return 0; */ 
         
-        // for (int t = 0; t < MIP_SEEDS; t++) {    
-        for (int t = 0; t < 1; t++) {
+        for (int t = 0; t < MIP_SEEDS; t++) {    
+        // for (int t = 0; t < 1; t++) {
             unsigned int *seed = mip_seeds + t;
             // precision_threshold(seed, &env); See branch theta-search
             // precision_scan(seed, &env);
             // glp_printf("Theta: %g\n", env.params->theta);
             single_run(seed, 120000, &env);
         }
+        free(delete_samples(samples));
     }
     
     delete_clusters_info(clusters);
