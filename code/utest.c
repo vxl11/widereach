@@ -262,6 +262,7 @@ void test_indexing() {
 	CU_ASSERT_EQUAL(v->ind[2], 5);
 	CU_ASSERT_DOUBLE_EQUAL(v->val[2], 1., 1e-12);
 	free(delete_sparse_vector(v));
+    free(delete_samples(samples));
     free(env.params);
 }  
 
