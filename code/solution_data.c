@@ -13,6 +13,8 @@ solution_data_t *solution_data_init(size_t size) {
 
 solution_data_t *delete_solution_data(solution_data_t *data) {
 	free(data->rank);
+    free(data->integer_solution);
+    free(data->violation_index);
 	return data;
 }
 
