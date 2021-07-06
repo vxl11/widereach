@@ -244,6 +244,13 @@ node_data_t *parent_data(int node, glp_tree *t) {
 }
 
 
+node_data_t *set_flags(node_data_t *data) {
+  data->cuts_data.initialized = 0;
+  data->initialized = 1;
+  return data;
+}
+
+
 node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     // Find and initialize node data
     node_data_t *data = (node_data_t *) glp_ios_node_data(t, node);
@@ -253,8 +260,7 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     node_data_t *data_parent = parent_data(node, t);
     if (NULL == data_parent) {
         branch_data->primary_direction = 1;
-        data->initialized = 1;
-        return data;
+        return set_flags(data);
     }
 
     branch_data_t *branch_data_parent = &(data_parent->branch_data);
@@ -265,8 +271,7 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     initialize_count(branch_data->directional_cnt, 
                      branch_data_parent->directional_cnt);
         
-    data->initialized = 1;
-    return data;
+    return set_flags(data);
 }
 
 
