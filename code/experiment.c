@@ -119,4 +119,5 @@ int main() {
     
     delete_clusters_info(clusters);
     delete_clusters_info(clusters + 1);
+    free(env.params);
 }
