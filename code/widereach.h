@@ -950,7 +950,8 @@ void interdiction_cut(
     sparse_vector_t *interdicted,
     /** A Boolean flag denoting whether the cuts data has been initialized */
     int *initalized,
-    /** Right hand side of the resulting cutting plane */
+    /** Right hand side of the resulting cutting plane. 
+     * The argument *rhs must be null. */
     sparse_vector_t **rhs,
     /** Left hand side of the resulting cutting plane */
     double *lhs);
