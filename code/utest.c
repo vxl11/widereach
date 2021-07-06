@@ -523,6 +523,8 @@ void test_cuts() {
     double lhs;
     int initialized = 0;
     interdiction_cut(pth, interdicted, &initialized, &rhs, &lhs);
+    CU_ASSERT_EQUAL(initialized, 1);
+    interdiction_cut(pth, interdicted, &initialized, &rhs, &lhs);
     free(delete_sparse_vector(pth));
     free(delete_sparse_vector(interdicted));
     CU_ASSERT_EQUAL(rhs->len, 5);

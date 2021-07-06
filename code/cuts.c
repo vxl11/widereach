@@ -49,9 +49,6 @@ void interdiction_cut(
     sparse_vector_t *rhs_local = sparse_vector_blank(pth->len + bnd);
     append_to_rhs(rhs_local, interdicted, identity, 0.);
     append_to_rhs(rhs_local, pth, discriminant, bnd);
-    /* if (*initialized) {
-      free(rhs);
-    }*/
     *rhs = rhs_local;
     *initialized = 1;
     *lhs = 
