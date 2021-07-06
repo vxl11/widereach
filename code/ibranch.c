@@ -339,8 +339,10 @@ void settle_cut(
         glp_tree *t) {
     if (interdicted->len > 0) {
         glp_assert(NULL == data->rhs);
-        interdiction_cut(pth, interdicted, 
-                         &(data->initialized), &(data->rhs), &(data->lhs));
+        /* rhs and lhs were used by icutgen, which has been replaced by
+         * irowgen
+         * interdiction_cut(pth, interdicted, 
+                         &(data->initialized), &(data->rhs), &(data->lhs)); */
     }
 }
 
