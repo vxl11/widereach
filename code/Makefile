@@ -16,7 +16,7 @@ OBJ = samples.o sparse_vector.o env.o indexing.o glpk.o params.o callback.o \
       simplex.o
 UOBJ = utest.o
 
-.PHONY: all coverage clean dependencies 
+.PHONY: all coverage clean dependencies valgrind
 
 all:
 	echo $(CFLAGS)
@@ -36,6 +36,9 @@ experiment:	$(OBJ) $(BASE) experiment.o
 
 hyperrnd:	$(OBJ) $(BASE) hyperrnd.o
 	$(CC) $(CFLAGS) -o $@ $(OBJ) hyperrnd.o $(LIBS) -fopenmp
+	
+valgrind:	utest
+	csh -c 'valgrind --tool=memcheck --leak-check=yes utest | & less -p Summary '
 
 dependencies:
 	sudo apt install libcunit1-dev glpk-doc libglpk-dev
