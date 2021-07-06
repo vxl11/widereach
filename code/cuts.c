@@ -42,14 +42,18 @@ void append_to_rhs(
 void interdiction_cut(
         sparse_vector_t *pth, 
         sparse_vector_t *interdicted,
-        int initialized,
+        int *initialized,
         sparse_vector_t **rhs,
         double *lhs) {
     int bnd = interdicted->len;
     sparse_vector_t *rhs_local = sparse_vector_blank(pth->len + bnd);
     append_to_rhs(rhs_local, interdicted, identity, 0.);
     append_to_rhs(rhs_local, pth, discriminant, bnd);
+    /* if (*initialized) {
+      free(rhs);
+    }*/
     *rhs = rhs_local;
+    *initialized = 1;
     *lhs = 
         bnd * vector_count(pth, positive_direction) - 
         vector_count(interdicted, negative_direction);

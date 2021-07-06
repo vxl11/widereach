@@ -949,7 +949,7 @@ void interdiction_cut(
     /** Samples that are interdicted by the path */
     sparse_vector_t *interdicted,
     /** A Boolean flag denoting whether the cuts data has been initialized */
-    int initalized,
+    int *initalized,
     /** Right hand side of the resulting cutting plane */
     sparse_vector_t **rhs,
     /** Left hand side of the resulting cutting plane */
