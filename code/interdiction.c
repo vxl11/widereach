@@ -28,6 +28,7 @@ glp_prob *append_sample(glp_prob *p, sample_locator_t *loc, env_t *env) {
     // Add the right hand side
     int row_idx = glp_add_rows(p, 1);
     glp_set_mat_row(p, row_idx, v->len, v->ind, v->val);
+    free(delete_sparse_vector(v));
     
     // Add the left hand side
     params_t *params = env->params;

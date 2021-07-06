@@ -42,6 +42,7 @@ void append_to_rhs(
 void interdiction_cut(
         sparse_vector_t *pth, 
         sparse_vector_t *interdicted,
+        int initialized,
         sparse_vector_t **rhs,
         double *lhs) {
     int bnd = interdicted->len;

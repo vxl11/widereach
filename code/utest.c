@@ -521,7 +521,7 @@ void test_cuts() {
     append(interdicted, 5, -1.);
     sparse_vector_t *rhs;
     double lhs;
-    interdiction_cut(pth, interdicted, &rhs, &lhs);
+    interdiction_cut(pth, interdicted, 0, &rhs, &lhs);
     free(delete_sparse_vector(pth));
     free(delete_sparse_vector(interdicted));
     CU_ASSERT_EQUAL(rhs->len, 5);

@@ -339,7 +339,7 @@ void settle_cut(
         glp_tree *t) {
     if (interdicted->len > 0) {
         glp_assert(NULL == data->rhs);
-        interdiction_cut(pth, interdicted, &(data->rhs), &(data->lhs));
+        interdiction_cut(pth, interdicted, 0, &(data->rhs), &(data->lhs));
     }
 }
 

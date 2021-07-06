@@ -771,6 +771,8 @@ int child_direction(child_data_t *, int node);
 
 /** Data regarding lazy constraints and cutting planes. */
 typedef struct {
+    /** Flag denoting whether the cuts data has been initialized */
+    int initialized;
     /** A count of valid inequalities introduced at this node or at one of 
      * its ancestors */
     int inequality_cnt;
@@ -946,6 +948,8 @@ void interdiction_cut(
     sparse_vector_t *pth, 
     /** Samples that are interdicted by the path */
     sparse_vector_t *interdicted,
+    /** A Boolean flag denoting whether the cuts data has been initialized */
+    int initalized,
     /** Right hand side of the resulting cutting plane */
     sparse_vector_t **rhs,
     /** Left hand side of the resulting cutting plane */
