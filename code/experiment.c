@@ -20,6 +20,8 @@ unsigned int mip_seeds[MIP_SEEDS] = {
     83898336, 41744843, 153111583, 318522606, 952537249, 298531860
 };
 
+unsigned long int validation_seed = 593587157;
+
 // Compute 10^d, where d is even or d=1, 3
 int pow10quick(int d) {
   if (!d) {
@@ -61,7 +63,7 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 2;
+    size_t dimension = 8;
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
@@ -109,7 +111,7 @@ int main() {
         
         // for (int t = 0; t < MIP_SEEDS; t++) {    
         // for (int t = 0; t < 1; t++) {
-        for (int t = 0; t < 2; t++) {
+        for (int t = 0; t < 6; t++) {
             glp_printf("Mip seed: %u\n", mip_seeds[s]);
             unsigned int *seed = mip_seeds + t;
             // precision_threshold(seed, &env); See branch theta-search
