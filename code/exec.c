@@ -1,4 +1,5 @@
 #include "widereach.h"
+#include "helper.h"
 
 double single_run(unsigned int *seed, int tm_lim, env_t *env) {
     samples_t *samples = env->samples;
@@ -24,8 +25,14 @@ double single_run(unsigned int *seed, int tm_lim, env_t *env) {
     glp_intopt(p, parm);
     free(parm);
 
+    /* size_t dimension = samples->dimension;
+    double *result = CALLOC(dimension + 2, double);
+    double *h = hyperplane(p, samples);
+    copy_hyperplane(dimension, result, h);
+    free(h); */
     double obj = glp_mip_obj_val(p);
     glp_printf("Objective: %g\n", obj);
+    // result[dimension + 1] = obj;
     /*
     int index_max = violation_idx(0, env.samples);
     for (int i = 1; i <= index_max; i++) {

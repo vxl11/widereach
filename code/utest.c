@@ -729,6 +729,7 @@ void test_exec() {
   
   single_run(NULL, 120000, &env);
   CU_PASS("single run");
+
   free(delete_samples(samples));
   free(parms);
 }

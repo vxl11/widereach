@@ -63,7 +63,7 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 8;
+    size_t dimension = 2;
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
@@ -80,6 +80,14 @@ int main() {
     
     info->count[0] = info->count[1] = n / 10;
     
+    double side = sqrt(fact(dimension) / fact(FACT_MAX - 1));
+    
+    int nval = 10000;
+    srand48(validation_seed);
+    samples_t *samples_validation = 
+      random_simplex_samples(nval, nval / 5, dimension, side);
+    double *h;
+    
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {
     for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
@@ -89,7 +97,6 @@ int main() {
         
         // samples = random_samples(n, n / 2, dimension);
         // samples = random_sample_clusters(clusters);
-        double side = sqrt(fact(dimension) / fact(FACT_MAX - 1));
         samples = random_simplex_samples(n, n / 5, dimension, side);
         // FILE *infile =
             // fopen("../../data/breast-cancer/wdbc.dat", "r");
@@ -110,18 +117,22 @@ int main() {
         return 0; */ 
         
         // for (int t = 0; t < MIP_SEEDS; t++) {    
-        // for (int t = 0; t < 1; t++) {
-        for (int t = 0; t < 6; t++) {
+        for (int t = 0; t < 1; t++) {
+        // for (int t = 0; t < 6; t++) {
             glp_printf("Mip seed: %u\n", mip_seeds[s]);
             unsigned int *seed = mip_seeds + t;
             // precision_threshold(seed, &env); See branch theta-search
             // precision_scan(seed, &env);
             // glp_printf("Theta: %g\n", env.params->theta);
-            single_run(seed, 120000, &env);
+            h = single_run(seed, 120000, &env);
+            glp_printf("Validation: %g\n", 
+                       hyperplane_to_solution(h, NULL, &env));
+            free(h);
         }
         free(delete_samples(samples));
     }
     
+    free(delete_samples(samples_validation));
     delete_clusters_info(clusters);
     delete_clusters_info(clusters + 1);
     free(env.params);

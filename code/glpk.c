@@ -274,12 +274,23 @@ node_data_t *initialize_data(int node, glp_tree *t, samples_t *samples) {
     return set_flags(data);
 }
 
+double *solution_values_generic(int node, glp_prob *p, 
+                                double (*getter)(glp_prob *, int)) {
+  int n = glp_get_num_cols(p);
+  double *lp = CALLOC(n + 1, double);
+  for (int i = 1; i <= n; i++) {
+    lp[i] = getter(p, i);
+  }
+  return lp;
+}
 
 double *solution_values(int node, glp_prob *p) {
+  return solution_values_generic(node, p, glp_get_col_prim);
+  /*
     int n = glp_get_num_cols(p);
     double *lp = CALLOC(n + 1, double);
     for (int i = 1; i <= n; i++) {
         lp[i] = glp_get_col_prim(p, i);
     }
-    return lp;
+    return lp; */
 }
