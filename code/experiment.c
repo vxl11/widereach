@@ -51,8 +51,8 @@ int main() {
     
     env_t env;
     env.params = params_default();
-    // env.params->theta = 0.99;
-    env.params->theta = 0.95;
+    env.params->theta = 0.99;
+    // env.params->theta = 0.95;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 400;
@@ -78,9 +78,10 @@ int main() {
     
     info->count[0] = info->count[1] = n / 10;
     
-    for (int s = 0; s < SAMPLE_SEEDS; s++) {
-    // for (int s = 0; s < 1; s++) {
+    // for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
+        glp_printf("Sample seed: %lu\n", samples_seeds[s]);
     
         samples_t *samples;
         
@@ -101,13 +102,15 @@ int main() {
         
         env.samples = samples;
         n = samples_total(samples);
-        env.params->lambda = 20 * (n + 1);
+        env.params->lambda = 100 * (n + 1);
         
         /* print_samples(env.samples);
         return 0; */ 
         
-        for (int t = 0; t < MIP_SEEDS; t++) {    
+        // for (int t = 0; t < MIP_SEEDS; t++) {    
         // for (int t = 0; t < 1; t++) {
+        for (int t = 0; t < 2; t++) {
+            glp_printf("Mip seed: %u\n", mip_seeds[s]);
             unsigned int *seed = mip_seeds + t;
             // precision_threshold(seed, &env); See branch theta-search
             // precision_scan(seed, &env);
