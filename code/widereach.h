@@ -899,11 +899,11 @@ int compare_signature(const node_signature_t *, const node_signature_t *);
 
 /** Return a new array containing the value of the decision variables in
  * the solution of the given problem. */
-double *solution_values(int node, glp_prob *);
+double *solution_values(glp_prob *);
 
 /** Return a new array containing the value of the decision variables in
  * the MIP solution of the given problem. */
-double *solution_values_mip(int node, glp_prob *);
+double *solution_values_mip(glp_prob *);
 
 
 /* -------------------------- Obstruction ------------------------------- */
