@@ -58,8 +58,7 @@ void print_obstruction(
             sample_locator_t **obstructions,
             glp_tree *t, env_t *env) {    
     glp_prob *p = glp_ios_get_prob(t);
-    int curr_node = glp_ios_curr_node(t);
-    double *solution = solution_values(curr_node, p);
+    double *solution = solution_values(p);
     traverse(solution, t, env);
     free(solution);
     
