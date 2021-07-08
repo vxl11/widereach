@@ -114,8 +114,7 @@ void branch_on(int index, glp_tree *t, env_t *env) {
     int direction = class_direction(class, samples);
     // int direction = class_reverse_direction(class, samples);
     // int direction = GLP_NO_BRNCH;
-    node_data_t *data_parent = parent_data(curr_node, t);
-    /*
+    /* node_data_t *data_parent = parent_data(curr_node, t);
     int direction = 
         data_parent != NULL ?   data_parent->branch_data.direction : 
                                 class_direction(class, samples); */
