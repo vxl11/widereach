@@ -25,7 +25,7 @@ double single_run(unsigned int *seed, int tm_lim, env_t *env) {
     glp_intopt(p, parm);
     free(parm);
 
-    double * result = solution_values_mip(int node, glp_prob *);
+    double *result = solution_values_mip(p);
     /* size_t dimension = samples->dimension;
     double *result = CALLOC(dimension + 2, double);
     double *h = hyperplane(p, samples);
