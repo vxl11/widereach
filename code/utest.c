@@ -727,11 +727,12 @@ void test_exec() {
   parms->rnd_trials = 100;
   parms->rnd_trials_cont = 0;
   
-  single_run(NULL, 120000, &env);
+  double *result = single_run(NULL, 120000, &env);
   CU_PASS("single run");
 
   free(delete_samples(samples));
   free(parms);
+  free(result);
 }
 
 extern double **random_simplex_points(

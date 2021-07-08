@@ -1,7 +1,7 @@
 #include "widereach.h"
 #include "helper.h"
 
-double single_run(unsigned int *seed, int tm_lim, env_t *env) {
+double *single_run(unsigned int *seed, int tm_lim, env_t *env) {
     samples_t *samples = env->samples;
     env->solution_data = solution_data_init(samples_total(samples));
         
@@ -31,7 +31,7 @@ double single_run(unsigned int *seed, int tm_lim, env_t *env) {
     double *h = hyperplane(p, samples);
     copy_hyperplane(dimension, result, h);
     free(h); */
-    double obj = glp_mip_obj_val(p);
+    double obj = result[0] = glp_mip_obj_val(p);
     glp_printf("Objective: %g\n", obj);
     // result[dimension + 1] = obj;
     /*
@@ -43,5 +43,5 @@ double single_run(unsigned int *seed, int tm_lim, env_t *env) {
     glp_delete_prob(p);
     free(delete_solution_data(env->solution_data));
     
-    return obj;
+    return result;
 }

@@ -667,9 +667,10 @@ int consistency_count(sparse_vector_t *, double *);
 /** Launch a single experiment 
  
  @return a new array in which 
- the first dimension+1 element represent the hyperplane and
- the last one is the objective value at the end of the run */
-double single_run(
+ the zeroth element is the objective value in the MIP solution at the end of 
+ the run,
+ and the next elements are the values of the decision variables. */
+double *single_run(
   /** Seed for the random number generator, or NULL if the drand48 does not
    * need to be reseeded */
   unsigned int *seed, 
@@ -898,11 +899,16 @@ int compare_signature(const node_signature_t *, const node_signature_t *);
 
 
 /** Return a new array containing the value of the decision variables in
- * the solution of the given problem. */
+ * the solution of the given problem, 
+ * indexed from 1 to the number of variables. 
+ * The 0th entry is unused.
+ */
 double *solution_values(glp_prob *);
 
 /** Return a new array containing the value of the decision variables in
- * the MIP solution of the given problem. */
+ * the MIP solution of the given problem.
+ * The format of the return value is the same as in solution_values.
+ */
 double *solution_values_mip(glp_prob *);
 
 
