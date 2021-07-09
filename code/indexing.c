@@ -176,9 +176,9 @@ void hyperplane_to_distance(
     }
 }
 
-unsigned int count_solution(double *solution, int index_max) {
+unsigned int count_solution(double *solution, int count) {
   unsigned int result = 0;
-  for (int i = 0; i <= index_max; i++) {
+  for (int i = 0; i < count; i++) {
     result += (int) solution[i];
   }
   return result;

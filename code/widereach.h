@@ -638,6 +638,16 @@ double hyperplane_to_solution(
 double hyperplane_to_solution_parts(
   double *, double *, params_t *, samples_t *);
 
+/** @return reach of the given integer solution for the given samples */
+unsigned int reach(double *solution, samples_t *);
+
+/** @return number of false positives in the given integer solution 
+ *for the given samples */
+unsigned int false_positives(double *solution, samples_t *);
+
+/** @return precision of the given integer solution for the given samples */
+double precision(double *solution, samples_t *);
+
 /** Returns an array of GLPK indexes in increasing order of violation
  * from the given hyperplane */
 int *sorted_by_violation(double *hyperplane, env_t *);

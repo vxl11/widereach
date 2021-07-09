@@ -155,6 +155,7 @@ struct distance_record {
     double directional_distance;
 };
 extern int dist_cmp(const void *, const void *);
+extern unsigned int count_solution(double *solution, int index_max);
 
 void test_indexing() {
 	samples_t *samples = random_samples(5, 3, 2);
@@ -216,6 +217,13 @@ void test_indexing() {
     CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
     value = hyperplane_to_solution(hyperplane, NULL, &env);
     CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
+    
+    double solution[] = { 0., 0., 0., 0., 1., 0., 0., 1., 1., -1. }; 
+    CU_ASSERT_EQUAL(count_solution(solution + 4, 3), 1);
+    CU_ASSERT_EQUAL(count_solution(solution + 7, 2), 2);
+    CU_ASSERT_EQUAL(reach(solution, samples), 1);
+    CU_ASSERT_EQUAL(false_positives(solution, samples), 2);
+    CU_ASSERT_DOUBLE_EQUAL(precision(solution, samples), 1./ 3., 1e-9);
     
     // double *distance = blank_solution(samples);
     // hyperplane_to_distance(hyperplane, distance, &env);
