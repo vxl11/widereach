@@ -578,13 +578,6 @@ int violation_idx(
 	/** Sample collection */
 	samples_t *);
 
-/** Return the index corresponding to the violation variable */
-int violation_idx(
-	/** 0: return column index, 1: row index */
-	int direction, 
-	/** Sample collection */
-	samples_t *);
-
 /** Compute the label of the given variable */
 int index_label(int i, samples_t *);
 
