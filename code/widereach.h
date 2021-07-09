@@ -640,6 +640,11 @@ double hyperplane_to_solution(
     double *solution,
     env_t *);
 
+/** Same as hyperplane_to_solution, but takes only the parameters and samples
+ * rather than the full environment. */
+double hyperplane_to_solution_parts(
+  double *, double *, params_t *, samples_t *);
+
 /** Returns an array of GLPK indexes in increasing order of violation
  * from the given hyperplane */
 int *sorted_by_violation(double *hyperplane, env_t *);

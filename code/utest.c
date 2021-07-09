@@ -211,8 +211,12 @@ void test_indexing() {
     env_t env;
     env.samples = samples;
     env.params = params_default();
-    double value = hyperplane_to_solution(hyperplane, NULL, &env);
+    double value = hyperplane_to_solution_parts(hyperplane, NULL, 
+                                                env.params, samples);
     CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
+    value = hyperplane_to_solution(hyperplane, NULL, &env);
+    CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);
+    
     // double *distance = blank_solution(samples);
     // hyperplane_to_distance(hyperplane, distance, &env);
     // CU_ASSERT_DOUBLE_EQUAL(value, 3., 1e-9);

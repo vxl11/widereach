@@ -126,7 +126,7 @@ int main() {
             // glp_printf("Theta: %g\n", env.params->theta);
             h = single_run(seed, 120000, &env);
             glp_printf("Validation: %g\n", 
-                       hyperplane_to_solution(h, NULL, &env));
+                       hyperplane_to_solution(h + 1, NULL, &env));
             free(h);
         }
         free(delete_samples(samples));

@@ -176,41 +176,49 @@ void hyperplane_to_distance(
     }
 }
 
+double hyperplane_to_solution_parts(
+        double *hyperplane, 
+        double *solution,
+        params_t *params,
+        samples_t *samples) {
+  if (NULL == hyperplane) {
+    return -DBL_MAX;
+  }
+    
+  double theta = params->theta;
+  double violation = theta * params->epsilon_precision;
+  double violation_coefficient[] = { theta, theta - 1. };
+  double precision[] = { params->epsilon_negative, params->epsilon_positive };
+  int idx_min = idx_extreme(0, 1, 0, samples);
+  int idx_max = violation_idx(0, samples);
+  double value = 0.;
+  for (int i = idx_min; i < idx_max; i++) {
+    sample_locator_t *loc = locator(i, samples);
+    int class = loc->class;        
+    double v = side(loc, samples, hyperplane, precision[class]);
+    free(loc);
+    update_solution_element(solution, i, v);
+    violation += v * violation_coefficient[class];
+    value += hinge(class, v);
+  }
+  violation = hinge(violation >= 0., violation);
+  if (solution != NULL) {
+    copy_hyperplane(samples->dimension, solution + 1, hyperplane);
+    solution[idx_max] = violation;
+  }
+  value -= params->lambda * violation;
+    
+  return value;
+}
 
 double hyperplane_to_solution(
         double *hyperplane, 
         double *solution,
         env_t *env) {
-    if (NULL == hyperplane) {
-        return -DBL_MAX;
-    }
-    
-    params_t *params = env->params;
-    double theta = params->theta;
-    double violation = theta * params->epsilon_precision;
-    double violation_coefficient[] = { theta, theta - 1. };
-    double precision[] = { params->epsilon_negative, params->epsilon_positive };
-    samples_t *samples = env->samples;
-    int idx_min = idx_extreme(0, 1, 0, samples);
-    int idx_max = violation_idx(0, samples);
-    double value = 0.;
-    for (int i = idx_min; i < idx_max; i++) {
-        sample_locator_t *loc = locator(i, samples);
-        int class = loc->class;        
-        double v = side(loc, samples, hyperplane, precision[class]);
-        free(loc);
-        update_solution_element(solution, i, v);
-        violation += v * violation_coefficient[class];
-        value += hinge(class, v);
-    }
-    violation = hinge(violation >= 0., violation);
-    if (solution != NULL) {
-        copy_hyperplane(samples->dimension, solution + 1, hyperplane);
-        solution[idx_max] = violation;
-    }
-    value -= params->lambda * violation;
-    
-    return value;
+  return hyperplane_to_solution_parts(hyperplane, 
+                                      solution, 
+                                      env->params, 
+                                      env->samples);
 }
 
 
