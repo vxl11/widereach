@@ -629,7 +629,8 @@ double hyperplane_to_solution(
     /** The solution vector, or NULL if the solution is not needed.
      Note that if solution is not null and solution[i] is integer,
      its value is not replaced by the hyperplane side. 
-     If the hyperplane is NULL, the solution is left unchanged. */
+     If the hyperplane is NULL, the solution is left unchanged. 
+     Solution indexing is in GLPK style, with solution[0] unused. */
     double *solution,
     env_t *);
 

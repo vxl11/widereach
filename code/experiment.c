@@ -64,6 +64,7 @@ int main() {
     env.params->rnd_trials_cont = 0;
     
     size_t dimension = 2;
+    
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
     clusters_info_singleton(clusters, n * .8, dimension);
@@ -87,6 +88,7 @@ int main() {
     samples_t *samples_validation = 
       random_simplex_samples(nval, nval / 5, dimension, side);
     double *h;
+    double *solution = CALLOC(dimension + nval + 3, double);
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {
     for (int s = 0; s < 1; s++) {
@@ -125,16 +127,19 @@ int main() {
             // precision_scan(seed, &env);
             // glp_printf("Theta: %g\n", env.params->theta);
             h = single_run(seed, 120000, &env);
-            glp_printf("Validation: %g\n", 
-                       hyperplane_to_solution_parts(h + 1, 
-                                                    NULL, 
-                                                    env.params, 
-                                                    samples_validation));
+            hyperplane_to_solution_parts(h + 1, 
+                                         solution, 
+                                         env.params, 
+                                         samples_validation);
+            glp_printf("Validation: %u\t%g\n", 
+                       reach(solution, samples_validation),
+                       precision(solution, samples_validation)); 
             free(h);
         }
         free(delete_samples(samples));
     }
     
+    free(solution);
     free(delete_samples(samples_validation));
     delete_clusters_info(clusters);
     delete_clusters_info(clusters + 1);
