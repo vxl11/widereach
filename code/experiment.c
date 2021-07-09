@@ -48,6 +48,13 @@ double fact(unsigned int n) {
   return (double) factorial[n];
 }
 
+double *init_solution(int nmemb, double *solution) {
+  for (int i = 1; i < nmemb; i++) {
+    solution[i] = .5;
+  }
+  return solution;
+}
+
 int main() {
     initialize_factorial();
     
@@ -88,7 +95,8 @@ int main() {
     samples_t *samples_validation = 
       random_simplex_samples(nval, nval / 5, dimension, side);
     double *h;
-    double *solution = CALLOC(dimension + nval + 3, double);
+    int solution_size = dimension + nval + 3;
+    double *solution = CALLOC(solution_size, double);
     
     // for (int s = 0; s < SAMPLE_SEEDS; s++) {
     for (int s = 0; s < 1; s++) {
@@ -128,7 +136,7 @@ int main() {
             // glp_printf("Theta: %g\n", env.params->theta);
             h = single_run(seed, 120000, &env);
             hyperplane_to_solution_parts(h + 1, 
-                                         solution, 
+                                         init_solution(solution_size, solution), 
                                          env.params, 
                                          samples_validation);
             glp_printf("Validation: %u\t%g\n", 
