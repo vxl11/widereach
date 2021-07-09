@@ -176,6 +176,31 @@ void hyperplane_to_distance(
     }
 }
 
+unsigned int count_solution(double *solution, int index_max) {
+  unsigned int result = 0;
+  for (int i = 0; i <= index_max; i++) {
+    result += (int) solution[i];
+  }
+  return result;
+}
+
+unsigned int reach(double *solution, samples_t *samples) {
+  return count_solution(solution + idx_extreme(0, 1, 0, samples), 
+                        positives(samples));
+}
+
+unsigned int false_positives(double *solution, samples_t *samples) {
+  return count_solution(solution + idx_extreme(0, 0, 0, samples),
+                        negatives(samples));
+}
+
+
+double precision(double *solution, samples_t *samples) {
+  double r = (double) reach(solution, samples);
+  double fp = (double) false_positives(solution, samples);
+  return r / (r + fp);
+}
+
 double hyperplane_to_solution_parts(
         double *hyperplane, 
         double *solution,
