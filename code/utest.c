@@ -747,6 +747,7 @@ void test_exec() {
   free(result);
 }
 
+extern void mirror_sample(size_t dimension, double *sample);
 extern double **random_simplex_points(
     size_t count, 
     double side, 
@@ -759,6 +760,12 @@ extern void set_sample_class_simplex(
         double side);
 
 void test_simplex() {
+  // Test mirror
+  double p[] = { .1, .2 };
+  mirror_sample(2, p);
+  CU_ASSERT_DOUBLE_EQUAL(p[0], .9, 1e-9);
+  CU_ASSERT_DOUBLE_EQUAL(p[1], .8, 1e-9);
+  
     // Test random_points
     double **points = random_simplex_points(7, .1, 2);
     double norm;

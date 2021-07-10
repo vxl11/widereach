@@ -94,8 +94,8 @@ int main() {
     srand48(validation_seed);
     samples_t *samples_validation = 
       random_simplex_samples(nval, nval / 5, dimension, side);
-    /* print_samples(samples_validation);
-    return 0; */
+    print_samples(samples_validation);
+    return 0;
     double *h;
     int solution_size = dimension + nval + 3;
     double *solution = CALLOC(solution_size, double);
