@@ -36,7 +36,10 @@ void set_sample_class_simplex(
 }
 
 samples_t *random_simplex_samples(
-		size_t count, size_t positives, size_t dimension, double side) {
+		size_t count, 
+        size_t positives, 
+        size_t dimension, 
+        double side) {
 	samples_t *samples = CALLOC(1, samples_t);
 	samples->dimension = dimension;
 	samples->class_cnt = 2;

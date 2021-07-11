@@ -246,6 +246,21 @@ samples_t *read_binary_samples(FILE *);
 
 /* ---------------------- Simplexes --------------------------------- */
 
+/** Descriptor of a set of simplex clusters */
+typedef struct {
+  /** Total number of samples */
+  size_t count;
+  /** Number of positive samples */
+  size_t positives; 
+  /** Number of clusters among which the positive samples are partitioned
+   * (currently supported: 1, 2) */
+  size_t cluster_cnt;
+  /** Dimension of the sample space */
+  size_t dimension;
+  /** Simplex side length */
+  double side;
+} simplex_info_t;
+
 /** Generates random binary samples in the simplex in the given dimension.
  * Function arguments are similar to random_samples, plus the simplex side.
  *
