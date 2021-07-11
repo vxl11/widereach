@@ -770,24 +770,38 @@ void test_simplex() {
   CU_ASSERT_DOUBLE_EQUAL(p[0], .9, 1e-9);
   CU_ASSERT_DOUBLE_EQUAL(p[1], .8, 1e-9);
   
-    // Test random_points
-    double **points = random_simplex_points(7, &info);
-    double norm;
-    for (size_t i = 0; i < 3; i++) {
-      norm = 0.;
-      for (size_t j = 0; j < 2; j++) {
-        printf("%lu %lu -> %g\n", i, j, points[i][j]);
-          CU_ASSERT(points[i][j] >= 0.);
-          norm += points[i][j];
-      }
-      CU_ASSERT(norm < .1);
-      free(points[i]);
+  // Test random_points
+  double **points = random_simplex_points(7, &info);
+  double norm;
+  for (size_t i = 0; i < 3; i++) {
+    norm = 0.;
+    for (size_t j = 0; j < 2; j++) {
+      CU_ASSERT(points[i][j] >= 0.);
+      norm += points[i][j];
     }
-    for (size_t i = 3; i < 7; i++) {
-      free(points[i]);
+    CU_ASSERT(norm < .1);
+    free(points[i]);
+  }
+  for (size_t i = 3; i < 7; i++) {
+    free(points[i]);
+  }
+  
+  free(points);
+  info.cluster_cnt = 2;
+  points = random_simplex_points(16, &info);
+  for (size_t i = 4; i < 8; i++) {
+    norm = 0.;
+    for (size_t j = 0; j < 2; j++) {
+      CU_ASSERT(points[i][j] <= 1.);
+      norm += 1. - points[i][j];
     }
-
-    free(points);
+    CU_ASSERT(norm < .1);
+  }
+  for (size_t i = 0; i < 16; i++) {
+    free(points[i]);
+  }
+  info.cluster_cnt = 1;
+  free(points);
     
     // Test set_sample_class_simplex
     samples_t *samples = CALLOC(1, samples_t);
