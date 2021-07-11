@@ -27,12 +27,12 @@ void set_sample_class_simplex(
 		samples_t *samples, 
 		size_t class, 
 		int label, 
-		size_t count,
-        double side) {
+        size_t count,
+		simplex_info_t *simplex_info) {
 	samples->label[class] = label;
 	samples->count[class] = count;
 	samples->samples[class] = 
-      random_simplex_points(count, side, samples->dimension);
+      random_simplex_points(count, simplex_info->side, samples->dimension);
 }
 
 samples_t *random_simplex_samples(simplex_info_t *simplex_info) {
@@ -48,6 +48,6 @@ samples_t *random_simplex_samples(simplex_info_t *simplex_info) {
 		*positives = count;
 	}
 	set_sample_class(samples, 0, -1, count - *positives);
-	set_sample_class_simplex(samples, 1,  1, *positives, simplex_info->side);
+	set_sample_class_simplex(samples, 1,  1, *positives, simplex_info);
 	return samples;
 }

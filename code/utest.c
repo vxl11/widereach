@@ -756,10 +756,17 @@ extern void set_sample_class_simplex(
 		samples_t *samples, 
 		size_t class, 
 		int label, 
-		size_t count,
-        double side);
+        size_t count,
+		simplex_info_t *);
 
 void test_simplex() {
+  simplex_info_t info = { 
+      .count = 7, 
+      .positives = 5, 
+      .cluster_cnt = 1, 
+      .dimension = 2, 
+      .side = .1 };
+      
   // Test mirror
   double p[] = { .1, .2 };
   mirror_sample(2, p);
@@ -792,7 +799,7 @@ void test_simplex() {
 	samples->label = CALLOC(1, int);
 	samples->count = CALLOC(1, size_t);
 	samples->samples = CALLOC(1, double **);
-    set_sample_class_simplex(samples, 0, -1, 5, .1); 
+    set_sample_class_simplex(samples, 0, -1, 5, &info); 
     CU_ASSERT_EQUAL(samples->label[0], -1);
     CU_ASSERT_EQUAL(samples->count[0], 5);        
     norm = 0.;
@@ -802,12 +809,6 @@ void test_simplex() {
     CU_ASSERT(norm <= .1);
     free(delete_samples(samples));
     
-    simplex_info_t info = { 
-      .count = 7, 
-      .positives = 5, 
-      .cluster_cnt = 1, 
-      .dimension = 2, 
-      .side = .1 };
     samples = random_simplex_samples(&info);
 	CU_ASSERT_EQUAL(samples->dimension, 2);
 	CU_ASSERT_EQUAL(samples_total(samples), 7);
