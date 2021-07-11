@@ -7,12 +7,13 @@ void mirror_sample(size_t dimension, double *sample) {
   }
 }
 
-double **random_simplex_points(size_t count, double side, size_t dimension) {
+double **random_simplex_points(size_t count, simplex_info_t *simplex_info) {
 	double **samples = CALLOC(count, double *);
     size_t count_simplex = count / 2;
     size_t mirror_count = count_simplex / 2;
+    size_t dimension = simplex_info->dimension;
 	for (size_t j = 0; j < count_simplex; j++) {
-		samples[j] = random_simplex_point(side, dimension);
+		samples[j] = random_simplex_point(simplex_info->side, dimension);
         if (j >= mirror_count) {
           // mirror_sample(dimension, samples[j]);
         }
@@ -31,8 +32,7 @@ void set_sample_class_simplex(
 		simplex_info_t *simplex_info) {
 	samples->label[class] = label;
 	samples->count[class] = count;
-	samples->samples[class] = 
-      random_simplex_points(count, simplex_info->side, samples->dimension);
+	samples->samples[class] = random_simplex_points(count, simplex_info);
 }
 
 samples_t *random_simplex_samples(simplex_info_t *simplex_info) {
