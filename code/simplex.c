@@ -10,12 +10,12 @@ void mirror_sample(size_t dimension, double *sample) {
 double **random_simplex_points(size_t count, simplex_info_t *simplex_info) {
 	double **samples = CALLOC(count, double *);
     size_t count_simplex = count / 2;
-    size_t mirror_count = count_simplex / 2;
+    size_t mirror_count = count_simplex / simplex_info->cluster_cnt;
     size_t dimension = simplex_info->dimension;
 	for (size_t j = 0; j < count_simplex; j++) {
 		samples[j] = random_simplex_point(simplex_info->side, dimension);
         if (j >= mirror_count) {
-          // mirror_sample(dimension, samples[j]);
+          mirror_sample(dimension, samples[j]);
         }
 	}
 	for (size_t j = count_simplex; j < count; j++) {
