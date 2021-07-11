@@ -802,7 +802,13 @@ void test_simplex() {
     CU_ASSERT(norm <= .1);
     free(delete_samples(samples));
     
-    samples = random_simplex_samples(7, 5, 2, .1);
+    simplex_info_t info = { 
+      .count = 7, 
+      .positives = 5, 
+      .cluster_cnt = 1, 
+      .dimension = 2, 
+      .side = .1 };
+    samples = random_simplex_samples(&info);
 	CU_ASSERT_EQUAL(samples->dimension, 2);
 	CU_ASSERT_EQUAL(samples_total(samples), 7);
 	CU_ASSERT_EQUAL(positives(samples), 5);
