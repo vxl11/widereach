@@ -70,7 +70,7 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 2;
+    size_t dimension = 4;
     
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
@@ -89,19 +89,26 @@ int main() {
     info->count[0] = info->count[1] = n / 10;
     
     double side = sqrt(fact(dimension) / fact(FACT_MAX - 1));
+    simplex_info_t simplex_info = {
+      .count = n,
+      .positives = n / 5,
+      .cluster_cnt = 2,
+      .dimension = dimension,
+      .side = side
+    };
     
-    int nval = 400;
+    // int simplex_info.count = 400;
     srand48(validation_seed);
     samples_t *samples_validation = 
-      random_simplex_samples(nval, nval / 5, dimension, side);
-    print_samples(samples_validation);
-    return 0;
+      random_simplex_samples(&simplex_info);
+    /* print_samples(samples_validation);
+    return 0; */
     double *h;
-    int solution_size = dimension + nval + 3;
+    int solution_size = dimension + simplex_info.count + 3;
     double *solution = CALLOC(solution_size, double);
     
-    // for (int s = 0; s < SAMPLE_SEEDS; s++) {
-    for (int s = 0; s < 1; s++) {
+    for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    // for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
         glp_printf("Sample seed: %lu\n", samples_seeds[s]);
     
@@ -109,7 +116,7 @@ int main() {
         
         // samples = random_samples(n, n / 2, dimension);
         // samples = random_sample_clusters(clusters);
-        samples = random_simplex_samples(n, n / 5, dimension, side);
+        samples = random_simplex_samples(&simplex_info);
         // FILE *infile =
             // fopen("../../data/breast-cancer/wdbc.dat", "r");
             // fopen("../../data/wine-quality/winequality-red.dat", "r");
@@ -126,10 +133,10 @@ int main() {
         env.params->lambda = 100 * (n + 1);
         
         /* print_samples(env.samples);
-        return 0; */ 
+        return 0; */  
         
-        // for (int t = 0; t < MIP_SEEDS; t++) {    
-        for (int t = 0; t < 1; t++) {
+        for (int t = 0; t < MIP_SEEDS; t++) {    
+        // for (int t = 0; t < 1; t++) {
         // for (int t = 0; t < 6; t++) {
             glp_printf("Mip seed: %u\n", mip_seeds[t]);
             unsigned int *seed = mip_seeds + t;
