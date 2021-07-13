@@ -101,8 +101,9 @@ int main() {
     srand48(validation_seed);
     samples_t *samples_validation = 
       random_simplex_samples(&simplex_info);
-    /* print_samples(samples_validation);
-    return 0; */
+    glp_printf("Validation\n");
+    print_samples(samples_validation);
+    /* return 0; */
     double *h;
     int solution_size = dimension + simplex_info.count + 3;
     double *solution = CALLOC(solution_size, double);
@@ -132,13 +133,13 @@ int main() {
         n = samples_total(samples);
         env.params->lambda = 100 * (n + 1);
         
-        /* print_samples(env.samples);
-        return 0; */  
+        print_samples(env.samples);
+        /* return 0; */  
         
-        for (int t = 0; t < MIP_SEEDS; t++) {    
+        // for (int t = 0; t < MIP_SEEDS; t++) {    
         // for (int t = 0; t < 1; t++) {
+        if (0) { int t=0;
         // for (int t = 0; t < 6; t++) {
-            glp_printf("Mip seed: %u\n", mip_seeds[t]);
             unsigned int *seed = mip_seeds + t;
             // precision_threshold(seed, &env); See branch theta-search
             // precision_scan(seed, &env);
