@@ -16,7 +16,7 @@ OBJ = samples.o sparse_vector.o env.o indexing.o glpk.o params.o callback.o \
       simplex.o
 UOBJ = utest.o
 
-.PHONY: all coverage clean dependencies valgrind
+.PHONY: all coverage clean dependencies valgrind cleancoverage
 
 all:
 	echo $(CFLAGS)
@@ -31,7 +31,7 @@ coverage:	utest
 itest:	$(OBJ) $(BASE) itest.o
 	$(CC) $(CFLAGS) -o $@ $(OBJ) itest.o $(LIBS) -fopenmp
 
-experiment:	$(OBJ) $(BASE) experiment.o
+experiment:	$(OBJ) $(BASE) experiment.o cleancoverage
 	$(CC) $(CFLAGS) -o $@ $(OBJ) experiment.o $(LIBS) -fopenmp
 
 hyperrnd:	$(OBJ) $(BASE) hyperrnd.o
@@ -45,6 +45,9 @@ dependencies:
 
 %.o:	%.c $(BASE)
 	$(CC) $(CFLAGS) $(INC) -c -o $@ $< -fopenmp
+	
+cleancoverage:
+	rm --force *.gcno *gcda
 
-clean:
-	rm --force *.o *.gcno *gcda utest itest experiment experiment-* hyperrnd hyperrnd-*
+clean:	cleancoverage
+	rm --force *.o utest itest experiment experiment-* hyperrnd hyperrnd-*
