@@ -60,7 +60,8 @@ int main() {
     
     env_t env;
     env.params = params_default();
-    env.params->theta = 0.99;
+    env.params->theta = 0.15;
+    double lambda_factor = 20.;
     // env.params->theta = 0.95;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
@@ -70,7 +71,7 @@ int main() {
     // env.params->rnd_trials_cont = 10;
     env.params->rnd_trials_cont = 0;
     
-    size_t dimension = 4;
+    size_t dimension = 8;
     
     clusters_info_t clusters[2];
     // int n = pow10quick(dimension);
@@ -92,24 +93,33 @@ int main() {
     simplex_info_t simplex_info = {
       .count = n,
       .positives = n / 5,
-      .cluster_cnt = 2,
+      .cluster_cnt = 1,
       .dimension = dimension,
       .side = side
     };
     
     // int simplex_info.count = 400;
     srand48(validation_seed);
-    samples_t *samples_validation = 
-      random_simplex_samples(&simplex_info);
-    glp_printf("Validation\n");
+    samples_t *samples_validation;
+    // samples_validation = random_simplex_samples(&simplex_info);
+    FILE *infile;
+    infile =
+       // fopen("../../data/breast-cancer/wdbc-validation.dat", "r");
+       // fopen("../../data/wine-quality/winequality-red-validation.dat", "r");
+       fopen("../../data/wine-quality/winequality-white-validation.dat", "r");
+    samples_validation = read_binary_samples(infile);
+    fclose(infile);
+    /* glp_printf("Validation\n");
     print_samples(samples_validation);
-    /* return 0; */
+    return 0; */
+    
     double *h;
-    int solution_size = dimension + simplex_info.count + 3;
+    dimension = samples_validation->dimension;
+    int solution_size = dimension + samples_total(samples_validation) + 3;
     double *solution = CALLOC(solution_size, double);
     
-    for (int s = 0; s < SAMPLE_SEEDS; s++) {
-    // for (int s = 0; s < 1; s++) {
+    // for (int s = 0; s < SAMPLE_SEEDS; s++) {
+    for (int s = 0; s < 1; s++) {
         srand48(samples_seeds[s]);
         glp_printf("Sample seed: %lu\n", samples_seeds[s]);
     
@@ -117,39 +127,39 @@ int main() {
         
         // samples = random_samples(n, n / 2, dimension);
         // samples = random_sample_clusters(clusters);
-        samples = random_simplex_samples(&simplex_info);
-        // FILE *infile =
-            // fopen("../../data/breast-cancer/wdbc.dat", "r");
-            // fopen("../../data/wine-quality/winequality-red.dat", "r");
-            // fopen("../../data/wine-quality/winequality-white.dat", "r"); 
+        // samples = random_simplex_samples(&simplex_info);
+        infile =
+            // fopen("../../data/breast-cancer/wdbc-train.dat", "r");
+            // fopen("../../data/wine-quality/winequality-red-train.dat", "r");
+            fopen("../../data/wine-quality/winequality-white-train.dat", "r"); 
             // fopen("../../data/south-german-credit/SouthGermanCredit.dat", "r");
             // fopen("../../data/cross-sell/train-nocat.dat", "r"); */
             // fopen("../../data/crops/sample.dat", "r");
             // fopen("../../data/crops/small-sample.dat", "r");
-        // samples = read_binary_samples(infile);
-        // fclose(infile);
+        samples = read_binary_samples(infile);
+        fclose(infile);
         
         env.samples = samples;
         n = samples_total(samples);
-        env.params->lambda = 100 * (n + 1);
+        env.params->lambda = lambda_factor * (n + 1);
         
-        print_samples(env.samples);
-        /* return 0; */  
+        /* print_samples(env.samples);
+        return 0; */  
         
         // for (int t = 0; t < MIP_SEEDS; t++) {    
-        // for (int t = 0; t < 1; t++) {
-        if (0) { int t=0;
+        for (int t = 0; t < 1; t++) {
+        // if (0) { int t=0;
         // for (int t = 0; t < 6; t++) {
             unsigned int *seed = mip_seeds + t;
             // precision_threshold(seed, &env); See branch theta-search
             // precision_scan(seed, &env);
             // glp_printf("Theta: %g\n", env.params->theta);
-            h = single_run(seed, 120000, &env);
+            h = single_run(seed, 1200, &env);
             hyperplane_to_solution_parts(h + 1, 
                                          init_solution(solution_size, solution), 
                                          env.params, 
-                                         samples_validation);
-            glp_printf("Validation: %u\t%g\n", 
+                                         samples_validation); 
+            glp_printf("Validation: %u\t%lg\n", 
                        reach(solution, samples_validation),
                        precision(solution, samples_validation)); 
             free(h);

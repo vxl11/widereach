@@ -225,14 +225,14 @@ double hyperplane_to_solution_parts(
     update_solution_element(solution, i, v);
     violation += v * violation_coefficient[class];
     value += hinge(class, v);
-  }
+  } 
   violation = hinge(violation >= 0., violation);
   if (solution != NULL) {
     copy_hyperplane(samples->dimension, solution + 1, hyperplane);
     solution[idx_max] = violation;
   }
   value -= params->lambda * violation;
-    
+  
   return value;
 }
 
