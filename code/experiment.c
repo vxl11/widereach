@@ -60,9 +60,18 @@ int main() {
     
     env_t env;
     env.params = params_default();
-    env.params->theta = 0.15;
-    double lambda_factor = 20.;
-    // env.params->theta = 0.95;
+    /*
+     * Simplex: 0.99
+     * 
+     * breast cancer 0.99
+     * red wine 0.04
+     * white wine 0.1
+     * south german credit  .95 (2, 1)
+     * crop mapping  .99 (76, 0.974359); 
+     * */
+    env.params->theta = 0.9;
+    double lambda_factor = 10.;
+    // env.params->theta = 0.99;
     env.params->branch_target = 0.0;
     env.params->iheur_method = deep;
     int n = 400;
@@ -98,7 +107,6 @@ int main() {
       .side = side
     };
     
-    // int simplex_info.count = 400;
     srand48(validation_seed);
     samples_t *samples_validation;
     // samples_validation = random_simplex_samples(&simplex_info);
@@ -106,7 +114,13 @@ int main() {
     infile =
        // fopen("../../data/breast-cancer/wdbc-validation.dat", "r");
        // fopen("../../data/wine-quality/winequality-red-validation.dat", "r");
-       fopen("../../data/wine-quality/winequality-white-validation.dat", "r");
+       // fopen("../../data/wine-quality/red-cross/winequality-red-2-validation.dat", "r");
+       // fopen("../../data/wine-quality/winequality-white-validation.dat", "r");
+       // fopen("../../data/wine-quality/white-cross/winequality-white-2-validation.dat", "r");
+       // fopen("../../data/south-german-credit/SouthGermanCredit-validation.dat", "r");
+       // fopen("../../data/south-german-credit/cross/SouthGermanCredit-2-validation.dat", "r");
+       fopen("../../data/crops/small-sample-validation.dat", "r");
+       // fopen("../../data/crops/cross/small-sample-2-validation.dat", "r");
     samples_validation = read_binary_samples(infile);
     fclose(infile);
     /* glp_printf("Validation\n");
@@ -129,13 +143,17 @@ int main() {
         // samples = random_sample_clusters(clusters);
         // samples = random_simplex_samples(&simplex_info);
         infile =
-            // fopen("../../data/breast-cancer/wdbc-train.dat", "r");
-            // fopen("../../data/wine-quality/winequality-red-train.dat", "r");
-            fopen("../../data/wine-quality/winequality-white-train.dat", "r"); 
-            // fopen("../../data/south-german-credit/SouthGermanCredit.dat", "r");
+            // fopen("../../data/breast-cancer/wdbc-training.dat", "r");
+            // fopen("../../data/wine-quality/winequality-red-training.dat", "r");
+            // fopen("../../data/wine-quality/red-cross/winequality-red-2-training.dat", "r");
+            // fopen("../../data/wine-quality/winequality-white-training.dat", "r"); 
+            // fopen("../../data/wine-quality/white-cross/winequality-white-2-training.dat", "r");
+            // fopen("../../data/south-german-credit/SouthGermanCredit-training.dat", "r");
+            // fopen("../../data/south-german-credit/cross/SouthGermanCredit-2-training.dat", "r");
             // fopen("../../data/cross-sell/train-nocat.dat", "r"); */
             // fopen("../../data/crops/sample.dat", "r");
-            // fopen("../../data/crops/small-sample.dat", "r");
+            fopen("../../data/crops/small-sample-training.dat", "r");
+            // fopen("../../data/crops/cross/small-sample-2-training.dat", "r");
         samples = read_binary_samples(infile);
         fclose(infile);
         
@@ -154,7 +172,7 @@ int main() {
             // precision_threshold(seed, &env); See branch theta-search
             // precision_scan(seed, &env);
             // glp_printf("Theta: %g\n", env.params->theta);
-            h = single_run(seed, 1200, &env);
+            h = single_run(seed, 120000, &env);
             hyperplane_to_solution_parts(h + 1, 
                                          init_solution(solution_size, solution), 
                                          env.params, 
