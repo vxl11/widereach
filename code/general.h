@@ -260,3 +260,185 @@ typedef struct {
  * @return A newly allocated group of samples
  **/
 samples_t *random_simplex_samples(simplex_info_t *);
+
+
+/* --------------------- Parameters                 ---------------------- */
+
+/** Heuristic method */
+typedef
+enum {
+	/** Round the fractional variable's value to the 
+	 * closest feasible integer value. */
+	simple, 
+	/** Round to the side of hyperplane */
+	deep 
+} iheur_method_t;
+
+
+/** Problem instance parameters */
+typedef struct {
+	/** Problem name */
+	char *name;
+	/** Verbosity level (GLPK enum) */
+	int verbosity;
+	/** Precision threshold */
+	double theta;
+	/** Tolerance for positive samples */
+	double epsilon_positive;
+	/** Tolerance for negative samples */
+	double epsilon_negative;
+	/** Tolerance for the precision constraint */
+	double epsilon_precision;
+	/** Lagrangian multiplier of the precision constraint */
+	double lambda;
+	/** Violation bound: 
+     *  either 0 for unbounded variables (GLP_FR)
+     *  or 1 for variable with lower bound (GLP_LO) */
+	int violation_type;
+	/** Target value of the branching variable */
+	double branch_target;
+	/** Method to use to round to an integer solution */
+	iheur_method_t iheur_method;
+    /** Number of initial random trials to find an integer solution */
+    int rnd_trials;
+    /** Number of random trials at each invocation of iheur */
+    int rnd_trials_cont;
+} params_t;
+
+
+/** Return a new parameter set with default values */
+params_t *params_default();
+
+
+/* ---------------------------- Solution Data -------------------------- */
+
+/** Data updated by the callback during the solution of the program */
+typedef struct {
+	/** Number of elements in rank that are significant */
+	size_t rank_significant;
+	/** Sorted list of indexes in order of branching priority */
+	int *rank;
+    /** Last node that branched */
+    int branching_node;
+    /** GLPK indexes sorted by hyperplane violation */
+    int *violation_index;
+    /** Best integer solution found by iheur */
+    double *integer_solution;
+    /** Objective value achieved by the best integer solution */
+    double intopt;
+} solution_data_t;
+
+
+/** Allocate and return a new solution data of the given size with no
+ * significant element. */
+solution_data_t *solution_data_init(size_t);
+
+/** Deallocate and return the elements in the solution data, 
+ * but not the solution data. */
+solution_data_t *delete_solution_data(solution_data_t *);
+
+/** Append the given index as the last significant element of the solution
+ * data */
+solution_data_t *append_data(solution_data_t *, int index);
+
+/** Update the integer solution and its objective value with the provided
+ * arguments */
+void update_solution(
+        solution_data_t *,
+        /** New solution vector */
+        double *solution, 
+        /** Objective value of the new solution vector */
+        double value,
+        /** Indexes sorted by violation */
+        int *violation_index);
+
+/* ---------------------------- Environment ----------------------------- */
+
+/** Environment */
+typedef struct {
+	/** Sample set */
+	samples_t *samples;
+	/** Problem instance parameters */
+	params_t *params;
+	/** Solution data */
+	solution_data_t *solution_data;
+} env_t;
+
+/** Deallocate the samples and the parameters.
+ *
+ * It assumes that samples and parameters were dynamically allocated */
+env_t *delete_env(env_t *);
+
+
+/* --------------------------- Random number generation ------------------ */
+
+/** Return the square of the length of the 
+ * d-dimensional vector given as argument */
+double length_squared(
+    /** Vector dimention */
+    size_t d, 
+    /** Vector */
+    double *w);
+
+/** Generates two normal random variables and stores the result in the
+ * vector passed as an argument. */
+void normal_pair(double *w);
+
+/** Multiply a vector by a scalar. */
+double multiply_scalar(
+    /** Scalar factor */
+    double a, 
+    /** Size of the vector to be multiplied */
+    size_t d, 
+    /** Vector to be multiplied */
+    double *w);
+
+/** Generate a random point in the unit hypercube of the given dimension.
+ * It returns a newly allocated vector. */
+double *random_point(size_t dimension);
+
+/** Generate a random point in the hypercube of the give dimension 
+ * located from [shift .... shift]^T to [shift+side ... shift+side]^T 
+ * (effectively translating the unit hypercube so that the lower left corner
+ * is shift away in every direction and scaling it so that each side has 
+ * the given length.)
+ */
+double *random_point_affine(size_t dimension, double shift, double side);
+
+/** Generates a random unit d-dimensional vector. */
+void random_unit_vector(
+    /** Vector size */
+    size_t d, 
+    /** Random unit d-dimensional vector, 
+     *  stores the result of the computation */
+    double *w);
+
+/** Generates a random vector in the volume under the simplex of the given
+ * dimension. It returns a newly allocated vector.
+ */
+double *random_simplex_point(
+    /** Simplex side */
+    double side,
+    /** Vector size */
+    size_t dimension);
+
+/** Copy a hyperplane of the given dimension into another one.
+ * A hyperplane is defined as dimension+1 vector in which the first
+ * dimension component contain a vector perpendicular to the hyperplane
+ * and the last component contains the intercept. */
+void copy_hyperplane(size_t dimension, double *dest, double *src);
+
+/** Generates a random hyperplane through a random point on the unit 
+ * hypersquare. The orthogonal vector part of the hyperplane as unit size.
+   Returns a newly allocated hyperplane.  */
+double *random_hyperplane(size_t dimension);
+
+/** Generates rnd_trials hyperplanes and returns 
+ * one that achieves the highest value of the objective function. 
+   The returned vector has been dynamically allocated. 
+   If rnd_trials is zero, then NULL is returned. */
+double *best_random_hyperplane(
+  /** A Boolean variable denoting whether this is the initial (1) or
+    * continuing (0) random hyperplane */
+  int initial, 
+  env_t *);

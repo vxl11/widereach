@@ -140,7 +140,9 @@ glp_prob *add_precision(glp_prob *p, const env_t *env) {
 	glp_set_col_name(p, col_idx, "V");
 	glp_set_col_kind(p, col_idx, GLP_CV);
 	params_t *params = env->params;
-	glp_set_col_bnds(p, col_idx, params->violation_type, 0., 0.);
+	glp_set_col_bnds(p, col_idx, 
+                     params->violation_type ? GLP_LO : GLP_FR, 
+                     0., 0.);
 	glp_set_obj_coef(p, col_idx, -params->lambda);
 
 	int row_idx = violation_idx(1, samples);

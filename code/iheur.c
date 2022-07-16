@@ -105,7 +105,7 @@ double iheur_violation(double X, double Y, params_t *params) {
 	double theta = params->theta;
 	double violation = (theta - 1.) * X + theta * Y + 
 		theta * params->epsilon_precision;
-	if (violation < 0. && GLP_LO == params->violation_type) {
+	if (violation < 0. && params->violation_type) {
 		violation = 0.;
 	}
 	return violation;
@@ -162,8 +162,8 @@ void iheur(glp_tree *t, env_t *env) {
     // Attempt to find an initial solution based on a random hyperplane
     solution_data_t *solution_data = env->solution_data;
     double *random_solution = blank_solution(samples);
-    double *h = best_random_hyperplane(NULL == solution_data->integer_solution, 
-                                       env);
+    double *h = 
+      best_random_hyperplane(NULL == solution_data->integer_solution, env);
     double random_objective_value = 
       hyperplane_to_solution(h, random_solution, env);
     free(h);
