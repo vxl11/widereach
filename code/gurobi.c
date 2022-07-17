@@ -1,7 +1,7 @@
 #include "widereach.h"
 #include "helper.h"
 
-glp_prob *init_gurobi_env(const env_t *env) {
+GRBenv *init_gurobi_env(const env_t *env) {
   GRBenv *p = NULL;
   if (GRBemptyenv(&p)) {
       return NULL;
@@ -35,7 +35,7 @@ GRBenv *gurobi_milp(const env_t *env) {
 	if (!is_binary(samples)) {
 		return NULL;
 	}
-	return NULL; // TODO
+	return init_gurobi_env(env); // TODO
 	/*
 	glp_prob *p = init_prob(env);
 	p = add_hyperplane(p, samples->dimension);

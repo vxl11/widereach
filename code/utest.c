@@ -835,6 +835,16 @@ void test_simplex() {
     free(delete_samples(samples));
 }
 
+GRBenv *init_gurobi_env(const env_t *);
+void test_gurobi() {
+  env_t env;
+  env.params = params_default();
+  env.solution_data = solution_data_init(5);
+  env.samples = random_samples(5, 3, 2);
+  CU_ASSERT_PTR_NULL(init_gurobi_env(&env));
+  delete_env(&env);
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -908,6 +918,10 @@ int main() {
     // Execution support
     CU_pSuite exec = CU_add_suite("execution", NULL, NULL);
 	CU_add_test(exec, "execution", test_exec);
+    
+    // Gurobi
+	CU_pSuite gurobi = CU_add_suite("gurobi", init_samples, NULL);
+	CU_add_test(gurobi, "gurobi", test_gurobi);
 
 	// Run tests
 	CU_basic_run_tests();
