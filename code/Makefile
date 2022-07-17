@@ -8,7 +8,7 @@ endif
 
 INC =
 LIBS = -lglpk -lm
-BASE = widereach.h helper.h Makefile
+BASE = widereach.h helper.h general.h glpk.h Makefile
 OBJ = samples.o sparse_vector.o env.o indexing.o glpk.o params.o callback.o \
       iheur.o ibranch.o iselect.o irowgen.o solution_data.o ibingo.o \
       traversal.o signature.o children.o paths.o random.o hyperplane.o \
