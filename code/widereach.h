@@ -8,6 +8,7 @@
 
 #include "general.h"
 #include "glpk.h"
+#include "gurobi.h"
 
 
 
