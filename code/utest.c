@@ -835,13 +835,15 @@ void test_simplex() {
     free(delete_samples(samples));
 }
 
-GRBenv *init_gurobi_env(const env_t *);
+GRBmodel *init_gurobi_model(const env_t *);
 void test_gurobi() {
   env_t env;
   env.params = params_default();
   env.solution_data = solution_data_init(5);
   env.samples = random_samples(5, 3, 2);
-  CU_ASSERT_PTR_NULL(init_gurobi_env(&env));
+  GRBmodel *model = init_gurobi_model(&env);
+  CU_ASSERT_PTR_NOT_NULL(model);
+  CU_ASSERT_EQUAL(GRBfreemodel(model), 0);
   delete_env(&env);
 }
 

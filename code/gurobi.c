@@ -1,7 +1,7 @@
 #include "widereach.h"
 #include "helper.h"
 
-GRBenv *init_gurobi_env(const env_t *env) {
+GRBmodel *init_gurobi_model(const env_t *env) {
   GRBenv *p = NULL;
   if (GRBemptyenv(&p)) {
       return NULL;
@@ -20,24 +20,18 @@ GRBenv *init_gurobi_env(const env_t *env) {
   if (GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE)) {
     return NULL;
   }
-  
-  samples_t *samples = env->samples;
-  
-  /* HERE
-	glp_add_cols(p, violation_idx(0, samples));
-	glp_add_rows(p, violation_idx(1, samples));
-	return p; */
-  return NULL;
+
+  return model; 
 }
 
-GRBenv *gurobi_milp(const env_t *env) {
+
+GRBmodel *gurobi_milp(const env_t *env) {
     samples_t *samples = env->samples;
 	if (!is_binary(samples)) {
 		return NULL;
 	}
-	return init_gurobi_env(env); // TODO
+	return init_gurobi_model(env); // TODO
 	/*
-	glp_prob *p = init_prob(env);
 	p = add_hyperplane(p, samples->dimension);
 	p = add_samples(p, env);
 	p = add_precision(p, env);
