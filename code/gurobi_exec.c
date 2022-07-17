@@ -9,10 +9,8 @@ double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
         srand48(*seed);
     }
 
-    GRBenv *p = NULL;
-    if (GRBemptyenv(&p)) {
-      return NULL;
-    }
+    // HERE
+    GRBenv *p = gurobi_milp(env);
     
     return NULL;
     // glp_write_lp(p, NULL, "tmp.lp");
