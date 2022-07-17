@@ -34,12 +34,12 @@ GRBmodel *add_gurobi_hyperplane(GRBmodel *model, size_t dimension) {
   char **varnames = CALLOC(ary_size, char *);
   char *name;
 	
-  for (int i = 1; i <= hyperplane_cnt; i++) {
+  for (int i = 0; i <= hyperplane_cnt; i++) {
     lb[i] = -GRB_INFINITY;
     name = varnames[i] = CALLOC(NAME_LEN_MAX, char);
     snprintf(name, NAME_LEN_MAX, "w%u", i);
   }
-  snprintf(varnames[hyperplane_cnt], NAME_LEN_MAX, "c");
+  snprintf(varnames[0], NAME_LEN_MAX, "c");
   
   int state =  GRBaddvars(model, hyperplane_cnt, 
                           0, NULL, NULL, NULL, 

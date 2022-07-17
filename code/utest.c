@@ -836,6 +836,7 @@ void test_simplex() {
 }
 
 GRBmodel *init_gurobi_model(const env_t *);
+GRBmodel *add_gurobi_hyperplane(GRBmodel *, size_t);
 void test_gurobi() {
   env_t env;
   env.params = params_default();
@@ -843,6 +844,13 @@ void test_gurobi() {
   env.samples = random_samples(5, 3, 2);
   GRBmodel *model = init_gurobi_model(&env);
   CU_ASSERT_PTR_NOT_NULL(model);
+  
+  model = add_gurobi_hyperplane(model, 2);
+  CU_ASSERT_PTR_NOT_NULL(model);
+  int varnumP;
+  CU_ASSERT_EQUAL(GRBgetvarbyname(model, "w1", &varnumP), 0);
+  CU_ASSERT_EQUAL(varnumP, 1);
+  
   CU_ASSERT_EQUAL(GRBfreemodel(model), 0);
   delete_env(&env);
 }
