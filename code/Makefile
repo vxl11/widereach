@@ -6,8 +6,8 @@ else
   CFLAGS = -O3 -DNDEBUG -funroll-loops
 endif
 
-INC =
-LIBS = -lglpk -lm
+INC = $(GUROBI_HOME)/include/
+LIBS = -L$(GUROBI_HOME)/lib -lgurobi95 -lglpk -lm
 BASE = widereach.h helper.h general.h glpk.h Makefile
 OBJ = samples.o sparse_vector.o env.o indexing.o glpk.o params.o callback.o \
       iheur.o ibranch.o iselect.o irowgen.o solution_data.o ibingo.o \
@@ -19,7 +19,7 @@ UOBJ = utest.o
 .PHONY: all coverage clean dependencies valgrind cleancoverage
 
 all:
-	echo $(CFLAGS)
+	echo $(CFLAGS); echo $(INC)
 
 utest:	$(UOBJ) $(OBJ) $(BASE)
 	rm --force *.gcno *gcda;\
@@ -44,7 +44,7 @@ dependencies:
 	sudo apt install libcunit1-dev glpk-doc libglpk-dev
 
 %.o:	%.c $(BASE)
-	$(CC) $(CFLAGS) $(INC) -c -o $@ $< -fopenmp
+	$(CC) $(CFLAGS) -I $(INC) -c -o $@ $< -fopenmp
 	
 cleancoverage:
 	rm --force *.gcno *gcda

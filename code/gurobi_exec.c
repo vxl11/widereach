@@ -4,14 +4,19 @@
 double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
     samples_t *samples = env->samples;
     env->solution_data = solution_data_init(samples_total(samples));
-        
+    
     if (seed !=NULL) {
         srand48(*seed);
     }
 
-    glp_prob *p = milp(env);
+    GRBenv *p = NULL;
+    if (GRBemptyenv(&p)) {
+      return NULL;
+    }
+    
+    return NULL;
     // glp_write_lp(p, NULL, "tmp.lp");
-    glp_scale_prob(p, GLP_SF_AUTO);
+    // glp_scale_prob(p, GLP_SF_AUTO);
     glp_simplex(p, NULL);
 
     glp_iocp *parm = iocp(env);
@@ -43,5 +48,5 @@ double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
     glp_delete_prob(p);
     free(delete_solution_data(env->solution_data));
     
-    return result;
+    // return result;
 }

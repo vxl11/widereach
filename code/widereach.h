@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <glpk.h>
+#include <gurobi_c.h>
 
 // #define EXPERIMENTAL
 
