@@ -835,6 +835,21 @@ void test_simplex() {
     free(delete_samples(samples));
 }
 
+
+void test_labels() {
+  CU_ASSERT_EQUAL(label_to_varname(1), 'x');
+  CU_ASSERT_EQUAL(label_to_varname(0), 'y');
+  CU_ASSERT_DOUBLE_EQUAL(label_to_obj(1), 1., 1e-12);
+  CU_ASSERT_DOUBLE_EQUAL(label_to_obj(0), 0., 1e-12);
+  
+  params_t *params = params_default();
+  CU_ASSERT_DOUBLE_EQUAL(label_to_bound(1, params), 
+                         1. - params->epsilon_positive, 1e-12);
+  CU_ASSERT_DOUBLE_EQUAL(label_to_bound(0, params), 
+                         - params->epsilon_negative, 1e-12);
+  free(params);
+}
+
 GRBmodel *init_gurobi_model(const env_t *);
 GRBmodel *add_gurobi_hyperplane(GRBmodel *, size_t);
 void test_gurobi() {
@@ -930,6 +945,10 @@ int main() {
     // Execution support
     CU_pSuite exec = CU_add_suite("execution", NULL, NULL);
 	CU_add_test(exec, "execution", test_exec);
+    
+    // Label conversion
+    CU_pSuite labels = CU_add_suite("labels", NULL, NULL);
+	CU_add_test(labels, "labels", test_labels);
     
     // Gurobi
 	CU_pSuite gurobi = CU_add_suite("gurobi", init_samples, NULL);
