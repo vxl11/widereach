@@ -311,9 +311,16 @@ params_t *params_default();
 
 
 /* ---------------------- Label conversions  --------------------------- */
+
+/** Convert a sample label to its coefficient in the objective function */
 double label_to_obj(int label);
+
+/** Convert a sample label to the prefix of the corresponding variable name */
 char label_to_varname(int label);
-double label_to_bound(int label, params_t *params);
+
+/** Convert a sample label to 
+ *  the right hand side of the corresponding constraint */
+double label_to_bound(int label, params_t *);
 
 
 /* ---------------------------- Solution Data -------------------------- */

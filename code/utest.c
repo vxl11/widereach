@@ -847,6 +847,7 @@ void test_gurobi() {
   
   model = add_gurobi_hyperplane(model, 2);
   CU_ASSERT_PTR_NOT_NULL(model);
+  CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
   // GRBwrite(model, "tmp.lp");
   int varnumP;
   CU_ASSERT_EQUAL(GRBgetvarbyname(model, "w1", &varnumP), 0);
