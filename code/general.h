@@ -310,6 +310,12 @@ typedef struct {
 params_t *params_default();
 
 
+/* ---------------------- Label conversions  --------------------------- */
+double label_to_obj(int label);
+char label_to_varname(int label);
+double label_to_bound(int label, params_t *params);
+
+
 /* ---------------------------- Solution Data -------------------------- */
 
 /** Data updated by the callback during the solution of the program */
