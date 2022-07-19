@@ -852,6 +852,7 @@ void test_labels() {
 
 GRBmodel *init_gurobi_model(const env_t *);
 GRBmodel *add_gurobi_hyperplane(GRBmodel *, size_t);
+GRBmodel *add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
 void test_gurobi() {
   env_t env;
   env.params = params_default();
@@ -867,6 +868,22 @@ void test_gurobi() {
   int varnumP;
   CU_ASSERT_EQUAL(GRBgetvarbyname(model, "w1", &varnumP), 0);
   CU_ASSERT_EQUAL(varnumP, 0);
+  
+  sample_locator_t *locator = CALLOC(1, sample_locator_t);;
+  locator->class = 1;
+  locator->index = 0;
+  model = add_gurobi_sample(model, *locator, &env);
+  CU_ASSERT_PTR_NOT_NULL(model);
+  free(locator);
+  CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
+  CU_ASSERT_EQUAL(GRBgetvarbyname(model, "x1", &varnumP), 0);
+  CU_ASSERT_EQUAL(varnumP, 3);
+  double valP;
+  CU_ASSERT_EQUAL(GRBgetcoeff(model, 0, 3, &valP), 0);
+  CU_ASSERT_DOUBLE_EQUAL(valP, 1., 1e-12);
+  CU_ASSERT_EQUAL(GRBgetdblattr(model, "MaxRHS", &valP), 0);
+  CU_ASSERT_DOUBLE_EQUAL(valP, 1.-env.params->epsilon_positive, 1e-9);
+  // GRBwrite(model, "tmp.lp");
   
   CU_ASSERT_EQUAL(GRBfreemodel(model), 0);
   delete_env(&env);
