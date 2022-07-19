@@ -15,7 +15,7 @@ extern void set_sample_class(samples_t *samples, size_t class, int label,
                              size_t count);
 
 
-void *accumulator(
+void *test_accumulator(
     samples_t *samples, 
     sample_locator_t locator, 
     void *accumulation, 
@@ -111,7 +111,7 @@ void test_samples() {
     
     samples->samples[0][1][0] = 0.;
     double result = 0;
-    reduce(samples, (void *) &result, accumulator, NULL);
+    reduce(samples, (void *) &result, test_accumulator, NULL);
     CU_ASSERT_DOUBLE_EQUAL(result, 1.+2e-3 + 1. + 1.-1e-3 + 1.-2e-3, 1e-6);
     
 	free(delete_samples(samples));

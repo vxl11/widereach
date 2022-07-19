@@ -121,19 +121,18 @@ GRBmodel *add_gurobi_sample(GRBmodel *model,
     model, locator, label, name, env);
 }
 
-GRBmodel *add_gurobi_samples(GRBmodel *model, const env_t *env) {
-	samples_t *samples = env->samples;
-	for (size_t class = 0; class < samples->class_cnt; class++) {
-		int cnt = samples->count[class];
-		for (size_t idx = 0; idx < cnt; idx++) {
-			sample_locator_t locator = { class, idx };
-			if (NULL == add_gurobi_sample(model, locator, env)) {
-              return NULL;
-            }
-		}
-	}
+void *gurobi_accumulator(
+    samples_t *samples, 
+    sample_locator_t locator, 
+    void *model, 
+    void *env) {
+  return (void *) 
+    add_gurobi_sample((GRBmodel *) model, locator, (const env_t *) env);
+}
 
-	return model;
+GRBmodel *add_gurobi_samples(GRBmodel *model, const env_t *env) {
+  return (GRBmodel *) 
+    reduce(env->samples, (void *) model, gurobi_accumulator, (void *) env); 
 }
 
 
