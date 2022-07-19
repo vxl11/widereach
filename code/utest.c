@@ -853,6 +853,7 @@ void test_labels() {
 GRBmodel *init_gurobi_model(const env_t *);
 GRBmodel *add_gurobi_hyperplane(GRBmodel *, size_t);
 GRBmodel *add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
+void gurobi_indices(sparse_vector_t *);
 void test_gurobi() {
   env_t env;
   env.params = params_default();
@@ -868,6 +869,15 @@ void test_gurobi() {
   int varnumP;
   CU_ASSERT_EQUAL(GRBgetvarbyname(model, "w1", &varnumP), 0);
   CU_ASSERT_EQUAL(varnumP, 0);
+  
+  sparse_vector_t *v = sparse_vector_blank(2);
+  append(v, 2, -1.);
+  append(v, 4, 1.);
+  gurobi_indices(v);
+  CU_ASSERT_EQUAL(v->ind[1], 1);
+  CU_ASSERT_EQUAL(v->ind[2], 3);
+  free(delete_sparse_vector(v));
+  
   
   sample_locator_t *locator = CALLOC(1, sample_locator_t);;
   locator->class = 1;

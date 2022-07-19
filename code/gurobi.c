@@ -63,8 +63,41 @@ GRBmodel *add_gurobi_sample_var(GRBmodel *model, int label, char *name) {
   return model_conditional(state, model);
 }
 
-GRBmodel *add_gurobi_sample_constr(GRBmodel *model, int label, char *name) {
-  return NULL;
+// Convert index set from GLPK to Gurobi format
+void gurobi_indices(sparse_vector_t *v) {
+  int vlen = v->len;
+  for (int i = 1; i <= vlen; i++) {
+    v->ind[i]--;
+  }
+}
+
+GRBmodel *add_gurobi_sample_constr(
+    GRBmodel *model, 
+    size_t class,
+    int label, 
+    size_t sample_index,
+    char *name,
+    const env_t * env) {
+  // Set coefficients of w
+  samples_t *samples = env->samples;
+  int dimension = (int) samples->dimension;
+  sparse_vector_t *v = 
+    to_sparse(dimension, samples->samples[class][sample_index], 2);
+  // Set coefficient of c
+  append(v, dimension + 1, -1.); 
+  // Change sign depending on sample class
+  multiply(v, -label);
+  // Add sample decision variable
+  int col_idx = idx(0, class, sample_index, samples);
+  append(v, col_idx, label);
+  
+  gurobi_indices(v);
+  
+  int state = GRBaddconstr(model,
+                           v->len, v->ind+1, v->val+1, 
+                           GRB_LESS_EQUAL, label_to_bound(label, env->params),
+                           name);
+  return model_conditional(state, model);
 }
 
 
@@ -85,29 +118,9 @@ GRBmodel *add_gurobi_sample(GRBmodel *model,
     return NULL;
   }
   
-  // Set coefficients of w
-  int dimension = (int) samples->dimension;
-  sparse_vector_t *v = 
-    to_sparse(dimension, samples->samples[class][sample_index], 2);
-  // Set coefficient of c
-  append(v, dimension + 1, -1.); 
-  // Change sign depending on sample class
-  multiply(v, -label);
-  // Add sample decision variable
-  int col_idx = idx(0, class, sample_index, samples);
-  append(v, col_idx, label);
-  
-  // Convert indices to Gurobi style
-  int vlen = v->len;
-  for (int i = 1; i <= vlen; i++) {
-    v->ind[i]--;
-  }
-  
-  int state = GRBaddconstr(model,
-                           v->len, v->ind+1, v->val+1, 
-                           GRB_LESS_EQUAL, label_to_bound(label, env->params),
-                           name);
-  return model_conditional(state, model);
+  // Add sample constraint    
+  return add_gurobi_sample_constr(
+    model, class, label, sample_index, name, env);
 }
 
 
