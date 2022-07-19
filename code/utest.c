@@ -852,6 +852,7 @@ void test_labels() {
 
 GRBmodel *init_gurobi_model(const env_t *);
 GRBmodel *add_gurobi_hyperplane(GRBmodel *, size_t);
+GRBmodel *add_gurobi_sample_var(GRBmodel *, int label, char *name);
 GRBmodel *add_gurobi_sample_constr(
     GRBmodel *, sample_locator_t, int label, char *name, const env_t *);
 GRBmodel *add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
@@ -867,7 +868,6 @@ void test_gurobi() {
   model = add_gurobi_hyperplane(model, 2);
   CU_ASSERT_PTR_NOT_NULL(model);
   CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
-  // GRBwrite(model, "tmp.lp");
   int varnumP;
   CU_ASSERT_EQUAL(GRBgetvarbyname(model, "w1", &varnumP), 0);
   CU_ASSERT_EQUAL(varnumP, 0);
@@ -885,7 +885,6 @@ void test_gurobi() {
   locator->index = 0;
   model = add_gurobi_sample(model, *locator, &env);
   CU_ASSERT_PTR_NOT_NULL(model);
-  free(locator);
   CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
   CU_ASSERT_EQUAL(GRBgetvarbyname(model, "x1", &varnumP), 0);
   CU_ASSERT_EQUAL(varnumP, 3);
@@ -897,12 +896,22 @@ void test_gurobi() {
   
   locator->class = 1;
   locator->index = 1;
-  model = add_gurobi_sample_constr(
-      model, 
-      *locator, env.samples->label[locator->class], "x1", 
-      &env);
-  // GRBwrite(model, "tmp.lp");
+  int label = env.samples->label[locator->class];
+  model = add_gurobi_sample_var(model, label, "x2");
+  CU_ASSERT_PTR_NOT_NULL(model);
+  CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
+  CU_ASSERT_EQUAL(GRBgetvarbyname(model, "x2", &varnumP), 0);
+  CU_ASSERT_EQUAL(varnumP, 4);
   
+  model = add_gurobi_sample_constr(model, *locator, label, "x2", &env);
+  free(locator);
+  CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
+  CU_ASSERT_PTR_NOT_NULL(model);
+  CU_ASSERT_EQUAL(GRBgetcoeff(model, 0, 3, &valP), 0);
+  CU_ASSERT_DOUBLE_EQUAL(valP, 1., 1e-12);
+  CU_ASSERT_EQUAL(GRBgetdblattr(model, "MaxRHS", &valP), 0);
+  CU_ASSERT_DOUBLE_EQUAL(valP, 1.-env.params->epsilon_positive, 1e-9);
+  // GRBwrite(model, "tmp.lp");
   CU_ASSERT_EQUAL(GRBfreemodel(model), 0);
   delete_env(&env);
 }
