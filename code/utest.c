@@ -852,6 +852,8 @@ void test_labels() {
 
 GRBmodel *init_gurobi_model(const env_t *);
 GRBmodel *add_gurobi_hyperplane(GRBmodel *, size_t);
+GRBmodel *add_gurobi_sample_constr(
+    GRBmodel *, sample_locator_t, int label, char *name, const env_t *);
 GRBmodel *add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
 void gurobi_indices(sparse_vector_t *);
 void test_gurobi() {
@@ -878,7 +880,6 @@ void test_gurobi() {
   CU_ASSERT_EQUAL(v->ind[2], 3);
   free(delete_sparse_vector(v));
   
-  
   sample_locator_t *locator = CALLOC(1, sample_locator_t);;
   locator->class = 1;
   locator->index = 0;
@@ -893,6 +894,13 @@ void test_gurobi() {
   CU_ASSERT_DOUBLE_EQUAL(valP, 1., 1e-12);
   CU_ASSERT_EQUAL(GRBgetdblattr(model, "MaxRHS", &valP), 0);
   CU_ASSERT_DOUBLE_EQUAL(valP, 1.-env.params->epsilon_positive, 1e-9);
+  
+  locator->class = 1;
+  locator->index = 1;
+  model = add_gurobi_sample_constr(
+      model, 
+      *locator, env.samples->label[locator->class], "x1", 
+      &env);
   // GRBwrite(model, "tmp.lp");
   
   CU_ASSERT_EQUAL(GRBfreemodel(model), 0);

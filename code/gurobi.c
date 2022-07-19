@@ -73,14 +73,15 @@ void gurobi_indices(sparse_vector_t *v) {
 
 GRBmodel *add_gurobi_sample_constr(
     GRBmodel *model, 
-    size_t class,
+    sample_locator_t locator,
     int label, 
-    size_t sample_index,
     char *name,
-    const env_t * env) {
+    const env_t *env) {
   // Set coefficients of w
   samples_t *samples = env->samples;
   int dimension = (int) samples->dimension;
+  size_t class = locator.class;
+  size_t sample_index = locator.index;
   sparse_vector_t *v = 
     to_sparse(dimension, samples->samples[class][sample_index], 2);
   // Set coefficient of c
@@ -104,14 +105,11 @@ GRBmodel *add_gurobi_sample_constr(
 GRBmodel *add_gurobi_sample(GRBmodel *model, 
                             sample_locator_t locator, 
                             const env_t *env) {
-  samples_t *samples = env->samples;
-  size_t class = locator.class;
-  int label = samples->label[class];
-  size_t sample_index = locator.index;
+  int label = env->samples->label[locator.class];
   char name[NAME_LEN_MAX];
   snprintf(name, NAME_LEN_MAX, "%c%u", 
           label_to_varname(label), 
-          (unsigned int) sample_index + 1);
+          (unsigned int) locator.index + 1);
   
   // Add sample decision variable
   if (NULL == add_gurobi_sample_var(model, label, name)) {
@@ -120,7 +118,7 @@ GRBmodel *add_gurobi_sample(GRBmodel *model,
   
   // Add sample constraint    
   return add_gurobi_sample_constr(
-    model, class, label, sample_index, name, env);
+    model, locator, label, name, env);
 }
 
 
