@@ -121,17 +121,32 @@ GRBmodel *add_gurobi_sample(GRBmodel *model,
     model, locator, label, name, env);
 }
 
+GRBmodel *add_gurobi_samples(GRBmodel *model, const env_t *env) {
+	samples_t *samples = env->samples;
+	for (size_t class = 0; class < samples->class_cnt; class++) {
+		int cnt = samples->count[class];
+		for (size_t idx = 0; idx < cnt; idx++) {
+			sample_locator_t locator = { class, idx };
+			if (NULL == add_gurobi_sample(model, locator, env)) {
+              return NULL;
+            }
+		}
+	}
+
+	return model;
+}
+
 
 GRBmodel *gurobi_milp(const env_t *env) {
     samples_t *samples = env->samples;
 	if (!is_binary(samples)) {
 		return NULL;
 	}
-	return init_gurobi_model(env); // TODO
-	/*
-	p = add_hyperplane(p, samples->dimension);
+	GRBmodel *model = init_gurobi_model(env); 
+	model = add_gurobi_hyperplane(model, samples->dimension);
+    /* 
 	p = add_samples(p, env);
-	p = add_precision(p, env);
+	p = add_precision(p, env); */
  	// p = add_valid_constraints(p, env);
-	return p;*/
+	return model;
 }

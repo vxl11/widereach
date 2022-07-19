@@ -147,6 +147,25 @@ int side_cnt(
 		/** Precision around the hyperplane */
 		double precision);
 
+/** Performs a reduction on the samples using the given accumulation operator */
+void *reduce(
+    samples_t *samples,
+    /** Initial value of the result */
+    void *initial,
+    /** Reduction function */
+    void *(*accumulator)(
+      /** Samples */
+      samples_t *samples,
+      /** Current sample locator */
+      sample_locator_t locator,
+      /** Current value of the accumulation */
+      void *accumulation, 
+      /** Auxiliary information */
+      void *aux),
+    /** Optional auxiliary information to be passed to the accumulator */
+    void *aux);
+
+
 /* ---------------------- Sample clusters --------------------------- */
 
 /** Descriptor of a set of clusters of samples */

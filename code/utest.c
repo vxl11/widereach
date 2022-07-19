@@ -14,6 +14,17 @@ extern double **random_points(size_t count, size_t dimension);
 extern void set_sample_class(samples_t *samples, size_t class, int label, 
                              size_t count);
 
+
+void *accumulator(
+    samples_t *samples, 
+    sample_locator_t locator, 
+    void *accumulation, 
+    void *aux) {
+  double *result = (double *) accumulation;
+  *result += samples->samples[locator.class][locator.index][0];
+  return result;
+}
+
 void test_samples() {
   // Test random_points
     double **points = random_points(3, 2);
@@ -97,7 +108,12 @@ void test_samples() {
 	samples->samples[0][0][0] = 1.-2e-3;
 	samples->samples[0][0][1] = -.5;
 	CU_ASSERT(!side(&loc, samples, hyperplane, 1e-3));
-
+    
+    samples->samples[0][1][0] = 0.;
+    double result = 0;
+    reduce(samples, (void *) &result, accumulator, NULL);
+    CU_ASSERT_DOUBLE_EQUAL(result, 1.+2e-3 + 1. + 1.-1e-3 + 1.-2e-3, 1e-6);
+    
 	free(delete_samples(samples));
     
     double *rnd_plane = random_hyperplane(2);

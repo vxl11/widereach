@@ -120,7 +120,7 @@ glp_prob *add_samples(glp_prob *p, const env_t *env) {
 		int cnt = samples->count[class];
 		for (size_t idx = 0; idx < cnt; idx++) {
 			sample_locator_t locator = { class, idx };
-			add_sample(p, locator , env);
+			add_sample(p, locator, env);
 		}
 	}
 
