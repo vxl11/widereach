@@ -112,13 +112,13 @@ GRBmodel *add_gurobi_sample(GRBmodel *model,
           (unsigned int) locator.index + 1);
   
   // Add sample decision variable
-  if (NULL == add_gurobi_sample_var(model, label, name)) {
+  GRBmodel *model_updated = add_gurobi_sample_var(model, label, name);
+  if (NULL == model_updated) {
     return NULL;
   }
   
-  // Add sample constraint    
-  return add_gurobi_sample_constr(
-    model, locator, label, name, env);
+  // Add sample constraint
+  return add_gurobi_sample_constr(model_updated, locator, label, name, env);
 }
 
 void *gurobi_accumulator(
@@ -126,8 +126,10 @@ void *gurobi_accumulator(
     sample_locator_t locator, 
     void *model, 
     void *env) {
-  return (void *) 
-    add_gurobi_sample((GRBmodel *) model, locator, (const env_t *) env);
+  /* return (void *) 
+    add_gurobi_sample((GRBmodel *) model, locator, (const env_t *) env); */
+  GRBmodel *m = add_gurobi_sample((GRBmodel *) model, locator, (const env_t *) env);
+  return (void *) m;
 }
 
 GRBmodel *add_gurobi_samples(GRBmodel *model, const env_t *env) {
@@ -144,7 +146,7 @@ GRBmodel *gurobi_milp(const env_t *env) {
 	GRBmodel *model = init_gurobi_model(env); 
 	model = add_gurobi_hyperplane(model, samples->dimension);
     /* 
-	p = add_samples(p, env);
+	p = add_gurobi_samples(p, env);
 	p = add_precision(p, env); */
  	// p = add_valid_constraints(p, env);
 	return model;

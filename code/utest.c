@@ -874,6 +874,7 @@ GRBmodel *add_gurobi_sample_constr(
 GRBmodel *add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
 void gurobi_indices(sparse_vector_t *);
 void *gurobi_accumulator(samples_t *, sample_locator_t, void *model, void *env);
+GRBmodel *add_gurobi_samples(GRBmodel *, const env_t *);
 void test_gurobi() {
   env_t env;
   env.params = params_default();
@@ -933,12 +934,22 @@ void test_gurobi() {
   label = env.samples->label[locator->class];
   model = add_gurobi_sample_var(model, label, "x3");
   CU_ASSERT_PTR_NOT_NULL(model);
+  locator->class = 0;
+  locator->index = 1;
   model = (GRBmodel *)  gurobi_accumulator(env.samples, *locator, model, &env);
   CU_ASSERT_EQUAL(GRBgetcoeff(model, 0, 3, &valP), 0);
   CU_ASSERT_DOUBLE_EQUAL(valP, 1., 1e-12);
-
-  // GRBwrite(model, "tmp.lp");
+  
   CU_ASSERT_EQUAL(GRBfreemodel(model), 0);
+  
+  GRBmodel *m = init_gurobi_model(&env);
+  m = add_gurobi_hyperplane(m, 2);
+    GRBwrite(m, "tmp.lp");
+  m = add_gurobi_samples(m, &env);
+
+  GRBwrite(m, "tmp.lp");
+  CU_ASSERT_EQUAL(GRBfreemodel(m), 0);
+  
   free(locator);
   delete_env(&env);
 }

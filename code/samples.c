@@ -170,7 +170,9 @@ void *reduce(
     void *(*accumulator)(samples_t *, sample_locator_t, void *, void *),
     void *aux) {
   void *result = initial;
-  for (size_t class = 0; class < samples->class_cnt; class++) {
+  size_t classes[] = { 1, 0 };
+  for (int class_index = 0; class_index < 2; class_index++) {
+    size_t class = classes[class_index];
     int cnt = samples->count[class];
     for (size_t idx = 0; idx < cnt; idx++) {
       sample_locator_t locator = { class, idx };
