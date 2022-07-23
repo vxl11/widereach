@@ -875,7 +875,8 @@ int add_gurobi_sample_constr(
 int add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
 void gurobi_indices(sparse_vector_t *);
 int gurobi_accumulator(samples_t *, sample_locator_t, void *model, void *env);
-GRBmodel *add_gurobi_samples(GRBmodel *, const env_t *);
+int add_gurobi_samples(GRBmodel *, const env_t *);
+int add_gurobi_precision(GRBmodel *, const env_t *);
 void test_gurobi() {
   env_t env;
   env.params = params_default();
@@ -944,8 +945,8 @@ void test_gurobi() {
   
   GRBmodel *m = init_gurobi_model(&env);
   add_gurobi_hyperplane(m, 2);
-    GRBwrite(m, "tmp.lp");
   add_gurobi_samples(m, &env);
+  CU_ASSERT_EQUAL(add_gurobi_precision(m, &env), 0);
 
   GRBwrite(m, "tmp.lp");
   CU_ASSERT_EQUAL(GRBfreemodel(m), 0);

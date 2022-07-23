@@ -129,6 +129,37 @@ int add_gurobi_samples(GRBmodel *model, const env_t *env) {
   return reduce(env->samples, (void *) model, gurobi_accumulator, (void *) env); 
 }
 
+int add_gurobi_precision(GRBmodel *model, const env_t *env) {
+  params_t *params = env->params;
+  int state = GRBaddvar(model, 0, NULL, NULL, 
+                        -params->lambda, 
+                        params->violation_type ? 0. : -GRB_INFINITY, 
+                        GRB_INFINITY,
+                        GRB_CONTINUOUS, "V");
+  return state;
+  /* -----------
+  samples_t *samples = env->samples;
+	int col_idx = violation_idx(0, samples);
+	glp_set_col_name(p, col_idx, "V");
+	glp_set_col_kind(p, col_idx, GLP_CV);
+	params_t *params = env->params;
+	glp_set_col_bnds(p, col_idx, 
+                     params->violation_type ? GLP_LO : GLP_FR, 
+                     0., 0.);
+	glp_set_obj_coef(p, col_idx, -params->lambda);
+
+	int row_idx = violation_idx(1, samples);
+	glp_set_row_name(p, row_idx, "V");
+	double theta = params->theta;
+	glp_set_row_bnds(p, row_idx, GLP_UP, 0., 
+			-theta * params->epsilon_precision);
+	sparse_vector_t *constraint = precision_row(samples, theta);
+	set_rhs(p, row_idx, constraint);
+	free(delete_sparse_vector(constraint));
+
+	return p;*/
+}
+
 
 GRBmodel *gurobi_milp(const env_t *env) {
     samples_t *samples = env->samples;
