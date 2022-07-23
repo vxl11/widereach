@@ -947,6 +947,9 @@ void test_gurobi() {
   add_gurobi_hyperplane(m, 2);
   add_gurobi_samples(m, &env);
   CU_ASSERT_EQUAL(add_gurobi_precision(m, &env), 0);
+  CU_ASSERT_EQUAL(GRBupdatemodel(m), 0);
+  CU_ASSERT_EQUAL(GRBgetcoeff(m, 5, 8, &valP), 0);
+  CU_ASSERT_DOUBLE_EQUAL(valP, -1., 1e-12);
 
   GRBwrite(m, "tmp.lp");
   CU_ASSERT_EQUAL(GRBfreemodel(m), 0);
