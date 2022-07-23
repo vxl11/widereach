@@ -3,9 +3,8 @@
 
 #define NAME_LEN_MAX 255
 
-#define TRY(condition, action) if (condition) { action; }
-#define TRY_MODEL(condition) TRY(condition, return NULL)
-#define TRY_STATE(body) { int state = body; TRY(state != 0, return state) }
+#define TRY_MODEL(condition) TRY(, condition, return NULL)
+#define TRY_STATE(body) TRY(int state = body, state != 0, return state)
 
 GRBmodel *init_gurobi_model(const env_t *env) {
   GRBenv *p = NULL;

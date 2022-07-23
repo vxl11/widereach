@@ -14,6 +14,15 @@ extern double **random_points(size_t count, size_t dimension);
 extern void set_sample_class(samples_t *samples, size_t class, int label, 
                              size_t count);
 
+void test_helpers() {
+  int result = 0;
+  
+  TRY(int state = 0, state != 0, result++)
+  CU_ASSERT_EQUAL(result, 0);
+  
+  TRY(int state = 1, state != 0, result++)
+  CU_ASSERT_EQUAL(result, 1);
+}
 
 int test_accumulator(
     samples_t *samples, 
@@ -963,6 +972,10 @@ int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
 		return EXIT_FAILURE;
 	}
+	
+	// Helpers
+	CU_pSuite helpers = CU_add_suite("helpers", NULL, NULL);
+	CU_add_test(helpers, "helper methods and macros", test_helpers);
 
 	// Samples
 	CU_pSuite samples = CU_add_suite("samples", init_samples, NULL);
