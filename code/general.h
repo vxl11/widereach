@@ -563,7 +563,7 @@ sparse_vector_t *cover_row(
 		/** Sample set */
                 samples_t *);
 
-/** Returns a new sparse vector representing the right hand side of the 
+/** Returns a new sparse vector representing the left hand side of the 
  * precision constraint */
 sparse_vector_t *precision_row(
 		/** Sample set */
