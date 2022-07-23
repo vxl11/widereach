@@ -27,11 +27,7 @@ GRBmodel *init_gurobi_model(const env_t *env) {
   return model; 
 }
 
-GRBmodel *model_conditional(int state, GRBmodel *model) {
-  return state ? NULL : model;
-}
-
-GRBmodel *add_gurobi_hyperplane(GRBmodel *model, size_t dimension) {
+int add_gurobi_hyperplane(GRBmodel *model, size_t dimension) {
   int dimension_int = (int) dimension;
   int hyperplane_cnt = 1 + dimension_int;
   double *lb = CALLOC(hyperplane_cnt, double);
@@ -45,22 +41,23 @@ GRBmodel *add_gurobi_hyperplane(GRBmodel *model, size_t dimension) {
   }
   snprintf(varnames[dimension_int], NAME_LEN_MAX, "c");
   
-  int state =  GRBaddvars(model, hyperplane_cnt, 
+  return GRBaddvars(model, hyperplane_cnt, 
                           0, NULL, NULL, NULL, 
                           NULL, lb, NULL, 
                           NULL, 
                           varnames);
-  return model_conditional(state, model);
 }
 
 
-GRBmodel *add_gurobi_sample_var(GRBmodel *model, int label, char *name) {
+int add_gurobi_sample_var(GRBmodel *model, int label, char *name) {
   int state = GRBaddvar(model, 0, NULL, NULL, 
                         label_to_obj(label), 
                         0., 1., GRB_BINARY, 
                         name);
-  GRBupdatemodel(model);
-  return model_conditional(state, model);
+  if (state != 0) {
+    return state;
+  }
+  return GRBupdatemodel(model);
 }
 
 // Convert index set from GLPK to Gurobi format
@@ -71,7 +68,7 @@ void gurobi_indices(sparse_vector_t *v) {
   }
 }
 
-GRBmodel *add_gurobi_sample_constr(
+int add_gurobi_sample_constr(
     GRBmodel *model, 
     sample_locator_t locator,
     int label, 
@@ -94,17 +91,16 @@ GRBmodel *add_gurobi_sample_constr(
   
   gurobi_indices(v);
   
-  int state = GRBaddconstr(model,
-                           v->len, v->ind+1, v->val+1, 
-                           GRB_LESS_EQUAL, label_to_bound(label, env->params),
-                           name);
-  return model_conditional(state, model);
+  return GRBaddconstr(model,
+                      v->len, v->ind+1, v->val+1, 
+                      GRB_LESS_EQUAL, label_to_bound(label, env->params),
+                      name);
 }
 
 
-GRBmodel *add_gurobi_sample(GRBmodel *model, 
-                            sample_locator_t locator, 
-                            const env_t *env) {
+int add_gurobi_sample(GRBmodel *model, 
+                      sample_locator_t locator, 
+                      const env_t *env) {
   int label = env->samples->label[locator.class];
   char name[NAME_LEN_MAX];
   snprintf(name, NAME_LEN_MAX, "%c%u", 
@@ -112,29 +108,25 @@ GRBmodel *add_gurobi_sample(GRBmodel *model,
           (unsigned int) locator.index + 1);
   
   // Add sample decision variable
-  GRBmodel *model_updated = add_gurobi_sample_var(model, label, name);
-  if (NULL == model_updated) {
-    return NULL;
+  int state = add_gurobi_sample_var(model, label, name);
+  if (state != 0) {
+    return state;
   }
   
   // Add sample constraint
-  return add_gurobi_sample_constr(model_updated, locator, label, name, env);
+  return add_gurobi_sample_constr(model, locator, label, name, env);
 }
 
-void *gurobi_accumulator(
+int gurobi_accumulator(
     samples_t *samples, 
     sample_locator_t locator, 
     void *model, 
     void *env) {
-  /* return (void *) 
-    add_gurobi_sample((GRBmodel *) model, locator, (const env_t *) env); */
-  GRBmodel *m = add_gurobi_sample((GRBmodel *) model, locator, (const env_t *) env);
-  return (void *) m;
+  return add_gurobi_sample((GRBmodel *) model, locator, (const env_t *) env);
 }
 
-GRBmodel *add_gurobi_samples(GRBmodel *model, const env_t *env) {
-  return (GRBmodel *) 
-    reduce(env->samples, (void *) model, gurobi_accumulator, (void *) env); 
+int add_gurobi_samples(GRBmodel *model, const env_t *env) {
+  return reduce(env->samples, (void *) model, gurobi_accumulator, (void *) env); 
 }
 
 
@@ -144,7 +136,7 @@ GRBmodel *gurobi_milp(const env_t *env) {
 		return NULL;
 	}
 	GRBmodel *model = init_gurobi_model(env); 
-	model = add_gurobi_hyperplane(model, samples->dimension);
+	add_gurobi_hyperplane(model, samples->dimension);
     /* 
 	p = add_gurobi_samples(p, env);
 	p = add_precision(p, env); */

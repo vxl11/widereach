@@ -15,14 +15,14 @@ extern void set_sample_class(samples_t *samples, size_t class, int label,
                              size_t count);
 
 
-void *test_accumulator(
+int test_accumulator(
     samples_t *samples, 
     sample_locator_t locator, 
     void *accumulation, 
     void *aux) {
   double *result = (double *) accumulation;
   *result += samples->samples[locator.class][locator.index][0];
-  return result;
+  return 0;
 }
 
 void test_samples() {
@@ -111,7 +111,8 @@ void test_samples() {
     
     samples->samples[0][1][0] = 0.;
     double result = 0;
-    reduce(samples, (void *) &result, test_accumulator, NULL);
+    CU_ASSERT_EQUAL(reduce(samples, (void *) &result, test_accumulator, NULL), 
+                    0);
     CU_ASSERT_DOUBLE_EQUAL(result, 1.+2e-3 + 1. + 1.-1e-3 + 1.-2e-3, 1e-6);
     
 	free(delete_samples(samples));
@@ -867,13 +868,13 @@ void test_labels() {
 }
 
 GRBmodel *init_gurobi_model(const env_t *);
-GRBmodel *add_gurobi_hyperplane(GRBmodel *, size_t);
-GRBmodel *add_gurobi_sample_var(GRBmodel *, int label, char *name);
-GRBmodel *add_gurobi_sample_constr(
+int add_gurobi_hyperplane(GRBmodel *, size_t);
+int add_gurobi_sample_var(GRBmodel *, int label, char *name);
+int add_gurobi_sample_constr(
     GRBmodel *, sample_locator_t, int label, char *name, const env_t *);
-GRBmodel *add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
+int add_gurobi_sample(GRBmodel *, sample_locator_t, const env_t *);
 void gurobi_indices(sparse_vector_t *);
-void *gurobi_accumulator(samples_t *, sample_locator_t, void *model, void *env);
+int gurobi_accumulator(samples_t *, sample_locator_t, void *model, void *env);
 GRBmodel *add_gurobi_samples(GRBmodel *, const env_t *);
 void test_gurobi() {
   env_t env;
@@ -883,7 +884,7 @@ void test_gurobi() {
   GRBmodel *model = init_gurobi_model(&env);
   CU_ASSERT_PTR_NOT_NULL(model);
   
-  model = add_gurobi_hyperplane(model, 2);
+  CU_ASSERT_EQUAL(add_gurobi_hyperplane(model, 2), 0);
   CU_ASSERT_PTR_NOT_NULL(model);
   CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
   int varnumP;
@@ -901,8 +902,7 @@ void test_gurobi() {
   sample_locator_t *locator = CALLOC(1, sample_locator_t);;
   locator->class = 1;
   locator->index = 0;
-  model = add_gurobi_sample(model, *locator, &env);
-  CU_ASSERT_PTR_NOT_NULL(model);
+  CU_ASSERT_EQUAL(add_gurobi_sample(model, *locator, &env), 0);
   CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
   CU_ASSERT_EQUAL(GRBgetvarbyname(model, "x1", &varnumP), 0);
   CU_ASSERT_EQUAL(varnumP, 3);
@@ -915,16 +915,16 @@ void test_gurobi() {
   locator->class = 1;
   locator->index = 1;
   int label = env.samples->label[locator->class];
-  model = add_gurobi_sample_var(model, label, "x2");
+  CU_ASSERT_EQUAL(add_gurobi_sample_var(model, label, "x2"), 0);
   CU_ASSERT_PTR_NOT_NULL(model);
   CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
   CU_ASSERT_EQUAL(GRBgetvarbyname(model, "x2", &varnumP), 0);
   CU_ASSERT_EQUAL(varnumP, 4);
   
-  model = add_gurobi_sample_constr(model, *locator, label, "x2", &env);
+  CU_ASSERT_EQUAL(add_gurobi_sample_constr(model, *locator, label, "x2", &env), 
+                  0);
   CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
-  CU_ASSERT_PTR_NOT_NULL(model);
-  CU_ASSERT_EQUAL(GRBgetcoeff(model, 0, 3, &valP), 0);
+  CU_ASSERT_EQUAL(GRBgetcoeff(model, 1, 4, &valP), 0);
   CU_ASSERT_DOUBLE_EQUAL(valP, 1., 1e-12);
   CU_ASSERT_EQUAL(GRBgetdblattr(model, "MaxRHS", &valP), 0);
   CU_ASSERT_DOUBLE_EQUAL(valP, 1.-env.params->epsilon_positive, 1e-9);
@@ -932,20 +932,20 @@ void test_gurobi() {
   locator->class = 1;
   locator->index = 2;
   label = env.samples->label[locator->class];
-  model = add_gurobi_sample_var(model, label, "x3");
-  CU_ASSERT_PTR_NOT_NULL(model);
+  CU_ASSERT_EQUAL(add_gurobi_sample(model, *locator, &env), 0);
   locator->class = 0;
-  locator->index = 1;
-  model = (GRBmodel *)  gurobi_accumulator(env.samples, *locator, model, &env);
-  CU_ASSERT_EQUAL(GRBgetcoeff(model, 0, 3, &valP), 0);
-  CU_ASSERT_DOUBLE_EQUAL(valP, 1., 1e-12);
-  
+  locator->index = 0;
+  CU_ASSERT_EQUAL(gurobi_accumulator(env.samples, *locator, model, &env), 0);
+  CU_ASSERT_EQUAL(GRBupdatemodel(model), 0);
+  CU_ASSERT_EQUAL(GRBgetcoeff(model, 3, 6, &valP), 0);
+  CU_ASSERT_DOUBLE_EQUAL(valP, -1., 1e-12);
+
   CU_ASSERT_EQUAL(GRBfreemodel(model), 0);
   
   GRBmodel *m = init_gurobi_model(&env);
-  m = add_gurobi_hyperplane(m, 2);
+  add_gurobi_hyperplane(m, 2);
     GRBwrite(m, "tmp.lp");
-  m = add_gurobi_samples(m, &env);
+  add_gurobi_samples(m, &env);
 
   GRBwrite(m, "tmp.lp");
   CU_ASSERT_EQUAL(GRBfreemodel(m), 0);

@@ -164,10 +164,10 @@ int side_cnt(
     return positive_cnt;
 }
 
-void *reduce(
+int reduce(
     samples_t *samples,
     void *initial,
-    void *(*accumulator)(samples_t *, sample_locator_t, void *, void *),
+    int (*accumulator)(samples_t *, sample_locator_t, void *, void *),
     void *aux) {
   void *result = initial;
   size_t classes[] = { 1, 0 };
@@ -176,12 +176,12 @@ void *reduce(
     int cnt = samples->count[class];
     for (size_t idx = 0; idx < cnt; idx++) {
       sample_locator_t locator = { class, idx };
-      result = accumulator(samples, locator, result, aux);
-      if (NULL == result) {
-        return result;
+      int state = accumulator(samples, locator, result, aux);
+      if (state != 0) {
+        return state;
       }
 	}
   }
 
-  return result;
+  return 0;
 }
