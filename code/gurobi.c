@@ -3,26 +3,23 @@
 
 #define NAME_LEN_MAX 255
 
+#define TRY(condition, action) if (condition) { action; }
+#define TRY_MODEL(condition) TRY(condition, return NULL)
+#define TRY_STATE(body) { int state = body; TRY(state != 0, return state) }
 
 GRBmodel *init_gurobi_model(const env_t *env) {
   GRBenv *p = NULL;
-  if (GRBemptyenv(&p)) {
-      return NULL;
-  }
+  TRY_MODEL(GRBemptyenv(&p));
   
-  if (GRBstartenv(p)) {
-    return NULL;
-  }
+  TRY_MODEL(GRBstartenv(p));
   
   params_t *params = env->params;
   GRBmodel *model = NULL;
-  if (GRBnewmodel(p, &model, params->name, 0, NULL, NULL, NULL, NULL, NULL)) {
-    return NULL;
-  }
+  TRY_MODEL(
+    GRBnewmodel(p, &model, params->name, 0, NULL, NULL, NULL, NULL, NULL));
   
-  if (GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE)) {
-    return NULL;
-  }
+  TRY_MODEL(
+    GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE));
 
   return model; 
 }
@@ -50,13 +47,11 @@ int add_gurobi_hyperplane(GRBmodel *model, size_t dimension) {
 
 
 int add_gurobi_sample_var(GRBmodel *model, int label, char *name) {
-  int state = GRBaddvar(model, 0, NULL, NULL, 
-                        label_to_obj(label), 
-                        0., 1., GRB_BINARY, 
-                        name);
-  if (state != 0) {
-    return state;
-  }
+  TRY_STATE(
+    GRBaddvar(model, 0, NULL, NULL, 
+              label_to_obj(label), 
+              0., 1., GRB_BINARY, 
+              name));
   return GRBupdatemodel(model);
 }
 
@@ -108,10 +103,7 @@ int add_gurobi_sample(GRBmodel *model,
           (unsigned int) locator.index + 1);
   
   // Add sample decision variable
-  int state = add_gurobi_sample_var(model, label, name);
-  if (state != 0) {
-    return state;
-  }
+  TRY_STATE(add_gurobi_sample_var(model, label, name));
   
   // Add sample constraint
   return add_gurobi_sample_constr(model, locator, label, name, env);
@@ -131,14 +123,12 @@ int add_gurobi_samples(GRBmodel *model, const env_t *env) {
 
 int add_gurobi_precision(GRBmodel *model, const env_t *env) {
   params_t *params = env->params;
-  int state = GRBaddvar(model, 0, NULL, NULL, 
-                        -params->lambda, 
-                        params->violation_type ? 0. : -GRB_INFINITY, 
-                        GRB_INFINITY,
-                        GRB_CONTINUOUS, "V");
-  if (state !=0) {
-    return state;
-  }
+  TRY_STATE(
+    GRBaddvar(model, 0, NULL, NULL, 
+              -params->lambda, 
+              params->violation_type ? 0. : -GRB_INFINITY, 
+              GRB_INFINITY,
+              GRB_CONTINUOUS, "V"));
   
   double theta = params->theta;
   sparse_vector_t *constraint = precision_row(env->samples, theta);
@@ -149,17 +139,21 @@ int add_gurobi_precision(GRBmodel *model, const env_t *env) {
                       "V");
 }
 
-
-GRBmodel *gurobi_milp(const env_t *env) {
+GRBmodel *gurobi_milp(int *state, const env_t *env) {
     samples_t *samples = env->samples;
-	if (!is_binary(samples)) {
-		return NULL;
-	}
+	TRY_MODEL(!is_binary(samples));
+	
 	GRBmodel *model = init_gurobi_model(env); 
-	add_gurobi_hyperplane(model, samples->dimension);
-    /* 
-	p = add_gurobi_samples(p, env);
-	p = add_precision(p, env); */
+	
+    *state = add_gurobi_hyperplane(model, samples->dimension);
+    TRY_MODEL(*state != 0);
+    
+	*state = add_gurobi_samples(model, env);
+    TRY_MODEL(*state != 0);
+    
+    *state = add_gurobi_precision(model, env);
+    TRY_MODEL(*state != 0);
+    
  	// p = add_valid_constraints(p, env);
 	return model;
 }
