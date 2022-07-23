@@ -354,6 +354,9 @@ itest
 experiment*
 hyperrnd*
 
+# Temporary files
+tmp.lp
+
 # Profiles
 *.gcno
 *.gcda
