@@ -1,20 +1,37 @@
 #include "widereach.h"
 #include "helper.h"
 
+int error_handle(int state, GRBmodel *model, char *step) {
+  if (!state) {
+    return 0;
+  }
+  fprintf(stderr, "Gurobi error (%s): %i\n", step, state);
+  fprintf(stderr, "Error message: %s\n", GRBgeterrormsg(GRBgetenv(model)));
+  return state;
+}
+
 double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
     samples_t *samples = env->samples;
     env->solution_data = solution_data_init(samples_total(samples));
     
-    if (seed !=NULL) {
+    if (seed != NULL) {
         srand48(*seed);
     }
 
-    // HERE
-        return NULL;
-    /* GRBenv *p = gurobi_milp(env);
+    int state;
+    GRBmodel *model;
+    TRY(
+      model = gurobi_milp(&state, env), 
+      error_handle(state, model, "model creation"), 
+      NULL)
     
-    return NULL;
-    // glp_write_lp(p, NULL, "tmp.lp");
+    TRY(
+      state = GRBoptimize(model), 
+      error_handle(state, model, "optimize"), 
+      NULL)
+
+    // GRBwrite(model, "tmp.lp");
+    /*
     // glp_scale_prob(p, GLP_SF_AUTO);
     glp_simplex(p, NULL);
 
@@ -48,4 +65,5 @@ double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
     free(delete_solution_data(env->solution_data));
     
     // return result; */
+    return NULL;
 }
