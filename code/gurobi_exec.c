@@ -6,12 +6,19 @@
       error_handle(state, model, step), \
       NULL)
   
+#define MSG_LEN 256
+  
 int error_handle(int state, GRBmodel *model, char *step) {
   if (!state) {
     return 0;
   }
-  fprintf(stderr, "Gurobi error (%s): %i\n", step, state);
-  fprintf(stderr, "Error message: %s\n", GRBgeterrormsg(GRBgetenv(model)));
+  
+  char msg[MSG_LEN];
+  GRBenv *env = GRBgetenv(model);
+  snprintf(msg, MSG_LEN, 
+           "Gurobi error (%s): %i\nError message: %s\n", 
+           step, state, GRBgeterrormsg(env));
+  GRBmsg(env, msg);
   return state;
 }
 
