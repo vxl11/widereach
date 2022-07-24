@@ -1,6 +1,11 @@
 #include "widereach.h"
 #include "helper.h"
 
+#define TRY_MODEL(premise, step) \
+  TRY(premise, \
+      error_handle(state, model, step), \
+      NULL)
+  
 int error_handle(int state, GRBmodel *model, char *step) {
   if (!state) {
     return 0;
@@ -20,15 +25,18 @@ double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
 
     int state;
     GRBmodel *model;
-    TRY(
-      model = gurobi_milp(&state, env), 
-      error_handle(state, model, "model creation"), 
-      NULL)
     
-    TRY(
-      state = GRBoptimize(model), 
-      error_handle(state, model, "optimize"), 
-      NULL)
+    TRY_MODEL(model = gurobi_milp(&state, env), "model creation") 
+    
+    TRY_MODEL(state =  GRBtunemodel(model), "parameter tuning")
+    
+    TRY_MODEL(
+      state = GRBsetdblparam(GRBgetenv(model), 
+                             "TimeLimit", 
+                             tm_lim / 1000.),
+      "set time limit")
+    
+    TRY_MODEL(state = GRBoptimize(model), "optimize")
 
     // GRBwrite(model, "tmp.lp");
     /*
