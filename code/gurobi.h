@@ -1,5 +1,13 @@
 /* --------------------------- Execution -------------------------------- */
 
+/** Return a Gurobi instance intialized from the given environment */
+GRBmodel *gurobi_milp(
+  /** Initialization error code (see Gurobi) */
+  int *state, 
+  /** Instance environment */
+  const env_t *);
+
+
 /** Launch a single experiment 
  
  @return a new array in which 

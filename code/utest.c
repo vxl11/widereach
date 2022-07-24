@@ -14,14 +14,15 @@ extern double **random_points(size_t count, size_t dimension);
 extern void set_sample_class(samples_t *samples, size_t class, int label, 
                              size_t count);
 
-void test_helpers() {
+int try(int init_value) {
   int result = 0;
-  
-  TRY(int state = 0, state != 0, result++)
-  CU_ASSERT_EQUAL(result, 0);
-  
-  TRY(int state = 1, state != 0, result++)
-  CU_ASSERT_EQUAL(result, 1);
+  TRY(int state = init_value, state != 0, ++result)
+  return result;
+}
+
+void test_helpers() {
+  CU_ASSERT_EQUAL(try(0), 0);
+  CU_ASSERT_EQUAL(try(1), 1);
 }
 
 int test_accumulator(
@@ -876,7 +877,7 @@ void test_labels() {
   free(params);
 }
 
-GRBmodel *init_gurobi_model(const env_t *);
+GRBmodel *init_gurobi_model(int *state, const env_t *);
 int add_gurobi_hyperplane(GRBmodel *, size_t);
 int add_gurobi_sample_var(GRBmodel *, int label, char *name);
 int add_gurobi_sample_constr(
@@ -891,7 +892,8 @@ void test_gurobi() {
   env.params = params_default();
   env.solution_data = solution_data_init(5);
   env.samples = random_samples(5, 3, 2);
-  GRBmodel *model = init_gurobi_model(&env);
+  int state;
+  GRBmodel *model = init_gurobi_model(&state, &env);
   CU_ASSERT_PTR_NOT_NULL(model);
   
   CU_ASSERT_EQUAL(add_gurobi_hyperplane(model, 2), 0);
@@ -952,16 +954,21 @@ void test_gurobi() {
 
   CU_ASSERT_EQUAL(GRBfreemodel(model), 0);
   
-  GRBmodel *m = init_gurobi_model(&env);
+  GRBmodel *m = init_gurobi_model(&state, &env);
   add_gurobi_hyperplane(m, 2);
   add_gurobi_samples(m, &env);
   CU_ASSERT_EQUAL(add_gurobi_precision(m, &env), 0);
   CU_ASSERT_EQUAL(GRBupdatemodel(m), 0);
   CU_ASSERT_EQUAL(GRBgetcoeff(m, 5, 8, &valP), 0);
   CU_ASSERT_DOUBLE_EQUAL(valP, -1., 1e-12);
-
-  GRBwrite(m, "tmp.lp");
   CU_ASSERT_EQUAL(GRBfreemodel(m), 0);
+
+  GRBmodel *g = gurobi_milp(&state, &env);
+  CU_ASSERT_EQUAL(GRBupdatemodel(m), 0);
+  CU_ASSERT_EQUAL(GRBgetcoeff(m, 5, 8, &valP), 0);
+  CU_ASSERT_DOUBLE_EQUAL(valP, -1., 1e-12);
+  GRBwrite(g, "tmp.lp");
+  CU_ASSERT_EQUAL(GRBfreemodel(g), 0);
   
   free(locator);
   delete_env(&env);

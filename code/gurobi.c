@@ -3,21 +3,23 @@
 
 #define NAME_LEN_MAX 255
 
-#define TRY_MODEL(condition) TRY(, condition, return NULL)
-#define TRY_STATE(body) TRY(int state = body, state != 0, return state)
+#define TRY_MODEL(condition) TRY(, condition, NULL)
+#define TRY_STATE(body) TRY(int state = body, state != 0, state)
+#define TRY_MODEL_ON(premise) TRY(*state = premise, *state != 0, NULL)
 
-GRBmodel *init_gurobi_model(const env_t *env) {
+GRBmodel *init_gurobi_model(int *state, const env_t *env) {
   GRBenv *p = NULL;
-  TRY_MODEL(GRBemptyenv(&p));
   
-  TRY_MODEL(GRBstartenv(p));
+  TRY_MODEL_ON(GRBemptyenv(&p));
+  
+  TRY_MODEL_ON(GRBstartenv(p));
   
   params_t *params = env->params;
   GRBmodel *model = NULL;
-  TRY_MODEL(
+  TRY_MODEL_ON(
     GRBnewmodel(p, &model, params->name, 0, NULL, NULL, NULL, NULL, NULL));
   
-  TRY_MODEL(
+  TRY_MODEL_ON(
     GRBsetintattr(model, GRB_INT_ATTR_MODELSENSE, GRB_MAXIMIZE));
 
   return model; 
@@ -140,18 +142,16 @@ int add_gurobi_precision(GRBmodel *model, const env_t *env) {
 
 GRBmodel *gurobi_milp(int *state, const env_t *env) {
     samples_t *samples = env->samples;
-	TRY_MODEL(!is_binary(samples));
+	TRY_MODEL(!is_binary(samples))
 	
-	GRBmodel *model = init_gurobi_model(env); 
+	GRBmodel *model = init_gurobi_model(state, env); 
+    TRY_MODEL(NULL == model)
 	
-    *state = add_gurobi_hyperplane(model, samples->dimension);
-    TRY_MODEL(*state != 0);
+    TRY_MODEL_ON(add_gurobi_hyperplane(model, samples->dimension))
     
-	*state = add_gurobi_samples(model, env);
-    TRY_MODEL(*state != 0);
+	TRY_MODEL_ON(add_gurobi_samples(model, env))
     
-    *state = add_gurobi_precision(model, env);
-    TRY_MODEL(*state != 0);
+    TRY_MODEL_ON(add_gurobi_precision(model, env))
     
  	// p = add_valid_constraints(p, env);
 	return model;
