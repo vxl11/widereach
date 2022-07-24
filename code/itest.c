@@ -4,6 +4,8 @@
 
 #define LINE_MAX 255
 
+#define UNUSED_RESULT(cmd) (void) (cmd + 1)
+
 void compare_files(char *filename) {
     char line[LINE_MAX];
     snprintf(line, LINE_MAX, "cmp %s tmp.lp", filename);
@@ -11,7 +13,7 @@ void compare_files(char *filename) {
 	printf("%s\n", fgets(line, sizeof(line), cmp) == NULL ? 
 			"success" : "FAILURE");
 	pclose(cmp);
-	system("rm tmp.lp");
+	UNUSED_RESULT(system("rm tmp.lp"));
 }
 
 int main() {
@@ -76,6 +78,13 @@ int main() {
     int status = 
         is_obstructed(&target, &source, 2, obstruction_ptr, env.samples);
     printf("%s (%i)\n", status ? "FAILURE": "success", status);
+    
+    printf("\nIntegration testing: Gurobi LP compare\n");
+    int state;
+    GRBmodel *model = gurobi_milp(&state, &env);
+    GRBwrite(model, "tmp.lp");
+	printf("Comparison result:\t");
+    compare_files("gitest.lp");
     
     delete_env(&env);
 }
