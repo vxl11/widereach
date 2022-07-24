@@ -355,8 +355,9 @@ experiment*
 hyperrnd*
 
 # Temporary files
-tmp.lp
+tmp*.lp
 
 # Profiles
 *.gcno
 *.gcda
+
