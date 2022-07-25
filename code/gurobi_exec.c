@@ -13,29 +13,29 @@ int error_handle(int state, GRBmodel *model, char *step) {
     return 0;
   }
   
-  char msg[MSG_LEN];
   GRBenv *env = GRBgetenv(model);
+  char msg[MSG_LEN];
   snprintf(msg, MSG_LEN, 
-           "Gurobi error (%s): %i\nError message: %s\n", 
+           "Error (%s): %i\nError message: %s\n", 
            step, state, GRBgeterrormsg(env));
   GRBmsg(env, msg);
   return state;
 }
 
 double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
-    samples_t *samples = env->samples;
+    /* samples_t *samples = env->samples;
     env->solution_data = solution_data_init(samples_total(samples));
     
     if (seed != NULL) {
         srand48(*seed);
-    }
+    }*/
 
     int state;
     GRBmodel *model;
     
     TRY_MODEL(model = gurobi_milp(&state, env), "model creation") 
     
-    TRY_MODEL(state =  GRBtunemodel(model), "parameter tuning")
+    TRY_MODEL(state = GRBtunemodel(model), "parameter tuning")
     
     TRY_MODEL(
       state = GRBsetdblparam(GRBgetenv(model), 
@@ -43,9 +43,16 @@ double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
                              tm_lim / 1000.),
       "set time limit")
     
+    // GRBwrite(model, "tmp.lp");
+    
     TRY_MODEL(state = GRBoptimize(model), "optimize")
 
-    // GRBwrite(model, "tmp.lp");
+    int optimstatus;
+    TRY_MODEL(
+      state = GRBgetintattr(model, GRB_INT_ATTR_STATUS, &optimstatus), 
+      "get optimization status")
+    
+
     /*
     // glp_scale_prob(p, GLP_SF_AUTO);
     glp_simplex(p, NULL);

@@ -974,6 +974,28 @@ void test_gurobi() {
   delete_env(&env);
 }
 
+void test_gurobi_exec() {
+  srand48(195583786);
+  
+  int n = 16;
+  samples_t *samples = random_samples(n, n / 2, 2);
+  
+  env_t env;
+  env.samples = samples;
+  params_t *parms = env.params = params_default();
+  parms->theta = 0.8;
+  parms->lambda = 10 * (n + 1); 
+  parms->rnd_trials = 100;
+  parms->rnd_trials_cont = 0;
+  
+  double *result = single_gurobi_run(NULL, 120000, &env);
+  CU_PASS("single gurobi run");
+
+  free(delete_samples(samples));
+  free(parms);
+  free(result);
+}
+
 
 int main() {
 	if (CU_initialize_registry() != CUE_SUCCESS) {
@@ -1047,10 +1069,6 @@ int main() {
     // Simplex
     CU_pSuite simplex = CU_add_suite("simplex", NULL, NULL);
 	CU_add_test(simplex, "simplex", test_simplex);
-
-    // Execution support
-    CU_pSuite exec = CU_add_suite("execution", NULL, NULL);
-	CU_add_test(exec, "execution", test_exec);
     
     // Label conversion
     CU_pSuite labels = CU_add_suite("labels", NULL, NULL);
@@ -1059,6 +1077,14 @@ int main() {
     // Gurobi
 	CU_pSuite gurobi = CU_add_suite("gurobi", init_samples, NULL);
 	CU_add_test(gurobi, "gurobi", test_gurobi);
+    
+    // Execution support
+    CU_pSuite exec = CU_add_suite("execution", NULL, NULL);
+	CU_add_test(exec, "execution", test_exec);
+    
+    // Gurobi execution support
+    CU_pSuite gurobi_exec = CU_add_suite("gurobi execution", NULL, NULL);
+	CU_add_test(gurobi_exec, "gurobi execution", test_gurobi_exec);
 
 	// Run tests
 	CU_basic_run_tests();
