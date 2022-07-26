@@ -20,4 +20,6 @@ double *single_gurobi_run(
   unsigned int *seed, 
   /** Time limit in milliseconds */
   int tm_lim, 
+  /** Time limit in milliseconds for tuning the model */
+  int tm_lim_tune, 
   env_t *);

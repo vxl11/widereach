@@ -988,7 +988,8 @@ void test_gurobi_exec() {
   parms->rnd_trials = 100;
   parms->rnd_trials_cont = 0;
   
-  double *result = single_gurobi_run(NULL, 120000, &env);
+  printf("============== Gurobi =============\n\n");
+  double *result = single_gurobi_run(NULL, 120000, 3000, &env);
   CU_PASS("single gurobi run");
 
   free(delete_samples(samples));

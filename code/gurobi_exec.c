@@ -22,7 +22,10 @@ int error_handle(int state, GRBmodel *model, char *step) {
   return state;
 }
 
-double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
+double *single_gurobi_run(unsigned int *seed, 
+                          int tm_lim, 
+                          int tm_lim_tune, 
+                          env_t *env) {
     /* samples_t *samples = env->samples;
     env->solution_data = solution_data_init(samples_total(samples));
     
@@ -34,9 +37,22 @@ double *single_gurobi_run(unsigned int *seed, int tm_lim, env_t *env) {
     GRBmodel *model;
     
     TRY_MODEL(model = gurobi_milp(&state, env), "model creation") 
-    
+
+    TRY_MODEL(
+      state = GRBsetdblparam(GRBgetenv(model), 
+                             "TuneTimeLimit", 
+                             tm_lim_tune / 1000.),
+      "set time limit for tuning")
     TRY_MODEL(state = GRBtunemodel(model), "parameter tuning")
     
+    
+    // Cut generation (TODO warning: just goofing around)
+    /*
+    GRBsetintparam(GRBgetenv(model), "CoverCuts", 2);
+    GRBsetintparam(GRBgetenv(model), "ImpliedCuts", 2);
+    GRBsetintparam(GRBgetenv(model), "InfProofCuts", 2); */
+    
+    printf("optimize ...\n");
     TRY_MODEL(
       state = GRBsetdblparam(GRBgetenv(model), 
                              "TimeLimit", 
