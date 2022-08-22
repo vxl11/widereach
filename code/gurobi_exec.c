@@ -47,7 +47,7 @@ double *single_gurobi_run(unsigned int *seed,
     
     
     // Cut generation (TODO warning: just goofing around)
-    /*
+    /* GRBsetintparam(GRBgetenv(model), "GomoryPasses", 0);
     GRBsetintparam(GRBgetenv(model), "CoverCuts", 2);
     GRBsetintparam(GRBgetenv(model), "ImpliedCuts", 2);
     GRBsetintparam(GRBgetenv(model), "InfProofCuts", 2); */
